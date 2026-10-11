@@ -49,7 +49,7 @@ jobs:
             Write-Host 'This version already has a release. Existing downloads will not be replaced. Bump release-version.txt for a new release.'
             exit 0
           }
-          gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "SI Local AI Launcher $tag" --notes-file release-output/RELEASE_NOTES.md --draft
+          gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "Local AI Launcher $tag" --notes-file release-output/RELEASE_NOTES.md --draft
           if ($LASTEXITCODE -ne 0) { throw 'Release creation failed' }
           $assets = @(Get-ChildItem release-output -File | Where-Object { $_.Name -ne 'RELEASE_NOTES.md' } | ForEach-Object { $_.FullName })
           gh release upload $tag @assets --repo $env:GITHUB_REPOSITORY
@@ -57,3 +57,9 @@ jobs:
           gh release edit $tag --draft=false --latest --repo $env:GITHUB_REPOSITORY
           if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }
 
+
+      - name: Refresh release descriptions
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/Update-Release-Notes.ps1

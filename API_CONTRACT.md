@@ -1,34 +1,32 @@
-# Local API contract — v1.3
+# Local API
 
-SI Local AI Launcher starts a local llama.cpp process. SI Copilot is a separate Visual Studio VSIX; its source was not supplied and no VSIX was created or changed.
+Local AI Launcher runs llama.cpp on `127.0.0.1`. Default base URL: `http://127.0.0.1:1234/v1`.
+Use the running model ID shown in the app; it includes a stable relative-path hash.
 
-Default endpoint: `http://127.0.0.1:1234/v1`. The selected port may differ. Copy the **running** model ID from “로컬 API 연결 정보”; the model ID includes a stable relative-path hash and is not just the GGUF filename.
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | Process readiness |
+| `GET /v1/models` | Running model alias |
+| `POST /v1/chat/completions` | Text generation |
 
-- `GET /health`: process readiness only; this alone does not establish model usability.
-- `GET /v1/models`: verify that the running alias is returned.
-- `POST /v1/chat/completions`: actual text generation. The launcher sends a small diagnostic request before displaying 준비 완료. A manual 연결 테스트 repeats the request.
-- Default single-model operation keeps all other models unloaded. File addition and UI selection do not restart the server. Explicit start/restart cancels the owned process's in-flight requests after confirmation.
-- Diagnostic requests disable thinking for that request only, use `stream: false`, and require nonempty `choices[0].message.content`. They do not measure recommendation quality, token throughput or VSIX behavior.
+The Launcher reports ready after a nonempty generation response. Diagnostic requests set `stream: false`, `max_tokens: 24`, `chat_template_kwargs.enable_thinking: false`, and `reasoning_effort: none`.
 
-Example request (replace the model value with the displayed running ID):
+## Authentication
 
-```json
-{
-  "model": "DISPLAYED_RUNNING_MODEL_ID",
-  "messages": [{"role": "user", "content": "Reply with OK only."}],
-  "stream": false,
-  "max_tokens": 24,
-  "chat_template_kwargs": {"enable_thinking": false},
-  "reasoning_effort": "none"
-}
-```
+`Settings.ApiKeyRequired` enables bearer authentication with `--api-key-file`. The key is stored in `state/local-api-key.txt`.
+Startup checks require 401 responses for missing/incorrect keys, then successful authenticated model listing and generation. `/health` is public in the pinned server.
+Unsupported key-file authentication stops startup. Logs, exported configuration and `connection.json` exclude the key.
 
-The launcher binds only to IPv4 loopback. Optional `Settings.ApiKeyRequired` enables bearer authentication through the runtime's `--api-key-file`. Existing settings default to false. The key is randomly generated once in the effective state directory as `local-api-key.txt`, never in settings.json. Internal health/models/load/chat requests include `Authorization: Bearer <local key>` when enabled. /health is public in the pinned server; it is not an authentication test. Before ready, the launcher requires unauthenticated and incorrect-key GET /v1/models requests to return 401, followed by successful authenticated model listing and generation. Unsupported key-file authentication or failed checks stop the server; authentication is never silently dropped.
+## Thinking
 
-`ThinkingOff` remains the persisted compatibility field. true emits `--reasoning off`, false now emits `--reasoning on`; older supported runtimes receive chat-template kwargs. The switch is a server default for supporting templates, not an enforcement policy. A request may override it. Unsupported runtimes are labeled accordingly. The diagnostic request remains explicitly non-thinking and does not validate reasoning output.
+Persisted `ThinkingOff` maps to `--reasoning off/on`, with template kwargs for older supported runtimes. This is a server default; request options can override it. Restart to apply changes.
 
-The API connection UI uses an in-memory snapshot from the ready, owned process, rather than unsaved form fields. Stopped/busy servers cannot export credentials/configuration. OpenCode exports use `@ai-sdk/openai-compatible`, `provider.si-local`, actual base URL/model ID/context, and a bounded output limit. Auth-enabled exports omit the key; use OpenCode `/connect` for provider ID si-local. Auth-disabled exports use the non-secret placeholder si-local-no-key. Existing OpenCode files are not automatically edited.
+## OpenCode
 
-Connection state adds ApiKeyRequired, Thinking and Context; it never includes the bearer token. API keys are not remote-company credentials. Remote/WSL/container clients are not configured by this launcher.
+Exports use `@ai-sdk/openai-compatible`, the running base URL/model/context and provider ID `si-local` for compatibility. Authenticated exports omit the key; register it through `/connect`. Keyless exports use `si-local-no-key`.
+Merge `provider.si-local` into existing configuration to retain MCP settings.
 
-`state/connection.json` is diagnostic state, not an agreed VSIX integration protocol. Its content can become stale after an abrupt termination. No consumer should trust it for process ownership, authentication, or liveness. The effective state directory is beside the EXE when writable, otherwise `%LOCALAPPDATA%/SI.LocalAI/<installation-path-hash>`. The actual directory opens through 진단 로그 → 로그 폴더 열기.
+## State
+
+State is stored beside the EXE, falling back to `%LOCALAPPDATA%/SI.LocalAI/<installation-path-hash>` when unwritable.
+`connection.json` is diagnostic data and can be stale after an abrupt exit. Use the live endpoints for readiness.

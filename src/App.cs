@@ -27,7 +27,7 @@ namespace SILocalAI
             {
                 mutex = new Mutex(false, "Local\\SI.LocalAI." + Paths.Hash(root.ToLowerInvariant()).Substring(0, 24));
                 try { owned = mutex.WaitOne(0); } catch (AbandonedMutexException) { owned = true; }
-                if (!owned) { MessageBox.Show("이미 실행 중입니다. 작업 표시줄 또는 알림 영역에서 SI Local AI를 확인하세요.", "SI Local AI"); return 0; }
+                if (!owned) { MessageBox.Show("이미 실행 중입니다. 작업 표시줄 또는 알림 영역에서 Local AI를 확인하세요.", "Local AI"); return 0; }
                 string state;
                 try
                 {
@@ -41,12 +41,12 @@ namespace SILocalAI
                 }
                 Directory.CreateDirectory(Path.Combine(state, "cache"));
                 var logger = new AppLog(Path.Combine(state, "launcher.log"));
-                logger.Write("SI Local AI Launcher / 시작 위치 " + root);
+                logger.Write("Local AI Launcher / 시작 위치 " + root);
                 Application.ThreadException += delegate(object sender, ThreadExceptionEventArgs e) { logger.Write(e.Exception.ToString()); MessageBox.Show(e.Exception.Message, "실행 오류", MessageBoxButtons.OK, MessageBoxIcon.Error); };
                 Application.Run(new MainForm(root, state, logger, args.Contains("--start-minimized")));
                 return 0;
             }
-            catch (Exception e) { MessageBox.Show(e.ToString(), "SI Local AI 초기화 실패", MessageBoxButtons.OK, MessageBoxIcon.Error); return 1; }
+            catch (Exception e) { MessageBox.Show(e.ToString(), "Local AI 초기화 실패", MessageBoxButtons.OK, MessageBoxIcon.Error); return 1; }
             finally { if (owned && mutex != null) mutex.ReleaseMutex(); if (mutex != null) mutex.Dispose(); }
         }
     }
@@ -83,7 +83,7 @@ namespace SILocalAI
             root = packageRoot; state = statePath; log = logger; initialMinimized = minimized;
             configFile = Path.Combine(state, "settings.json"); config = LoadSettings();
             server = new ServerController(root, state, log);
-            Text = "SI Local AI Launcher";
+            Text = "Local AI Launcher";
             Font = new Font("Malgun Gothic", 9F);
             ForeColor = ink; BackColor = paper;
             StartPosition = FormStartPosition.CenterScreen;
@@ -114,7 +114,7 @@ namespace SILocalAI
                 finally { catalogRefreshing = false; }
             };
             libraryTimer.Start();
-            tray.Icon = SystemIcons.Application; tray.Text = "SI Local AI Launcher";
+            tray.Icon = SystemIcons.Application; tray.Text = "Local AI Launcher";
             var menu = new ContextMenuStrip();
             menu.Items.Add("열기", null, delegate { ShowWindow(); });
             menu.Items.Add("서버 종료 후 닫기", null, delegate { ShowWindow(); Close(); });
@@ -315,7 +315,7 @@ namespace SILocalAI
             if (!String.IsNullOrEmpty(s.BaseUrl)) baseUrl.Text = s.BaseUrl;
             if (!String.IsNullOrEmpty(s.ChatUrl)) chatUrl.Text = s.ChatUrl;
             if (!String.IsNullOrEmpty(s.ModelId)) modelId.Text = s.ModelId;
-            tray.Text = s.Ready ? "SI Local AI · 사용 가능" : "SI Local AI · " + (s.State == "error" ? "오류" : "대기/로딩");
+            tray.Text = s.Ready ? "Local AI · 사용 가능" : "Local AI · " + (s.State == "error" ? "오류" : "대기/로딩");
             SetBusy(uiBusy); UpdateDashboard(s); UpdateConnectionPanel();
         }
         void BrowseAsset(string key)
@@ -362,7 +362,7 @@ namespace SILocalAI
             if (closing) return;
             if ((server.Alive || uiBusy) && e.CloseReason == CloseReason.UserClosing)
             {
-                var answer = MessageBox.Show(this, "종료하면 이 도구가 시작한 AI 서버와 모델도 종료됩니다.\r\n\r\n예: 서버 종료 후 닫기\r\n아니요: 알림 영역으로 최소화\r\n취소: 계속 사용", "SI Local AI 종료", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                var answer = MessageBox.Show(this, "종료하면 이 도구가 시작한 AI 서버와 모델도 종료됩니다.\r\n\r\n예: 서버 종료 후 닫기\r\n아니요: 알림 영역으로 최소화\r\n취소: 계속 사용", "Local AI 종료", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (answer == DialogResult.Cancel) { e.Cancel = true; return; }
                 if (answer == DialogResult.No) { e.Cancel = true; WindowState = FormWindowState.Minimized; return; }
             }

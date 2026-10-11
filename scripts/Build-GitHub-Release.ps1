@@ -31,13 +31,13 @@ if ($downloadExit -ne 0) { throw 'Download checks failed' }
 $version = (Get-Content release-version.txt -Raw).Trim()
 if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
 $stage = Join-Path $env:RUNNER_TEMP ('si-local-release-' + [Guid]::NewGuid().ToString('N'))
-Expand-Archive downloads/SI_Local_AI_Update_v1.3.zip $stage
+New-Item $stage -ItemType Directory -Force | Out-Null
 # Always ship the same source and instructions as the freshly compiled EXE.
-foreach ($folder in @('src', 'tests', 'tools')) {
+foreach ($folder in @('src', 'tests', 'tools', 'validation')) {
     New-Item (Join-Path $stage $folder) -ItemType Directory -Force | Out-Null
     Copy-Item "$folder/*" (Join-Path $stage $folder) -Recurse -Force
 }
-foreach ($file in @('SI.LocalAI.Launcher.exe', 'SI.LocalAI.Launcher.exe.config', 'Build.cmd', 'Start.cmd', 'release-version.txt', 'START_HERE_KO.txt', 'README_KO.md', 'VALIDATION.md', 'README_API_UPDATE_KO.md', 'README_FULL_DOWNLOAD_KO.md')) {
+foreach ($file in @('LocalAI.Launcher.exe', 'LocalAI.Launcher.exe.config', 'LocalAI.Launcher.sln', 'Build.cmd', 'Start.cmd', 'Run-Core-Tests.cmd', 'Run-API-Checks.cmd', 'Verify-Package.cmd', 'Verify-Package.ps1', 'release-version.txt', 'settings.example.json', 'ASSET_MANIFEST.json', 'START_HERE_KO.txt', 'README.md', 'README_KO.md', 'README_INSTALL_KO.txt', 'VALIDATION.md', 'API_CONTRACT.md', 'README_API_UPDATE_KO.md', 'README_FULL_DOWNLOAD_KO.md')) {
     Copy-Item $file (Join-Path $stage $file) -Force
 }
 Copy-Item state/windows-core-tests.txt (Join-Path $stage 'validation/WINDOWS_CORE_TESTS.txt')
@@ -59,14 +59,10 @@ Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 - This ZIP contains the Windows-built EXE. Previous Linux reports are historical records.
 "@
 $receipt | Set-Content (Join-Path $stage 'validation/WINDOWS_CI.md') -Encoding utf8
-$intro = "이 ZIP의 EXE는 GitHub Actions Windows 환경에서 다시 빌드했습니다. Windows 로직 검사 69개 통과. GUI/DPI·모델 추론·사내 OpenCode/MCP 연동은 미검증입니다. 세부 결과는 validation/WINDOWS_CI.md를 확인하세요.`r`n`r`n"
-$readmePath = Join-Path $stage 'README_API_UPDATE_KO.md'
-$intro + (Get-Content $readmePath -Raw -Encoding utf8) | Set-Content $readmePath -Encoding utf8
-
 # Keep every original large-asset digest. Update only the files actually in this overlay.
 $manifest = @{}
-Get-Content (Join-Path $stage 'SHA256SUMS.txt') | ForEach-Object {
-    if ($_ -match '^([0-9a-f]{64})  (.+)$') { $manifest[$Matches[2]] = $Matches[1] }
+(Get-Content ASSET_MANIFEST.json -Raw | ConvertFrom-Json).files | ForEach-Object {
+    $manifest[$_.path] = $_.sha256
 }
 $base = $stage.TrimEnd('\') + '\'
 Get-ChildItem $stage -File -Recurse | Where-Object { $_.Name -ne 'SHA256SUMS.txt' } | ForEach-Object {
@@ -78,7 +74,7 @@ $lines | Set-Content (Join-Path $stage 'SHA256SUMS.txt') -Encoding utf8
 
 $out = Join-Path $repoRoot 'release-output'
 New-Item $out -ItemType Directory -Force | Out-Null
-$zipName = "SI_Local_AI_Update_v${version}_Windows.zip"
+$zipName = "Local_AI_Update_v${version}_Windows.zip"
 $zipPath = Join-Path $out $zipName
 Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $zipPath -CompressionLevel Optimal
 $hash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -92,7 +88,7 @@ Copy-Item state/windows-download-checks.txt $out
 if ($LASTEXITCODE -ne 0) { throw 'Distribution split checks failed' }
 & python scripts/build_full_release.py --overlay $stage --output $out --installer-only
 if ($LASTEXITCODE -ne 0) { throw 'Full offline payload preparation failed' }
-$payloadRoot = Join-Path $env:RUNNER_TEMP ("si-full-$version/SI_Local_AI")
+$payloadRoot = Join-Path $env:RUNNER_TEMP ("si-full-$version/Local_AI")
 & ./scripts/Build-Offline-Installer.ps1 -PayloadRoot $payloadRoot -OutDirectory $out
 if (-not $?) { throw 'Offline installer build/validation failed' }
 & $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:InstallerDownload '/out:release-output\Internet-PC-Download-Installer.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:release-output\installer-download-manifest.json,InstallerManifest' 'tools\FullDownload.cs' 'tools\InstallerDownload.cs'
@@ -109,33 +105,20 @@ Get-ChildItem $out -File | Where-Object { $_.Name -notin @('SHA256SUMS.txt', 'RE
     (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name
 } | Set-Content (Join-Path $out 'SHA256SUMS.txt') -Encoding ascii
 @"
-## 업무망용 오프라인 인스톨러
+## Local AI Launcher
 
-쎄트렉아이 로고를 적용한 **오프라인 설치 파일 세트**입니다. Setup은 인터넷에 접속하여 파일을 다운로드하지 않습니다.
-
-### 필수 파일 — 모두 같은 폴더에 받으세요 (합계 약 $size GiB)
+모델을 포함한 오프라인 설치 파일입니다. 합계 $size GiB.
 
 $fileLinks
 
-1. 인터넷 사용이 승인된 PC에서 위 **Setup EXE + 모든 BIN** 파일을 받습니다. EXE 하나만으로는 설치할 수 없습니다.
-2. 같은 폴더에 모아 회사가 승인한 반입 절차로 업무망에 옮깁니다.
-3. 업무망에서 **SI_Local_AI_Offline_Setup.exe**를 실행합니다. BIN 파일은 풀거나 합칠 필요가 없습니다.
+같은 폴더에 저장한 뒤 **Local_AI_Offline_Setup.exe**를 실행합니다.
+[인터넷 PC용 다운로드 도구](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Installer.exe)는 이어받기와 SHA256 검사를 지원합니다.
 
-인터넷 PC에서 편하게 받으려면 [Internet-PC-Download-Installer.exe](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Installer.exe)를 사용하세요. **이 편의 도구만 GitHub에 연결하며 업무망에서 사용하는 설치 프로그램이 아닙니다.** 완료된 SI_Local_AI_Offline_Installer 폴더를 옮기면 됩니다.
+- 포함: Qwen3.5-4B-Q4_K_M, llama.cpp CPU·CUDA 12.4/13.4, VC++ 런타임
+- 환경: Windows 10/11 x64, .NET Framework 4.8+, 여유 공간 6GB 이상
+- 변경: 앱 이름 정리, 문서·앱 안내 간소화
+- 기존 포터블 업데이트: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)
 
-### 포함 및 동작
-
-- Qwen3.5-4B-Q4_K_M 실제 모델, llama.cpp CPU, CUDA 12.4/13.4 실행기와 일치 DLL, VC++ 오프라인 설치 파일, 전체 소스·라이선스·해시 포함.
-- 현재 사용자 계정에 설치, 시작 메뉴 및 선택한 바탕화면 바로가기, Windows 앱 목록에서 제거.
-- 재설치 시 개인 설정·API 키 유지. 제거 시 개인 설정과 사용자가 추가한 파일은 보존.
-- 앱·설치 화면에는 버전 숫자를 표시하지 않고 내부 메타데이터와 GitHub에서 관리.
-- .NET Framework 4.8 이상과 GPU 사용 시 호환 NVIDIA 드라이버가 필요합니다. 자동 다운로드·정책 변경·LM Studio·외부망 모델 실행은 없습니다.
-
-Windows에서 실제 설치·전체 설치 파일 SHA256·재설치·제거 및 개인 파일 보존 검사를 통과했습니다. 결과: INSTALLER_VALIDATION.md.
-Launcher Windows 빌드 및 코어/API 69개, 다운로드 9개 검사도 통과했습니다. 실제 GUI/DPI와 모델 추론·사내 OpenCode/MCP 연동은 별도 실환경 확인이 필요합니다.
-
-기존 포터블 사용자는 작은 **$zipName**을 기존 폴더에 덮어써도 됩니다. 이것은 전체 설치 파일이 아닙니다.
-Source code ZIP에는 대용량 모델이 없습니다. 위 필수 설치 파일을 받으세요.
-
-Commit: $env:GITHUB_SHA
+Windows 빌드·설치·재설치·제거 검사 통과. GUI/DPI·모델 추론·사내 MCP는 미검증입니다.
+검사 기록: INSTALLER_VALIDATION.md · WINDOWS_CI.md
 "@ | Set-Content (Join-Path $out 'RELEASE_NOTES.md') -Encoding utf8

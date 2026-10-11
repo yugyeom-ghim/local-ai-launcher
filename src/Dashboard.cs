@@ -87,7 +87,7 @@ namespace SILocalAI
                 Margin = new Padding(0, 4, 12, 4), BackColor = Color.White, AccessibleName = "SI 로고" };
             heading.Controls.Add(logo, 0, 0);
             var titles = AutoTable(1, 100);
-            AddRow(titles, L("SI Local AI", 23F, true));
+            AddRow(titles, L("Local AI Launcher", 20F, true));
             var sub = L("내 PC에서 실행하는 오프라인 AI", 9.5F, false); sub.ForeColor = Theme.Muted; sub.Margin = new Padding(0, 4, 0, 0); AddRow(titles, sub);
             heading.Controls.Add(titles, 1, 0);
             heading.ColumnStyles[2] = new ColumnStyle(SizeType.AutoSize);

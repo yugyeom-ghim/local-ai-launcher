@@ -26,13 +26,13 @@
     },
     {
       "path": "installer/assets/wizard-panel.png",
-      "size": 45003,
-      "sha256": "105d3627c51c5de7c0f66b4077215ef8a99984cbb513879f583d0f7eeabc9f81"
+      "size": 38391,
+      "sha256": "de2e51ead7327544e13927dc7fe1175c083f08865a795402e849a247a8529c97"
     },
     {
       "path": "installer/assets/wizard-panel.svg",
-      "size": 10694,
-      "sha256": "4109733b8cd0d02e70b65b99e3a5545c42cd3260e98ee89067d020dac3931d3a"
+      "size": 10623,
+      "sha256": "edc829ae771a68fdd8657e822242e4efbfabb1c9e18309d5ba2f4e5465dc619e"
     }
   ]
 }

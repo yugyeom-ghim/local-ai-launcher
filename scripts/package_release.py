@@ -26,7 +26,7 @@ def main():
         p.error("--output is required when creating a ZIP")
     if args.output is not None and root in args.output.resolve().parents:
         raise ValueError("Write ZIP outside the release tree")
-    required = ["SI.LocalAI.Launcher.exe", "SI.LocalAI.Launcher.exe.config", "ASSET_MANIFEST.json", "VALIDATION.md",
+    required = ["LocalAI.Launcher.exe", "LocalAI.Launcher.exe.config", "ASSET_MANIFEST.json", "VALIDATION.md",
                 "licenses/llama-LICENSE.txt", "licenses/Qwen-LICENSE.txt", "licenses/CUDA-12.4-EULA.html",
                 "licenses/CUDA-13.4-EULA.html", "prerequisites/vc_redist.x64.exe",
                 "offline-assets/ai/models/Qwen3.5-4B-Q4_K_M.gguf"]

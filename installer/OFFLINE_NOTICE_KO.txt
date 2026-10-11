@@ -1,18 +1,7 @@
-SI Local AI 오프라인 설치
+Local AI Launcher
 
-이 설치 프로그램은 인터넷에 연결하여 파일을 다운로드하지 않습니다.
-Setup EXE와 함께 제공된 모든 BIN 데이터 파일이 같은 폴더에 있어야 합니다.
+Windows 10/11 x64, .NET Framework 4.8+, 여유 공간 6GB 이상이 필요합니다.
+CUDA 사용 시 호환 NVIDIA 드라이버가 필요합니다.
 
-포함: Qwen3.5-4B-Q4_K_M 모델, CPU 실행기, CUDA 12.4/13.4 실행기와 DLL.
-필요 환경: Windows x64, .NET Framework 4.8 이상, 설치 드라이브에 약 6GB 이상 여유 공간.
-CUDA 사용에는 해당 버전을 지원하는 NVIDIA 드라이버가 필요합니다.
-VC++ 런타임이 없는 경우 동봉된 prerequisites\vc_redist.x64.exe를 회사의 승인 절차에 따라 설치하세요.
-런타임·드라이버 설치나 보안 정책 변경을 자동 실행하지 않습니다.
-
-기존 설정을 이어 쓰려면 기존 Launcher 폴더를 설치 위치로 지정하세요.
-설치 전에 실행 중인 모델 서버와 Launcher, 트레이 앱을 종료해 주세요.
-기존 state 폴더, 개인 API 키, 사용자가 추가한 파일은 덮어쓰지 않습니다.
-기본 설치 경로는 현재 사용자의 LocalAppData\Programs\SI Local AI Launcher입니다.
-
-SI코파일럿은 별도의 Visual Studio VSIX이며 이 설치 프로그램에서 수정하지 않습니다.
-제거는 Windows 설정의 앱 목록에서 할 수 있습니다. 개인 설정 및 사용자가 추가한 모델은 남습니다.
+기존 설정을 이어 쓰려면 기존 설치 폴더를 선택하세요.
+설치 전에 서버와 Launcher를 종료하세요.

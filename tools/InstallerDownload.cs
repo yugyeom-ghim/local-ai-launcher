@@ -17,12 +17,12 @@ public static class InstallerDownload
     public static int Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
-        Console.Title = "인터넷 PC 전용 · SI Local AI 설치 파일 다운로드";
+        Console.Title = "인터넷 PC 전용 · Local AI 설치 파일 다운로드";
         int result = 0;
         try
         {
             bool verifyOnly = args.Contains("--verify-only");
-            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SI_Local_AI_Offline_Installer");
+            string folder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Local_AI_Offline_Installer");
             int index = Array.IndexOf(args, "--directory");
             if (index >= 0) folder = Path.GetFullPath(args[index + 1]);
             InstallerManifest manifest;
@@ -33,13 +33,13 @@ public static class InstallerDownload
             foreach (var item in manifest.files)
             {
                 FullDownload.CheckItem(item);
-                if (!item.url.StartsWith("https://github.com/yugyeom-ghim/si_local_model/releases/download/", StringComparison.Ordinal))
+                if (!item.url.StartsWith("https://github.com/yugyeom-ghim/si_local_model/releases/download/", StringComparison.Ordinal) && !item.url.StartsWith("https://github.com/yugyeom-ghim/local-ai-launcher/releases/download/", StringComparison.Ordinal))
                     throw new InvalidDataException("Unexpected download origin.");
             }
             if (manifest.files.Select(x => x.name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != manifest.files.Length)
                 throw new InvalidDataException("Duplicate installer file names.");
-            Console.WriteLine("인터넷 PC 전용 다운로드 도구입니다. 설치 프로그램이 아닙니다.");
-            Console.WriteLine("GitHub에 접속해 설치 파일을 받습니다. 업무망에서는 SI_Local_AI_Offline_Setup.exe를 실행하세요.");
+            Console.WriteLine("Local AI Launcher 설치 파일 다운로드");
+            Console.WriteLine("GitHub에서 설치 파일을 받습니다.");
             if (verifyOnly) Console.WriteLine("검증 전용: 네트워크 다운로드를 수행하지 않습니다.");
             Directory.CreateDirectory(folder);
             using (var fileLock = new FileStream(Path.Combine(folder, "download.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
@@ -63,8 +63,8 @@ public static class InstallerDownload
                     Console.WriteLine("\nSHA256 OK: " + item.name);
                 }
                 Console.WriteLine("완료: " + folder);
-                Console.WriteLine("이 폴더의 Setup EXE와 모든 BIN 파일을 승인된 절차로 업무망에 옮기세요.");
-                Console.WriteLine("업무망에서 Setup EXE를 실행하면 인터넷 없이 설치됩니다.");
+                Console.WriteLine("설치 폴더를 업무망으로 반입하세요.");
+                Console.WriteLine("설치: Local_AI_Offline_Setup.exe");
             }
         }
         catch (Exception ex) { Console.WriteLine("완료하지 못했습니다: " + ex.Message); result = 1; }

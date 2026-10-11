@@ -15,11 +15,11 @@ if ((Get-Item $compilerSetup).Length -ne 10592232 -or (Get-FileHash $compilerSet
 $process = Start-Process $compilerSetup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',"/DIR=`"$compilerRoot`"") -Wait -PassThru
 if ($process.ExitCode -ne 0) { throw "Compiler installation failed: $($process.ExitCode)" }
 $iscc = Join-Path $compilerRoot 'ISCC.exe'
-& $iscc "/DPayloadRoot=$PayloadRoot" "/DOutputRoot=$OutDirectory" "/DReleaseVersion=$version" (Join-Path $repoRoot 'installer/SI-Local-AI.iss')
+& $iscc "/DPayloadRoot=$PayloadRoot" "/DOutputRoot=$OutDirectory" "/DReleaseVersion=$version" (Join-Path $repoRoot 'installer/Local-AI.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Offline installer compilation failed' }
 
-$setup = Join-Path $OutDirectory 'SI_Local_AI_Offline_Setup.exe'
-$installerFiles = @(Get-Item $setup) + @(Get-ChildItem $OutDirectory -Filter 'SI_Local_AI_Offline_Setup-*.bin' -File | Sort-Object Name)
+$setup = Join-Path $OutDirectory 'Local_AI_Offline_Setup.exe'
+$installerFiles = @(Get-Item $setup) + @(Get-ChildItem $OutDirectory -Filter 'Local_AI_Offline_Setup-*.bin' -File | Sort-Object Name)
 if ($installerFiles.Count -lt 2) { throw 'Installer data slices are missing' }
 $baseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/"
 $manifest = @{ version = $version; files = @($installerFiles | ForEach-Object {

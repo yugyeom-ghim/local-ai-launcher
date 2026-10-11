@@ -1,4 +1,4 @@
-﻿// SI Local AI Launcher. C# 5 / .NET Framework 4.8. No NuGet packages.
+﻿// Local AI Launcher. C# 5 / .NET Framework 4.8. No NuGet packages.
 using System;
 using System.IO;
 using System.Text;

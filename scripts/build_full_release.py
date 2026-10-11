@@ -52,7 +52,7 @@ def main():
     work = Path(os.environ["RUNNER_TEMP"]) / ("si-full-" + version)
     cache = work / "cache"
     cache.mkdir(parents=True)
-    root = work / "SI_Local_AI"
+    root = work / "Local_AI"
     lock = json.loads((repo / "scripts/ASSET_LOCK.json").read_text(encoding="utf-8"))
     # Reuse the exact archived license snapshots; live license pages can change.
     for item in lock["assets"]:
@@ -68,15 +68,12 @@ def main():
         shutil.copyfile(repo / name, root / name)
     manifest_path = root / "ASSET_MANIFEST.json"
     assets = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assets["package"] = "SI Local AI Offline " + version
+    assets["package"] = "Local AI Offline " + version
     assets["prepared_date"] = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
     assets["launcher_build"] = "Windows Server 2022, .NET Framework 4.8 x64 Release"
     assets["windows_execution_verified"] = False
     assets["validation_note"] = "Windows build and logic checks passed; GUI/model inference/company MCP not verified. See validation/WINDOWS_CI.md."
     manifest_path.write_text(json.dumps(assets, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    (root / "README_API_UPDATE_KO.md").write_text(
-        "이 전체 패키지는 모델과 CPU/CUDA 실행기를 포함합니다. 아래 업데이트 적용 단계는 기존 사용자용입니다. 신규 설치는 START_HERE_KO.txt를 확인하세요.\n\n"
-        + (root / "README_API_UPDATE_KO.md").read_text(encoding="utf-8-sig"), encoding="utf-8")
     if args.installer_only:
         subprocess.run([sys.executable, str(repo / "scripts/package_release.py"), "--root", str(root), "--manifest-only"], check=True)
         receipt = {
@@ -92,7 +89,7 @@ def main():
         shutil.copyfile(repo / "scripts/ASSET_LOCK.json", args.output / "ASSET_LOCK.json")
         print("Complete offline installer payload ready:", root, flush=True)
         return
-    archive = work / ("SI_Local_AI_Full_v" + version + "_Windows.zip")
+    archive = work / ("Local_AI_Full_v" + version + "_Windows.zip")
     subprocess.run([sys.executable, str(repo / "scripts/package_release.py"), "--root", str(root), "--output", str(archive)], check=True)
     # Reading every member checks CRC and proves the final ZIP is complete.
     with zipfile.ZipFile(archive) as z:

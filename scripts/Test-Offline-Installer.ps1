@@ -1,7 +1,7 @@
 param([Parameter(Mandatory=$true)][string]$SetupPath, [Parameter(Mandatory=$true)][string]$PayloadRoot, [Parameter(Mandatory=$true)][string]$OutDirectory)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$installPath = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP '설치 검증/SI Local AI'))
+$installPath = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP '설치 검증/Local AI'))
 $results = [Collections.Generic.List[string]]::new()
 function Check([bool]$condition, [string]$name) {
     if (-not $condition) { throw "Installer check failed: $name" }
@@ -23,9 +23,19 @@ $mutex = [Threading.Mutex]::new($true, ('Local\SI.LocalAI.'+$mutexHash.Substring
 try { Check ((Run-Setup 'installer-running-guard') -ne 0) 'running Launcher blocks installation without being terminated' }
 finally { $mutex.ReleaseMutex(); $mutex.Dispose() }
 
+$legacyMenu = Join-Path ([Environment]::GetFolderPath('Programs')) 'SI Local AI'
+$legacyDesktop = Join-Path ([Environment]::GetFolderPath('DesktopDirectory')) 'SI Local AI Launcher.lnk'
+New-Item $installPath -ItemType Directory -Force | Out-Null
+New-Item $legacyMenu -ItemType Directory -Force | Out-Null
+[IO.File]::WriteAllText((Join-Path $installPath 'SI.LocalAI.Launcher.exe'), 'legacy-app-fixture')
+[IO.File]::WriteAllText((Join-Path $installPath 'SI.LocalAI.Launcher.exe.config'), 'legacy-config-fixture')
+[IO.File]::WriteAllText((Join-Path $legacyMenu 'SI Local AI Launcher.lnk'), 'legacy-shortcut-fixture')
+[IO.File]::WriteAllText($legacyDesktop, 'legacy-shortcut-fixture')
+
 Check ((Run-Setup 'installer-install') -eq 0) 'native Windows unattended installation succeeds'
-Check (Test-Path (Join-Path $installPath 'SI.LocalAI.Launcher.exe')) 'Launcher EXE installed'
-Check (Test-Path (Join-Path $installPath 'installer/assets/satreci.ico')) 'Satrec Initiative icon installed'
+Check (Test-Path (Join-Path $installPath 'LocalAI.Launcher.exe')) 'Launcher EXE installed'
+Check (-not (Test-Path (Join-Path $installPath 'SI.LocalAI.Launcher.exe')) -and -not (Test-Path $legacyDesktop) -and -not (Test-Path $legacyMenu)) 'legacy executable and shortcuts removed'
+Check (Test-Path (Join-Path $installPath 'installer/assets/satreci.ico')) 'application icon installed'
 $count = 0
 foreach ($line in [IO.File]::ReadLines((Join-Path $PayloadRoot 'SHA256SUMS.txt'))) {
     if ($line -notmatch '^([0-9a-f]{64})  (.+)$') { throw 'Invalid payload SHA256 manifest' }
@@ -37,13 +47,13 @@ foreach ($line in [IO.File]::ReadLines((Join-Path $PayloadRoot 'SHA256SUMS.txt')
     $count++
 }
 Check ($count -gt 187) "all $count installed payload files match SHA256"
-$menu = [IO.Path]::GetFullPath((Join-Path ([Environment]::GetFolderPath('Programs')) 'SI Local AI/SI Local AI Launcher.lnk'))
-$desktop = Join-Path ([Environment]::GetFolderPath('DesktopDirectory')) 'SI Local AI Launcher.lnk'
+$menu = [IO.Path]::GetFullPath((Join-Path ([Environment]::GetFolderPath('Programs')) 'Local AI Launcher/Local AI Launcher.lnk'))
+$desktop = Join-Path ([Environment]::GetFolderPath('DesktopDirectory')) 'Local AI Launcher.lnk'
 Check (Test-Path $menu) 'Start menu shortcut created'
 Check (Test-Path $desktop) 'optional desktop shortcut created'
 Add-Type -Path (Join-Path (Split-Path -Parent $PSScriptRoot) 'tests/ShellLinkReader.cs')
 $shortcutTarget = [ShellLinkReader]::ReadTarget($menu)
-$expectedTarget = [IO.Path]::GetFullPath((Join-Path $installPath 'SI.LocalAI.Launcher.exe'))
+$expectedTarget = [IO.Path]::GetFullPath((Join-Path $installPath 'LocalAI.Launcher.exe'))
 Write-Host "Shortcut target: $shortcutTarget; expected: $expectedTarget"
 Check (-not [String]::IsNullOrWhiteSpace($shortcutTarget) -and [IO.Path]::GetFullPath($shortcutTarget) -eq $expectedTarget) 'shortcut targets the installed Launcher'
 
@@ -60,7 +70,7 @@ Check ((Get-FileHash $settings).Hash -eq $settingsHash -and (Get-FileHash $key).
 $uninstaller = Join-Path $installPath 'unins000.exe'
 $process = Start-Process $uninstaller -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/LOG=`"$(Join-Path $OutDirectory 'installer-uninstall.log')`"") -Wait -PassThru
 Check ($process.ExitCode -eq 0) 'native Windows uninstall succeeds'
-Check (-not (Test-Path (Join-Path $installPath 'SI.LocalAI.Launcher.exe'))) 'uninstall removes the Launcher'
+Check (-not (Test-Path (Join-Path $installPath 'LocalAI.Launcher.exe'))) 'uninstall removes the Launcher'
 Check (-not (Test-Path (Join-Path $installPath 'offline-assets/ai/models/Qwen3.5-4B-Q4_K_M.gguf'))) 'uninstall removes the bundled model'
 Check ((Get-FileHash $settings).Hash -eq $settingsHash -and (Get-FileHash $key).Hash -eq $keyHash -and (Get-FileHash $personal).Hash -eq $personalHash) 'uninstall preserves personal settings, local key and user-added files'
 Check (-not (Test-Path $menu) -and -not (Test-Path $desktop)) 'uninstall removes created shortcuts'

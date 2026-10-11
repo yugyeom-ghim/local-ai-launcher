@@ -123,7 +123,7 @@ namespace SILocalAI.Distribution
         public static int Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-            Console.Title = "SI Local AI 전체 다운로드";
+            Console.Title = "Local AI 전체 다운로드";
             int result = 0;
             try
             {
@@ -137,19 +137,19 @@ namespace SILocalAI.Distribution
                 foreach (var item in manifest.parts)
                 {
                     CheckItem(item);
-                    if (!item.url.StartsWith("https://github.com/yugyeom-ghim/si_local_model/releases/download/", StringComparison.Ordinal))
+                    if (!item.url.StartsWith("https://github.com/yugyeom-ghim/si_local_model/releases/download/", StringComparison.Ordinal) && !item.url.StartsWith("https://github.com/yugyeom-ghim/local-ai-launcher/releases/download/", StringComparison.Ordinal))
                         throw new InvalidDataException("Unexpected download origin.");
                 }
                 if (manifest.parts.Select(p => p.name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != manifest.parts.Length
                     || manifest.parts.Sum(p => p.size) != manifest.archive.size)
                     throw new InvalidDataException("Invalid part sizes/names.");
                 string root = AppDomain.CurrentDomain.BaseDirectory;
-                string cache = Path.Combine(root, "SI_Local_AI_Download_Cache");
+                string cache = Path.Combine(root, "Local_AI_Download_Cache");
                 Directory.CreateDirectory(cache);
                 using (var downloadLock = new FileStream(Path.Combine(cache, "download.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
                 {
                     string output = Path.Combine(root, manifest.archive.name);
-                    Console.WriteLine("SI Local AI 전체 다운로드\n실행기·DLL·Qwen 모델을 GitHub에서 받아 ZIP 하나로 저장합니다.");
+                    Console.WriteLine("Local AI 전체 다운로드\n실행기·DLL·Qwen 모델을 GitHub에서 받아 ZIP 하나로 저장합니다.");
                     Console.WriteLine("위치: " + root);
                     Console.WriteLine("완료 후 ZIP을 압축 해제하세요. 모델이나 설치 프로그램은 자동 실행하지 않습니다.");
                     if (Verified(output, manifest.archive)) Console.WriteLine("이미 전체 다운로드와 SHA256 검사가 완료된 ZIP입니다.");
