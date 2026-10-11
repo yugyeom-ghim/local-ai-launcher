@@ -22,6 +22,7 @@ if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
 $stage = Join-Path $env:RUNNER_TEMP ('si-local-release-' + [Guid]::NewGuid().ToString('N'))
 Expand-Archive downloads/SI_Local_AI_Update_v1.3.zip $stage
 Copy-Item SI.LocalAI.Launcher.exe (Join-Path $stage 'SI.LocalAI.Launcher.exe') -Force
+Copy-Item Build.cmd (Join-Path $stage 'Build.cmd') -Force
 Copy-Item state/windows-core-tests.txt (Join-Path $stage 'validation/WINDOWS_CORE_TESTS.txt')
 Copy-Item state/windows-api-checks.txt (Join-Path $stage 'validation/WINDOWS_API_CHECKS.txt')
 $receipt = @"
