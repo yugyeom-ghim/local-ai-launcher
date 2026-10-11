@@ -197,7 +197,7 @@ namespace SILocalAI
                     var item = L(model.name + "  ·  " + (model.size / 1e9).ToString("0.00") + " GB\n" + model.tier, 9.5F, false);
                     item.ForeColor = Theme.Muted; item.Margin = new Padding(0, 12, 0, 0); AddRow(body, item);
                 }
-                var close = Action("닫기", delegate { dialog.Close(); }, false); dialog.CancelButton = close; AddRow(body, Actions(close));
+                var close = Action("닫기", delegate { dialog.Close(); }, false); dialog.CancelButton = close; AddRow(body, Actions(Action("목록 새로고침", async delegate { dialog.Close(); await Work(RescanFromUi); }, false), close));
                 viewport.SetContent(body); dialog.Controls.Add(viewport); dialog.ShowDialog(this);
             }
         }

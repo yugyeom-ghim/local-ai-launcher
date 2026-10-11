@@ -111,6 +111,7 @@ class UiChecks
                         form.Scale(new SizeF(1.5F, 1.5F)); form.MinimumSize = new Size(750, 540); form.ClientSize = new Size(1000, 680); Application.DoEvents(); Capture(Path.Combine(output, "models-scale150.png"));
                         var scaledStart = (Control)Field("startButton");
                         if (!form.ClientRectangle.Contains(form.PointToClient(scaledStart.PointToScreen(new Point(scaledStart.Width - 1, scaledStart.Height - 1))))) Fail("Scaled run button clipped");
+                        foreach (var viewport in All(form).OfType<ContentViewport>().Where(v => v.Visible)) if (viewport.HorizontalScroll.Visible) Fail("Unexpected horizontal viewport scroll");
                         result["render_checks"] = "1000x680, 800x600, API, settings, logs, long CPU, simulated 150% scale";
                     }
                 }

@@ -1,0 +1,30 @@
+{
+  "run": "https://github.com/yugyeom-ghim/local-ai-launcher/actions/runs/38149575301",
+  "runner": "Windows Server 2022, GitHub-hosted",
+  "baseline_commit": "3ca55aed238cb92e6c6a6d3b93b315c2172a1228",
+  "candidate_commit": "c18d623b505f06c35608a603e50cdbb29fc14247",
+  "fixture": "Three tiny valid GGUF test files. No model inference. Startup=constructor to Shown; idle=10 seconds after 6 seconds settling. CPU=process CPU time, subject to OS measurement resolution.",
+  "baseline": {
+    "construct_ms": 8745,
+    "shown_ms": 36267,
+    "idle_cpu_ms_10s": 2921.875,
+    "idle_layout_events": 1019,
+    "max_heartbeat_gap_ms": 2983,
+    "heartbeats": 67,
+    "model_count": 3,
+    "server_alive": false,
+    "platform": "Microsoft Windows NT 6.2.9200.0"
+  },
+  "candidate": {
+    "construct_ms": 1894,
+    "shown_ms": 2129,
+    "idle_cpu_ms_10s": 0,
+    "idle_layout_events": 0,
+    "max_heartbeat_gap_ms": 121,
+    "heartbeats": 92,
+    "idle_directory_scans": 0,
+    "model_count": 3,
+    "server_alive": false,
+    "platform": "Microsoft Windows NT 6.2.9200.0"
+  }
+}

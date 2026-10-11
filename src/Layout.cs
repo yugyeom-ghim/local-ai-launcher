@@ -76,8 +76,8 @@ namespace SILocalAI
         public ContentViewport() { Dock = DockStyle.Fill; AutoScroll = true; Margin = new Padding(0); }
         public void SetContent(Control child)
         {
-            content = child; child.Dock = DockStyle.None; child.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            Controls.Add(child); child.SizeChanged += delegate { if (!arranging) PerformLayout(); };
+            content = child; child.AutoSize = false; child.Dock = DockStyle.None; child.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            Controls.Add(child); child.Layout += delegate { if (!arranging) PerformLayout(); };
             PerformLayout();
         }
         protected override void OnVisibleChanged(EventArgs e) { base.OnVisibleChanged(e); if (Visible) PerformLayout(); }
