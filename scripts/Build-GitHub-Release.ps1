@@ -20,7 +20,7 @@ if ($apiExit -ne 0) { throw 'API logic checks failed' }
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
 $csc = Join-Path $framework 'csc.exe'
 $web = (Get-ChildItem (Join-Path $env:WINDIR 'Microsoft.NET/assembly/GAC_MSIL/System.Web.Extensions') -Filter System.Web.Extensions.dll -Recurse | Select-Object -First 1).FullName
-& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:DownloadTests /out:state/DownloadTests.exe /r:System.dll /r:System.Core.dll "/r:$web" tools/FullDownload.cs tests/DownloadTests.cs
+& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:DownloadTests '/out:state\DownloadTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" 'tools\FullDownload.cs' 'tests\DownloadTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Download test compilation failed' }
 $downloadOutput = & .\state\DownloadTests.exe 2>&1
 $downloadExit = $LASTEXITCODE
@@ -92,7 +92,7 @@ Copy-Item state/windows-download-checks.txt $out
 if ($LASTEXITCODE -ne 0) { throw 'Distribution split checks failed' }
 & python scripts/build_full_release.py --overlay $stage --output $out
 if ($LASTEXITCODE -ne 0) { throw 'Full offline package preparation failed' }
-& $csc /nologo /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:SILocalAI.Distribution.FullDownload /out:release-output/Download-SI-Local-AI.exe /r:System.dll /r:System.Core.dll "/r:$web" /resource:release-output/full-download-manifest.json,FullDownloadManifest tools/FullDownload.cs
+& $csc /nologo /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:SILocalAI.Distribution.FullDownload '/out:release-output\Download-SI-Local-AI.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:release-output\full-download-manifest.json,FullDownloadManifest' 'tools\FullDownload.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Full downloader compilation failed' }
 Copy-Item src/SI.LocalAI.Launcher.exe.config (Join-Path $out 'Download-SI-Local-AI.exe.config')
 Copy-Item README_FULL_DOWNLOAD_KO.md $out
