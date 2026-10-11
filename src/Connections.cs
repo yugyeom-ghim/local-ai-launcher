@@ -15,8 +15,9 @@ namespace SILocalAI
 
         void BuildApiPage(Control page)
         {
+            var surface = new Surface { Dock = DockStyle.Fill, Padding = new Padding(22) }; page.Controls.Add(surface);
             var viewport = new ContentViewport(); var body = AutoTable(1, 100);
-            var live = AutoTable(1, 100); AddRow(body, Card(live, new Padding(22)));
+            var live = body;
             AddRow(live, L("로컬 API 연결 정보", 17F, true));
             apiStateLabel = L("모델을 시작하세요", 10F, false); apiStateLabel.ForeColor = Theme.Muted; apiStateLabel.Margin = new Padding(0, 12, 0, 18); AddRow(live, apiStateLabel);
             apiBaseField = ReadonlyText(); apiModelField = ReadonlyText(); apiKeyField = ReadonlyText(); apiKeyField.UseSystemPasswordChar = true;
@@ -27,13 +28,13 @@ namespace SILocalAI
             var guide = Action("연결 방법", delegate { TryAction(ShowConnectionGuide); }, false);
             connectionActions.Add(export); connectionActions.Add(copy); connectionActions.Add(guide);
             AddRow(live, Actions(export, copy, guide, testButton));
-            var settings = AutoTable(1, 100); AddRow(body, Card(settings, new Padding(22)));
-            apiKeyBox = new CheckBox { Text = "API 키 사용", AutoSize = true, Margin = new Padding(0, 0, 0, 12), AccessibleName = "로컬 API 키 인증 사용" };
+            var settings = body;
+            apiKeyBox = new CheckBox { Text = "API 키 사용", AutoSize = true, Margin = new Padding(0, 20, 0, 12), AccessibleName = "로컬 API 키 인증 사용" };
             editable.Add(apiKeyBox); AddRow(settings, apiKeyBox);
             apiPendingLabel = L("", 9F, false); apiPendingLabel.ForeColor = Theme.Muted; AddRow(settings, apiPendingLabel);
             var save = Action("저장", delegate { TryAction(delegate { ReadConfig(); SaveConfig(); UpdateConnectionPanel(); statusLabel.Text = "저장됨 · 다음 시작 시 적용"; }); }, false); editable.Add(save);
             var apply = Action("저장 후 시작 / 재시작", async delegate { await Work(StartFromUi); }, false); editable.Add(apply);
-            AddRow(settings, Actions(save, apply)); viewport.SetContent(body); page.Controls.Add(viewport);
+            AddRow(settings, Actions(save, apply)); viewport.SetContent(body); surface.Controls.Add(viewport);
             apiKeyBox.CheckedChanged += delegate { UpdateConnectionPanel(); };
             thinkingModeBox.SelectedIndexChanged += delegate { UpdateConnectionPanel(); };
         }
@@ -42,7 +43,7 @@ namespace SILocalAI
             if (apiStateLabel == null || apiKeyField == null) return;
             bool ready = !uiBusy && !server.Busy && server.Alive && server.Status.Ready;
             foreach (Control c in connectionActions) c.Enabled = ready;
-            apiPendingLabel.Text = "다음 시작 시 적용 · API 키 " + (apiKeyBox.Checked ? "사용" : "없음") + " · 사고 모드 " + (thinkingModeBox.SelectedIndex == 1 ? "ON" : "OFF");
+            apiPendingLabel.Text = "변경 후 서버를 다시 시작하세요.";
             if (ready)
             {
                 var c = server.Connection();

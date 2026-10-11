@@ -36,6 +36,15 @@ $modelChecks | Set-Content state/windows-model-pack-checks.txt -Encoding utf8
 $modelChecks | Write-Host
 if ($modelExit -ne 0) { throw 'Model pack logic checks failed' }
 
+& ./scripts/Test-UI.ps1
+if (-not $?) { throw 'Native UI/idle checks failed' }
+& $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 '/out:LibraryWatchTests.exe' /r:System.dll /r:System.Core.dll '/r:LocalAI.Launcher.exe' 'tests\LibraryWatchTests.cs'
+if ($LASTEXITCODE -ne 0) { throw 'Library watcher test compilation failed' }
+$watchChecks = & ./LibraryWatchTests.exe 2>&1
+$watchExit = $LASTEXITCODE
+$watchChecks | Set-Content state/windows-library-watch-checks.txt -Encoding utf8
+if ($watchExit -ne 0) { throw 'Library watcher tests failed' }
+
 $version = (Get-Content release-version.txt -Raw).Trim()
 if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
 $stage = Join-Path $env:RUNNER_TEMP ('si-local-release-' + [Guid]::NewGuid().ToString('N'))
@@ -49,6 +58,8 @@ foreach ($file in @('LocalAI.Launcher.exe', 'LocalAI.Launcher.exe.config', 'Loca
     Copy-Item $file (Join-Path $stage $file) -Force
 }
 Copy-Item state/windows-core-tests.txt (Join-Path $stage 'validation/WINDOWS_CORE_TESTS.txt')
+Copy-Item state/ui-checks/UI_CHECKS.json (Join-Path $stage 'validation/UI_CHECKS.json')
+Copy-Item state/windows-library-watch-checks.txt (Join-Path $stage 'validation/WINDOWS_LIBRARY_WATCH_CHECKS.txt')
 Copy-Item state/windows-api-checks.txt (Join-Path $stage 'validation/WINDOWS_API_CHECKS.txt')
 Copy-Item state/windows-download-checks.txt (Join-Path $stage 'validation/WINDOWS_DOWNLOAD_CHECKS.txt')
 $receipt = @"
@@ -63,7 +74,8 @@ Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 - API request/credential logic checks: 7 passed.
 - Download/assembly checks: 9 passed, including HTTP Range resume and ignored-Range restart.
 - No GGUF, llama-server, CUDA runtime or model inference was executed in this job.
-- GUI/DPI and company OpenCode/MCP integration remain unverified.
+- Native WinForms startup, idle CPU, UI heartbeat, fixed-size renders, simulated scaling and local file change checks passed.
+- Physical DPI transitions, CPU/CUDA inference and company OpenCode/MCP integration remain unverified.
 - This ZIP contains the Windows-built EXE. Previous Linux reports are historical records.
 "@
 $receipt | Set-Content (Join-Path $stage 'validation/WINDOWS_CI.md') -Encoding utf8
@@ -92,12 +104,18 @@ Copy-Item state/windows-core-tests.txt $out
 Copy-Item state/windows-api-checks.txt $out
 Copy-Item state/windows-download-checks.txt $out
 Copy-Item state/windows-model-pack-checks.txt (Join-Path $out 'MODEL_PACK_CHECKS.txt')
+Copy-Item state/ui-checks/UI_CHECKS.json $out
+Copy-Item state/ui-checks/models-1000.png (Join-Path $out 'UI_PREVIEW.png')
+Copy-Item state/windows-library-watch-checks.txt $out
 
 & python -m unittest discover -s tests -p test_distribution.py
 if ($LASTEXITCODE -ne 0) { throw 'Distribution split checks failed' }
 & python scripts/build_full_release.py --overlay $stage --output $out --installer-only
 if ($LASTEXITCODE -ne 0) { throw 'Full offline payload preparation failed' }
 $payloadRoot = Join-Path $env:RUNNER_TEMP ("si-full-$version/Local_AI")
+& ./scripts/Test-UI.ps1 -Output 'state/real-payload-ui' -PackageRoot $payloadRoot
+if (-not $?) { throw 'Real-payload UI/idle checks failed' }
+Copy-Item state/real-payload-ui/UI_CHECKS.json (Join-Path $out 'REAL_ASSET_UI_CHECKS.json')
 & ./scripts/Build-Offline-Installer.ps1 -PayloadRoot $payloadRoot -OutDirectory $out
 if (-not $?) { throw 'Offline installer build/validation failed' }
 & $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:InstallerDownload '/out:release-output\Internet-PC-Download-Installer.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:release-output\installer-download-manifest.json,InstallerManifest' 'tools\FullDownload.cs' 'tools\InstallerDownload.cs'
@@ -116,7 +134,9 @@ Get-ChildItem $out -File | Where-Object { $_.Name -notin @('SHA256SUMS.txt', 'RE
 @"
 ## Local AI Launcher
 
-모델을 포함한 오프라인 설치 파일입니다. 합계 $size GiB.
+기존 설치: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)을 설치 폴더에 덮어씁니다. 모델은 다시 받을 필요가 없습니다.
+
+새 설치: 모델을 포함한 오프라인 설치 파일입니다. 합계 $size GiB.
 
 $fileLinks
 
@@ -125,7 +145,8 @@ $fileLinks
 
 - 포함: Qwen3.5-4B-Q4_K_M, llama.cpp CPU·CUDA 12.4/13.4, VC++ 런타임
 - 환경: Windows 10/11 x64, .NET Framework 4.8+, 여유 공간 6GB 이상
-- 변경: 사양별 추천, VRAM 표시, 오프라인 모델 팩 설치
+- 변경: 시작·대기 지연 개선, 모델 검색창 제거, 화면 구성·글꼴·로고 배경 정리
+- 모델 추가: **모델 추가**에서 폴더 열기 또는 모델 팩 설치
 - 기존 포터블 업데이트: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)
 
 ## 사양별 추가 모델
@@ -137,10 +158,10 @@ $fileLinks
 | 4060 Ti 16GB / GPU 12–16GB | Qwen3.5 9B | 5.68GB |
 
 [인터넷 PC용 모델 다운로드 도구](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Models.exe)에서 필요한 모델 또는 전체를 선택합니다.
-팩 폴더를 반입한 뒤 Launcher의 **모델 팩 설치**에서 해당 .modelpack.json을 선택하세요.
+팩 폴더를 반입한 뒤 Launcher의 **모델 추가 → 모델 팩 설치**에서 해당 .modelpack.json을 선택하세요.
 27B 등 큰 모델은 models 폴더에 GGUF를 직접 추가해 사용할 수 있습니다.
 메모리 권장은 문맥 4K–8K 기준 추정치입니다.
 
-Windows 빌드·설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·팩 설치 검사 통과. GUI/DPI·모델 추론·사내 MCP는 미검증입니다.
-검사 기록: INSTALLER_VALIDATION.md · WINDOWS_CI.md · MODEL_PACK_VALIDATION.json
+Windows 빌드·설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·팩 설치 검사 통과. Windows 화면·대기 성능 검사 통과. 실제 모니터 DPI 전환·모델 추론·사내 MCP는 미검증입니다.
+검사 기록: UI_CHECKS.json · REAL_ASSET_UI_CHECKS.json · INSTALLER_VALIDATION.md · WINDOWS_CI.md
 "@ | Set-Content (Join-Path $out 'RELEASE_NOTES.md') -Encoding utf8

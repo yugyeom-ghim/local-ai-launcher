@@ -41,6 +41,8 @@ class UiChecks
         string root = Path.Combine(Path.GetTempPath(), "local-ai-ui-" + Guid.NewGuid().ToString("N"));
         string state = Path.Combine(root, "state"), models = Path.Combine(root, "ai", "models");
         Directory.CreateDirectory(state); Directory.CreateDirectory(models);
+        string cpuFixture = Path.Combine(root, "ai", "bin", "win-cpu-x64"); Directory.CreateDirectory(cpuFixture);
+        File.WriteAllText(Path.Combine(cpuFixture, "llama-server.exe"), "UI test fixture only; never execute.");
         foreach (string n in new[] { "Qwen3.5-2B-Q4_K_M.gguf", "Qwen3.5-4B-Q4_K_M.gguf", "Qwen3.5-9B-Q4_K_M.gguf" }) Model(Path.Combine(models, n));
         bool baseline = args.Length > 1 && args[1] == "baseline";
         // For release validation a real payload can be inspected, always with isolated settings and AutoStart=false.
@@ -107,6 +109,8 @@ class UiChecks
                         nested.GetType().GetProperty("SelectedIndex").SetValue(nested, 2, null); Application.DoEvents(); Capture(Path.Combine(output, "pc-info.png"));
                         selected.SetValue(nav, 0, null);
                         form.Scale(new SizeF(1.5F, 1.5F)); form.MinimumSize = new Size(750, 540); form.ClientSize = new Size(1000, 680); Application.DoEvents(); Capture(Path.Combine(output, "models-scale150.png"));
+                        var scaledStart = (Control)Field("startButton");
+                        if (!form.ClientRectangle.Contains(form.PointToClient(scaledStart.PointToScreen(new Point(scaledStart.Width - 1, scaledStart.Height - 1))))) Fail("Scaled run button clipped");
                         result["render_checks"] = "1000x680, 800x600, API, settings, logs, long CPU, simulated 150% scale";
                     }
                 }

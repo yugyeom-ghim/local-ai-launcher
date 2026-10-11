@@ -127,7 +127,7 @@ namespace SILocalAI
         void BuildLibrary(Control page)
         {
             // Fixed outer bounds; only the details scroll. No preferred-height feedback into the window.
-            var columns = Table(2, 58, 42); page.Controls.Add(columns);
+            var columns = Table(2, 58, 42); columns.RowCount = 1; columns.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); page.Controls.Add(columns);
             var list = Table(1, 100); list.RowCount = 3; list.Padding = new Padding(18);
             list.RowStyles.Add(new RowStyle(SizeType.Absolute, 58)); list.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); list.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
             var library = new Surface { Dock = DockStyle.Fill, Padding = new Padding(0), Margin = new Padding(0, 0, 16, 0) }; library.Controls.Add(list); columns.Controls.Add(library, 0, 0);
@@ -157,10 +157,10 @@ namespace SILocalAI
             selectedState = L("", 9F, false); selectedState.ForeColor = Theme.Accent; selectedState.Margin = new Padding(0, 0, 0, 12); AddRow(detail, selectedState);
             startButton = Action("시작", async delegate { await Work(StartFromUi); }, true);
             stopButton = Action("중지", delegate { cancelRequested = true; if (modelImport != null) modelImport.Cancel(); else server.Stop(); }, false);
-            var run = Table(2, 70, 30); run.Height = 48; run.Dock = DockStyle.Top; startButton.AutoSize = false; stopButton.AutoSize = false;
+            var run = Table(2, 70, 30); run.RowCount = 1; run.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); run.Height = 48; run.Dock = DockStyle.Top; startButton.AutoSize = false; stopButton.AutoSize = false;
             startButton.Margin = new Padding(0, 0, 8, 0); stopButton.Margin = new Padding(0); run.Controls.Add(startButton, 0, 0); run.Controls.Add(stopButton, 1, 0); loadButton = startButton;
             var runArea = Table(1, 100); runArea.RowCount = 2; runArea.RowStyles.Add(new RowStyle(SizeType.Absolute, 48)); runArea.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); runArea.Controls.Add(run, 0, 0); detailShell.Controls.Add(runArea, 0, 1);
-            runningNote = L("", 9F, false); runningNote.ForeColor = Theme.Muted; runningNote.Margin = new Padding(0, 16, 0, 0); AddRow(detail, runningNote);
+            runningNote = L("", 9F, false); runningNote.Visible = false; runningNote.ForeColor = Theme.Muted; runningNote.Margin = new Padding(0, 16, 0, 0); AddRow(detail, runningNote);
             webButton = Action("대화 열기", delegate { OpenUi(); }, false); runArea.Controls.Add(Actions(webButton), 0, 1);
             viewport.SetContent(detail);
             // Compatibility fields remain internal; connection details have a single home in the API tab.
@@ -302,6 +302,7 @@ namespace SILocalAI
             if(m!=null) tips.SetToolTip(selectedName,m.RelativePath);
             bool same=m!=null && server.Status.Ready && server.Status.ModelId==m.Id;
             selectedState.Text=server.Alive ? (same ? "실행 중 · 변경 사항은 재시작 후 적용" : "시작하면 현재 모델을 교체합니다") : "";
+            selectedState.Visible = server.Alive;
             startButton.Text=uiBusy?"준비 중…":server.Alive?(same?"재시작":"모델 전환") : "시작";
             startButton.Enabled=!uiBusy && m!=null && inventory.Backends.Any(b=>!String.IsNullOrEmpty(b.Exe));
         }
@@ -311,6 +312,7 @@ namespace SILocalAI
             stateBadge.Text=s.Ready?"준비 완료":s.State=="error"?"오류":s.State=="loading"?"로딩 중":s.State=="probing" || s.State=="testing"?"검사 중":s.Listening?"모델 대기":"대기";
             stateBadge.ForeColor=s.State=="error"?Theme.Danger:s.Ready?Theme.Accent:Theme.Muted;
             stateBadge.BackColor=s.State=="error"?Color.FromArgb(254,237,234):s.Ready?Theme.Pale:Color.FromArgb(233,238,245);
+            runningNote.Visible = s.Listening;
             runningNote.Text=s.Ready?s.Backend + " · 실행 중":s.Listening?"모델 준비 중":"";
             if(s.Ready) modelId.Text=s.ModelId; else if(!s.Listening) modelId.Text="";
             if(!s.Listening && !uiBusy) { baseUrl.Text=""; chatUrl.Text=""; }

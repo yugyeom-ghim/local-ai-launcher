@@ -172,7 +172,7 @@ namespace SILocalAI
         TextBox ReadonlyText() { return new TextBox { ReadOnly = true, Dock = DockStyle.Fill, BackColor = Color.White, Margin = new Padding(3, 5, 3, 5) }; }
         ComboBox Combo(string[] values)
         {
-            var c = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Dock = DockStyle.Fill, Margin = new Padding(3, 5, 3, 5) };
+            var c = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, FlatStyle = FlatStyle.Flat, BackColor = Color.White, Dock = DockStyle.Fill, Margin = new Padding(3, 5, 3, 5) };
             c.Items.AddRange(values); editable.Add(c); return c;
         }
         NumericUpDown Number(int min, int max, int step)
@@ -299,6 +299,7 @@ namespace SILocalAI
             stopButton.Enabled = value || server.Alive;
             testButton.Enabled = !value && server.Status.Ready;
             webButton.Enabled = server.Status.Listening;
+            progress.Visible = value;
             progress.Style = value ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
             if (!value) progress.Value = server.Status.Ready ? 100 : 0;
             RefreshSelection(); UpdateConnectionPanel();
