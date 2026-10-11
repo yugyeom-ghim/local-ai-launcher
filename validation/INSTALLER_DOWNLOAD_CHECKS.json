@@ -1,7 +1,7 @@
 {
-  "release": "https://github.com/yugyeom-ghim/si_local_model/releases/tag/v1.4.0",
-  "commit": "fcd11908de928e37eda5bbb64f860c671734a507",
-  "total_installer_bytes": 4068264969,
+  "release": "https://github.com/yugyeom-ghim/local-ai-launcher/releases/tag/v1.4.1",
+  "commit": "f96a66c19803555fbbdf8ed312ffaceaca6b7501",
+  "total_installer_bytes": 4068237305,
   "update_zip_crc_and_manifest": "passed",
   "assets": [
     {
@@ -12,68 +12,68 @@
     },
     {
       "name": "ASSET_MANIFEST.json",
-      "size": 56360,
-      "sha256": "65ceaea7c614733a3a113c6d0262873b6b621705a75ef7c07e3ece93dafd292d",
+      "size": 56357,
+      "sha256": "62320242682b9c274bdd51c6aa68c3cdbaa8420aaca5b7cfbcbf2bc4021c5ba7",
       "verification": "full download"
     },
     {
       "name": "FULL_PACKAGE_VALIDATION.json",
       "size": 361,
-      "sha256": "0705cda3108130062fd87535f520abb8ecd8e517565ae3b11a5aff9ce2f925f6",
+      "sha256": "dad346e702c8c46523e79f2c481bb1b7dff55e393e31052ee538a8000a7d83cf",
       "verification": "full download"
     },
     {
       "name": "installer-download-manifest.json",
-      "size": 1227,
-      "sha256": "8e5c22ddf6dc3fecb2bcd26904ddf604867b44270a07e844dd0f26aceeef8628",
+      "size": 1203,
+      "sha256": "2e637c11303f0c852a00f1b1d0462c7a35614252c7247bf916d3b8bda7314185",
       "verification": "full download"
     },
     {
       "name": "INSTALLER_BUILD_TOOL.json",
       "size": 351,
-      "sha256": "b3f95ae300b81f8f67e96ead496edeccb1628f2c14716352c643ed0ca609621c",
+      "sha256": "6a6e7c9664ead34e5272d364b887f367217841d23018df888ea925d221478b66",
       "verification": "full download"
     },
     {
       "name": "INSTALLER_VALIDATION.md",
-      "size": 1488,
-      "sha256": "597013adfefdcca3319193cc0acc4bf5c5e3d1e13d1732e21c22620986b2c132",
+      "size": 1527,
+      "sha256": "ea9bd31abe1a2ce4b336600376d09a74a156ca74f5a25a3c440fcadae618d4c0",
       "verification": "full download"
     },
     {
       "name": "Internet-PC-Download-Installer.exe",
       "size": 16384,
-      "sha256": "2f48c67908e4be7244a87e91f145bcfa29b4572ca9e2023d36e63512ee385e2f",
+      "sha256": "eea40396817e109ff9bd0894df6cb095040da6d5ff5d6002a6555505b88082fe",
+      "verification": "full download"
+    },
+    {
+      "name": "Local_AI_Offline_Setup.exe",
+      "size": 2217491,
+      "sha256": "1c231ec4a6cd37a1bb111e2d14fa6cecc58e07ef814ee5be7a13eb8d502762b1",
+      "verification": "full download"
+    },
+    {
+      "name": "Local_AI_Update_v1.4.1_Windows.zip",
+      "size": 183560,
+      "sha256": "ff86a5f4347fca838f6fe0eabae52cfa395d14c93acc52724003cf52c8257cb1",
       "verification": "full download"
     },
     {
       "name": "README_FULL_DOWNLOAD_KO.md",
-      "size": 3956,
-      "sha256": "42c1b646c7a1264fafc0c8c6918c386a8097255e73685132c152d0931425323c",
+      "size": 1221,
+      "sha256": "1e30ff13949b451bd6f51bf1464e4d78424a59c688b91d7b27493ef54bd7e9d0",
       "verification": "full download"
     },
     {
       "name": "README_INSTALL_KO.txt",
-      "size": 2949,
-      "sha256": "dfb63e885ddc1202e9e5d77154d73cd69485a7fb1144cfb6cf542b1f5d1e1092",
+      "size": 888,
+      "sha256": "11039b97234781f6c00bb7c1bf049d78ec7d3bba1b17fec8cd9e281f38574efb",
       "verification": "full download"
     },
     {
       "name": "SHA256SUMS.txt",
-      "size": 1690,
-      "sha256": "c0093a5b158393e189c34247c91e778a46b405ed3485359b5d70f2cd70e3e521",
-      "verification": "full download"
-    },
-    {
-      "name": "SI_Local_AI_Offline_Setup.exe",
-      "size": 2223516,
-      "sha256": "eb1a480d35f102ed5d96186436cb456c3ce5efe0e22ae5e72dd5bc05df868f45",
-      "verification": "full download"
-    },
-    {
-      "name": "SI_Local_AI_Update_v1.4.0_Windows.zip",
-      "size": 183770,
-      "sha256": "b2f8b7cd19db248f3d267cb73d41f6e0c7d7222f80b2d629f90f189c9dfa9ce7",
+      "size": 1675,
+      "sha256": "0717171fbe5b3e2ae1312cbb52b584c6decca87bcbd6cb554550f7e96ed336d2",
       "verification": "full download"
     },
     {
@@ -97,25 +97,25 @@
     {
       "name": "WINDOWS_CI.md",
       "size": 691,
-      "sha256": "cb18ff4a86a39c33089c152678161ec9662de0169bf2b27edee373ce6665f224",
+      "sha256": "016bc15e4bdaad34546837c483f34688bc094ee257833d06e8b9ebcc513affeb",
       "verification": "full download"
     },
     {
-      "name": "SI_Local_AI_Offline_Setup-1.bin",
-      "size": 1608389120,
-      "sha256": "ffc4fbae5d33803936326f397158cfb8cf95d14fd5cefd1c735538c3acb741b5",
+      "name": "Local_AI_Offline_Setup-1.bin",
+      "size": 1608394752,
+      "sha256": "9ba6e0e9cd38f0ab9c0784595d3da774ca421061ae775fc8fe696da3a6fa9b15",
       "verification": "GitHub server-side digest matched manifest; HTTP 206 first 4096 bytes accessible"
     },
     {
-      "name": "SI_Local_AI_Offline_Setup-2.bin",
+      "name": "Local_AI_Offline_Setup-2.bin",
       "size": 1610612736,
-      "sha256": "a7123afed4f54affd542afa70ec2ecf8af37ec516c4e08c7b952f64d70ad38e5",
+      "sha256": "03afb39c9271ce01673383d2e2924bc7eceaa999d2e68524da1b6f05995e46b0",
       "verification": "GitHub server-side digest matched manifest; HTTP 206 first 4096 bytes accessible"
     },
     {
-      "name": "SI_Local_AI_Offline_Setup-3.bin",
-      "size": 847039597,
-      "sha256": "a5c99d5eb6f70955538d6655ef1fa8945b8a43aa01a9c9800b73645df55391e3",
+      "name": "Local_AI_Offline_Setup-3.bin",
+      "size": 847012326,
+      "sha256": "874eb518294f2dc053980f05db1cbd1e3b1014cdc04eb7e02748cff69f995d2a",
       "verification": "GitHub server-side digest matched manifest; HTTP 206 first 4096 bytes accessible"
     }
   ]

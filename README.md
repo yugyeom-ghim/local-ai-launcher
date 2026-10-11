@@ -2,12 +2,12 @@
 
 Windows에서 GGUF 모델을 실행하고 OpenAI 호환 API를 제공하는 llama.cpp 런처입니다.
 
-[다운로드](https://github.com/yugyeom-ghim/si_local_model/releases/latest) · [사용법](README_KO.md) · [API 연결](README_API_UPDATE_KO.md)
+[다운로드](https://github.com/yugyeom-ghim/local-ai-launcher/releases/latest) · [사용법](README_KO.md) · [API 연결](README_API_UPDATE_KO.md)
 
 ## 설치
 
 Setup EXE와 BIN 파일을 같은 폴더에 받은 뒤 Setup을 실행합니다. 설치는 오프라인으로 진행됩니다.
-인터넷 PC에서는 [다운로드 도구](https://github.com/yugyeom-ghim/si_local_model/releases/latest/download/Internet-PC-Download-Installer.exe)로 전체 파일을 이어받을 수 있습니다.
+인터넷 PC에서는 [다운로드 도구](https://github.com/yugyeom-ghim/local-ai-launcher/releases/latest/download/Internet-PC-Download-Installer.exe)로 전체 파일을 이어받을 수 있습니다.
 
 - 포함: Qwen3.5-4B-Q4_K_M, llama.cpp CPU·CUDA 12.4/13.4, VC++ 재배포 파일
 - 환경: Windows 10/11 x64, .NET Framework 4.8+, 설치 공간 6GB 이상

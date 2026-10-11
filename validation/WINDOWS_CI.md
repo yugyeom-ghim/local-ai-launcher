@@ -1,8 +1,8 @@
 # Windows GitHub Actions validation
 
-Version: 1.4.0
-Commit: fcd11908de928e37eda5bbb64f860c671734a507
-Run: https://github.com/yugyeom-ghim/si_local_model/actions/runs/38128563074
+Version: 1.4.1
+Commit: f96a66c19803555fbbdf8ed312ffaceaca6b7501
+Run: https://github.com/yugyeom-ghim/si_local_model/actions/runs/38137048627
 
 - Windows Server 2022 runner: native .NET Framework x64 Release build succeeded.
 - Core regression checks: 62 passed.

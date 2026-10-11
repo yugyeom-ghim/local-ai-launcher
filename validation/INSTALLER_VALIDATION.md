@@ -1,14 +1,15 @@
 # Offline installer validation
 
-Run: https://github.com/yugyeom-ghim/si_local_model/actions/runs/38128563074
-Commit: fcd11908de928e37eda5bbb64f860c671734a507
+Run: https://github.com/yugyeom-ghim/si_local_model/actions/runs/38137048627
+Commit: f96a66c19803555fbbdf8ed312ffaceaca6b7501
 Windows Server 2022: real setup/reinstall/uninstall executed in a temporary Korean path.
 
 PASS running Launcher blocks installation without being terminated
 PASS native Windows unattended installation succeeds
 PASS Launcher EXE installed
-PASS Satrec Initiative icon installed
-PASS all 270 installed payload files match SHA256
+PASS legacy executable and shortcuts removed
+PASS application icon installed
+PASS all 283 installed payload files match SHA256
 PASS Start menu shortcut created
 PASS optional desktop shortcut created
 PASS shortcut targets the installed Launcher
