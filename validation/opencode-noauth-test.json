@@ -1,0 +1,23 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "si-local": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "SI Local AI",
+      "options": {
+        "baseURL": "http://127.0.0.1:1234/v1",
+        "apiKey": "si-local-no-key"
+      },
+      "models": {
+        "Qwen3.5-4B-Q4_K_M-12345678": {
+          "name": "Qwen3.5-4B-Q4_K_M (local)",
+          "limit": {
+            "context": 16384,
+            "output": 4096
+          }
+        }
+      }
+    }
+  },
+  "model": "si-local/Qwen3.5-4B-Q4_K_M-12345678"
+}

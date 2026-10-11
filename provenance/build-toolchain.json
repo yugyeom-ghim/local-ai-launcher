@@ -1,0 +1,10 @@
+{
+  "sdk_version": "8.0.425",
+  "sdk_asset": {
+    "name": "dotnet-sdk-linux-x64.tar.gz",
+    "rid": "linux-x64",
+    "url": "https://builds.dotnet.microsoft.com/dotnet/Sdk/8.0.425/dotnet-sdk-8.0.425-linux-x64.tar.gz",
+    "hash": "934b8060a7190e5909ad1fd0785db542f487b3bbf6cdd14826b02095fdd0d0394298b1634085eff302928fccc33f7c1a7253e9b87df555fc36fce819bcd2e798"
+  },
+  "net48_package": "Microsoft.NETFramework.ReferenceAssemblies.net48/1.0.3"
+}

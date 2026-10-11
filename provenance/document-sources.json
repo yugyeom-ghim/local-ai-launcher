@@ -1,0 +1,11 @@
+{
+  "llama-LICENSE.txt": "https://raw.githubusercontent.com/ggml-org/llama.cpp/d81235049384534c167caea52b85a694f6103d14/LICENSE",
+  "server-README.md": "https://raw.githubusercontent.com/ggml-org/llama.cpp/d81235049384534c167caea52b85a694f6103d14/tools/server/README.md",
+  "ggml-common.h": "https://raw.githubusercontent.com/ggml-org/llama.cpp/d81235049384534c167caea52b85a694f6103d14/ggml/src/ggml-common.h",
+  "ggml.c": "https://raw.githubusercontent.com/ggml-org/llama.cpp/d81235049384534c167caea52b85a694f6103d14/ggml/src/ggml.c",
+  "ggml.h": "https://raw.githubusercontent.com/ggml-org/llama.cpp/d81235049384534c167caea52b85a694f6103d14/ggml/include/ggml.h",
+  "Qwen-LICENSE.txt": "https://huggingface.co/Qwen/Qwen3.5-4B/resolve/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/LICENSE",
+  "Qwen-model-card.md": "https://huggingface.co/Qwen/Qwen3.5-4B/resolve/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/README.md",
+  "Unsloth-model-card.md": "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/e87f176479d0855a907a41277aca2f8ee7a09523/README.md",
+  "CUDA-12.4-EULA.html": "https://docs.nvidia.com/cuda/archive/12.4.0/eula/index.html"
+}

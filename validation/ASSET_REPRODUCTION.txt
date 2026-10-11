@@ -1,0 +1,4 @@
+prepare_assets.py --cache acquisition --destination <new directory> --offline-cache
+All 13 pinned downloads/cache files verified.
+Expanded asset files matched actual release manifest: 169
+No server, model or installer was executed.

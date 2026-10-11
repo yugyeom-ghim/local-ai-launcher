@@ -1,0 +1,22 @@
+{
+  "Schema": 1,
+  "AssetRoot": "offline-assets/ai",
+  "ModelsPath": "models",
+  "CpuPath": "bin/win-cpu-x64",
+  "Cuda12Path": "bin/win-cuda-12.4-x64",
+  "Cuda13Path": "bin/win-cuda-13.1-x64",
+  "Backend": "auto",
+  "Mode": "auto",
+  "Model": "",
+  "Port": 1234,
+  "Context": 4096,
+  "Threads": 0,
+  "LoadTimeout": 180,
+  "GpuLayers": -1,
+  "AutoStart": false,
+  "ThinkingOff": true,
+  "OpenBrowser": false,
+  "CpuFallback": true,
+  "Cuda134Path": "bin/win-cuda-13.4-x64",
+  "ApiKeyRequired": false
+}

@@ -1,0 +1,5 @@
+Linux cross-build; Windows execution NOT tested.
+.NET SDK 8.0.425 Roslyn + Microsoft.NETFramework.ReferenceAssemblies.net48 1.0.3
+Release: /target:winexe /platform:x64 /optimize+ /langversion:5 /deterministic+
+Exit code: 0
+EXE SHA256: 4cefbd72a288f48f551a973091fe63ce9342a1ea216ad158198b515b2cac2ae7

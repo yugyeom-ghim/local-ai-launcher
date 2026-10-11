@@ -1,0 +1,8 @@
+PASS unsafe path rejected: ../outside
+PASS unsafe path rejected: /absolute
+PASS unsafe path rejected: C:/absolute
+PASS unsafe path rejected: x\..\outside
+PASS unsafe path rejected: CON.txt
+PASS unsafe path rejected: name.
+PASS unsafe path rejected: x/../escape
+PASS case-insensitive duplicate rejected before extraction

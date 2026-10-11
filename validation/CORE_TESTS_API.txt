@@ -1,0 +1,63 @@
+﻿PASS fresh install requires explicit start
+PASS v1.0 saved automatic start is preserved
+PASS newly observed file is not stable
+PASS file becomes stable after quiet interval
+PASS size change restarts stability interval
+PASS timestamp-only change restarts interval
+PASS removed and re-added file must settle again
+PASS default configuration
+PASS configuration rejects bad port
+PASS configuration rejects bad context
+PASS relative path rejects drive
+PASS relative path rejects network
+PASS relative path rejects newline
+PASS quote empty argument
+PASS quote spaces and Unicode
+PASS quote embedded quote
+PASS quote trailing backslash
+PASS same root is dot
+PASS path round trip
+PASS JSON missing fields retain defaults
+PASS JSON round trip
+PASS exact option matching
+PASS router requires offline support
+PASS router capabilities
+PASS CPU does not count as CUDA
+PASS CUDA device recognized
+PASS GGUF header parser
+PASS truncated tensor payload rejected
+PASS CUDA 13.4 config supported without replacing legacy path
+PASS HTML renamed as GGUF rejected
+PASS discovery filters projector OCR runtime encoder
+PASS missing model shard excluded
+PASS complete shards form one model
+PASS runtime discovery
+PASS unstable GGUF excluded from launch catalog
+PASS one unstable shard excludes entire model
+PASS catalog signature changes on model addition
+PASS catalog signature is order independent
+PASS preferred Qwen selected
+PASS saved model respected
+PASS model IDs distinct
+PASS generated preset has relative paths only
+PASS model IDs survive package move
+PASS backend priority and explicit CPU
+PASS explicit CUDA never falls back to CPU
+PASS CUDA 12 then 13.4 then CPU priority
+PASS fallback opt out
+PASS CPU arguments, no unsupported reasoning
+PASS router args never fix model alias
+PASS router disables implicit model loading when supported
+PASS legacy ThinkingOff false and auth default survive load
+PASS auth preference survives settings round trip
+PASS thinking ON explicitly passed rather than template default
+PASS thinking OFF explicit and format cannot masquerade as switch
+PASS older runtime template switch explicitly supports ON and OFF
+PASS local key persists without rotation and differs across installs
+PASS malformed key fails instead of silently disabling authentication
+PASS authentication unsupported fails closed
+PASS key path only in command, optional auth retains compatibility
+PASS OpenCode export roundtrip uses active model port context without key
+PASS keyless export works even for clients requiring a key field
+PASS atomic state replacement
+Core tests: 62 passed, 0 failed

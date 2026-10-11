@@ -1,0 +1,1295 @@
+{
+  "schema": 1,
+  "package": "SI Local AI Offline v1.2",
+  "prepared_date": "2026-10-08",
+  "llama_release": "b11429",
+  "llama_commit": "d81235049384534c167caea52b85a694f6103d14",
+  "release_marked_prerelease": true,
+  "windows_execution_verified": false,
+  "launcher_build": "Release x64 net48, Linux cross-build",
+  "sources": [
+    {
+      "name": "cudart-llama-bin-win-cuda-12.4-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11429/cudart-llama-bin-win-cuda-12.4-x64.zip",
+      "size": 391443627,
+      "sha256": "8c79a9b226de4b3cacfd1f83d24f962d0773be79f1e7b75c6af4ded7e32ae1d6",
+      "publisher_sha256": "8c79a9b226de4b3cacfd1f83d24f962d0773be79f1e7b75c6af4ded7e32ae1d6",
+      "publisher_hash_match": true,
+      "target": "offline-assets/ai/bin/win-cuda-12.4-x64",
+      "license": "NVIDIA-CUDA-EULA",
+      "version": "b11429",
+      "extract_zip": true
+    },
+    {
+      "name": "llama-b11429-bin-win-cpu-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11429/llama-b11429-bin-win-cpu-x64.zip",
+      "size": 19398918,
+      "sha256": "1283323272b04cd07905816a597a0da810918102de958f4ff6f7bbaa70ed2efe",
+      "publisher_sha256": "1283323272b04cd07905816a597a0da810918102de958f4ff6f7bbaa70ed2efe",
+      "publisher_hash_match": true,
+      "target": "offline-assets/ai/bin/win-cpu-x64",
+      "license": "MIT and bundled third-party notices",
+      "version": "b11429",
+      "extract_zip": true
+    },
+    {
+      "name": "llama-b11429-bin-win-cuda-12.4-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11429/llama-b11429-bin-win-cuda-12.4-x64.zip",
+      "size": 264478423,
+      "sha256": "dd6df685c1024e6aa55ca55ad35038692d5e284d4dc895e7a646c3245d3d14ff",
+      "publisher_sha256": "dd6df685c1024e6aa55ca55ad35038692d5e284d4dc895e7a646c3245d3d14ff",
+      "publisher_hash_match": true,
+      "target": "offline-assets/ai/bin/win-cuda-12.4-x64",
+      "license": "MIT and bundled third-party notices",
+      "version": "b11429",
+      "extract_zip": true
+    },
+    {
+      "name": "Qwen3.5-4B-Q4_K_M.gguf",
+      "url": "https://huggingface.co/unsloth/Qwen3.5-4B-GGUF/resolve/e87f176479d0855a907a41277aca2f8ee7a09523/Qwen3.5-4B-Q4_K_M.gguf",
+      "size": 2740937888,
+      "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+      "publisher_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+      "publisher_hash_match": true,
+      "target": "offline-assets/ai/models/Qwen3.5-4B-Q4_K_M.gguf",
+      "license": "Apache-2.0",
+      "version": "e87f176479d0855a907a41277aca2f8ee7a09523",
+      "extract_zip": false
+    },
+    {
+      "name": "cudart-llama-bin-win-cuda-13.4-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11429/cudart-llama-bin-win-cuda-13.4-x64.zip",
+      "size": 423535356,
+      "sha256": "738f8c251ac22b70c3ae6f83a10cf222725df0395246a2cf58f32bdb85fbe668",
+      "publisher_sha256": "738f8c251ac22b70c3ae6f83a10cf222725df0395246a2cf58f32bdb85fbe668",
+      "publisher_hash_match": true,
+      "target": "offline-assets/ai/bin/win-cuda-13.4-x64",
+      "license": "NVIDIA-CUDA-EULA",
+      "version": "b11429",
+      "extract_zip": true
+    },
+    {
+      "name": "llama-b11429-bin-win-cuda-13.4-x64.zip",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11429/llama-b11429-bin-win-cuda-13.4-x64.zip",
+      "size": 153089864,
+      "sha256": "76ddc6eff2389570789ed608881efc6977751a722015d8e8c94f302224ff1a3a",
+      "publisher_sha256": "76ddc6eff2389570789ed608881efc6977751a722015d8e8c94f302224ff1a3a",
+      "publisher_hash_match": true,
+      "target": "offline-assets/ai/bin/win-cuda-13.4-x64",
+      "license": "MIT and bundled third-party notices",
+      "version": "b11429",
+      "extract_zip": true
+    },
+    {
+      "name": "vc_redist.x64.exe",
+      "url": "https://download.visualstudio.microsoft.com/download/pr/ebdab8e5-1d7b-4d9f-a11b-cbb1720c3b12/843068991DAAA1F73AD9F6239BCE4D0F6A07A51F18C37EA2A867E9BECA71295C/VC_redist.x64.exe",
+      "target": "prerequisites/vc_redist.x64.exe",
+      "size": 18731856,
+      "sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+      "publisher_sha256": null,
+      "publisher_hash_match": null,
+      "license": "Microsoft Visual C++ v14 Redistributable and Runtime terms",
+      "version": "14.51.36247.0",
+      "extract_zip": false
+    },
+    {
+      "name": "llama-LICENSE.txt",
+      "url": "https://raw.githubusercontent.com/ggml-org/llama.cpp/d81235049384534c167caea52b85a694f6103d14/LICENSE",
+      "target": "licenses/llama-LICENSE.txt",
+      "size": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "publisher_sha256": null,
+      "publisher_hash_match": null,
+      "license": "Upstream license text",
+      "version": "snapshot 2026-10-08",
+      "extract_zip": false
+    },
+    {
+      "name": "Qwen-LICENSE.txt",
+      "url": "https://huggingface.co/Qwen/Qwen3.5-4B/resolve/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/LICENSE",
+      "target": "licenses/Qwen-LICENSE.txt",
+      "size": 11544,
+      "sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "publisher_sha256": null,
+      "publisher_hash_match": null,
+      "license": "Upstream license text",
+      "version": "snapshot 2026-10-08",
+      "extract_zip": false
+    },
+    {
+      "name": "CUDA-12.4-EULA.html",
+      "url": "https://docs.nvidia.com/cuda/archive/12.4.0/eula/index.html",
+      "target": "licenses/CUDA-12.4-EULA.html",
+      "size": 82548,
+      "sha256": "182734e0cee7c6217b911ef88fc92c4a1f487d1003c24dd9dab1597a399fb7c5",
+      "publisher_sha256": null,
+      "publisher_hash_match": null,
+      "license": "Upstream license text",
+      "version": "snapshot 2026-10-08",
+      "extract_zip": false
+    },
+    {
+      "name": "CUDA-13.4-EULA.html",
+      "url": "https://docs.nvidia.com/cuda/eula/index.html",
+      "target": "licenses/CUDA-13.4-EULA.html",
+      "size": 103131,
+      "sha256": "dae4884999a096f1e61e976336344e95a3705eca1a87caf519c3f70b6d859a06",
+      "publisher_sha256": null,
+      "publisher_hash_match": null,
+      "license": "Upstream license text",
+      "version": "snapshot 2026-10-08",
+      "extract_zip": false
+    },
+    {
+      "name": "VC-REDIST-LICENSE.docx",
+      "url": "https://visualstudio.microsoft.com/wp-content/uploads/2025/10/Visual-C-V14-License-Redistributable_and_Runtime_ENU.docx",
+      "target": "licenses/VC-REDIST-LICENSE.docx",
+      "size": 39553,
+      "sha256": "08651651a7602fc7c0e2763de0fde1ff9f868df2780597cd1775ee9d6441c783",
+      "publisher_sha256": null,
+      "publisher_hash_match": null,
+      "license": "Upstream license text",
+      "version": "snapshot 2026-10-08",
+      "extract_zip": false
+    },
+    {
+      "name": "llama-source.tar.gz",
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/tarball/d81235049384534c167caea52b85a694f6103d14",
+      "target": "licenses/upstream-source/llama.cpp-b11429.tar.gz",
+      "size": 37875044,
+      "sha256": "098ddd709b03b1973229fc96464be2e098fd54f76ded653ce98242c1b90f91b4",
+      "publisher_sha256": null,
+      "publisher_hash_match": null,
+      "license": "MIT and embedded upstream notices",
+      "version": "d81235049384534c167caea52b85a694f6103d14",
+      "extract_zip": false
+    }
+  ],
+  "files": [
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/LICENSE-LLVM-OpenMP",
+      "size_bytes": 19741,
+      "sha256": "fdad1758a9e1f9d5a81e18879b3406772115edc92c24bfa36b70c654f325e8e4",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-base.dll",
+      "size_bytes": 803328,
+      "sha256": "19b7666b4cd7dc01e219e247783ffd1979694d6f1635bbf3209ae5fa0fc169c0",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-alderlake.dll",
+      "size_bytes": 1434624,
+      "sha256": "176045703530b923eb565052d9c622e1453c7013ac11823926f89260768cdddd",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-cannonlake.dll",
+      "size_bytes": 1614336,
+      "sha256": "c9723eab21d1d80e38f3791088739c56a8a36f7db5ad2340811eac2d3fd45af7",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-cascadelake.dll",
+      "size_bytes": 1598976,
+      "sha256": "1db7a13737763d444c278ac218ad9dc5dc850e1fcd98bc07ece307ae6f64dda6",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-cooperlake.dll",
+      "size_bytes": 1608704,
+      "sha256": "482a40664f87b8e94bdab53c13b14fa6b722ffd743a7a7c4fa7d5cec6ed44852",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-haswell.dll",
+      "size_bytes": 1439232,
+      "sha256": "8022a1d17a56f537b956683a484dc1a0f95ab4b01e95b4c57d53bb1e6c3e529f",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-icelake.dll",
+      "size_bytes": 1606144,
+      "sha256": "c096a02ec4a9fecca14a14bd9ed5d6c9fa7569cc2a678b08dd1978646abe1e2a",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-ivybridge.dll",
+      "size_bytes": 1314816,
+      "sha256": "1792967edf602b0a459cbb519e71a3037fba5854ba273b8328467c9d9dc201f1",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-piledriver.dll",
+      "size_bytes": 1307648,
+      "sha256": "b47a82e5d9087f03a54a840e848e4f2e0b44312309065e60b8d0cd421202233c",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-sandybridge.dll",
+      "size_bytes": 1289728,
+      "sha256": "007dc9fca693bf1e3941c1d46bb273de587c2d0947625884ccd68154d190e03c",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-sapphirerapids.dll",
+      "size_bytes": 1885696,
+      "sha256": "72b1203f01d4aa12f22d45415d91dc046f15e3eb3da49f7110b59c888bee9978",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-skylakex.dll",
+      "size_bytes": 1608192,
+      "sha256": "ccf578111e9688c2c51f0279ab4e56351fa084f7d6e43e7c091d961fdbb03081",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-sse42.dll",
+      "size_bytes": 915456,
+      "sha256": "740d3e84289733501b70274904c9d1135bdc579babf7c82825f5ae0133e5afbd",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-x64.dll",
+      "size_bytes": 908288,
+      "sha256": "b1089f3ad0cc1363519c3583b033648cf471297bdd5482e72c71dcf5c5cb0765",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-cpu-zen4.dll",
+      "size_bytes": 1615360,
+      "sha256": "7f257519148e3b81fc718acad0f7afcd381d2b429fe0032a1f97e365d7ff2db5",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-rpc-server.exe",
+      "size_bytes": 117248,
+      "sha256": "621d99411e46c721cc7a479cfb38491525f857b9159ad2656193994751d183fa",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml-rpc.dll",
+      "size_bytes": 168960,
+      "sha256": "7ba393c88878711014e57bfe77a45ec99bbcc106f945baec1c90614370dd9459",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/ggml.dll",
+      "size_bytes": 79872,
+      "sha256": "2dc74873c47a09294431af997f7d5c31bdbc0eafc49c2c30ea03b7331c1a5c3c",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/libomp.dll",
+      "size_bytes": 768000,
+      "sha256": "a12116ba72d1d6820407cf30be23da04ce79d6bb8a71a5ee71759c5a1faa6f1c",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-batched-bench-impl.dll",
+      "size_bytes": 61952,
+      "sha256": "fffda75084850c467df634417ac29b0aa814146021f334cd18d91a16e97b3048",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-batched-bench.exe",
+      "size_bytes": 9216,
+      "sha256": "0185ab3a5799d3452282ee01d0b501ef385769c0642a9375af2983a1834792c3",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-bench-impl.dll",
+      "size_bytes": 403968,
+      "sha256": "34e052bc21d7e81a174c4cb2f48aa93b26863a2fb6f326d70e17c732179b55ae",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-bench.exe",
+      "size_bytes": 9216,
+      "sha256": "168ad39c85bb45b1b43b133074317bc577ed7b0a34d380d6a559207683b94114",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-cli-impl.dll",
+      "size_bytes": 3315712,
+      "sha256": "5dc73fb3fecc0da17f6b18999a4516e6e346dcc0e1cff10379ab16a4fca182cc",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-cli.exe",
+      "size_bytes": 9216,
+      "sha256": "db2ca6b1255759101d8933370c992a9f2e219a0d62bc6528072eb4e0e7a323ba",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-common.dll",
+      "size_bytes": 7924224,
+      "sha256": "cb5011455243a8b6a91fed00fbb33d93fdb53fa7c417fc59f27a004af85d7d9b",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-completion-impl.dll",
+      "size_bytes": 136192,
+      "sha256": "92c753b5d1328540a43349466f892abbd34c3f902351f19b0aa58bc1752a97af",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-completion.exe",
+      "size_bytes": 9216,
+      "sha256": "aaf0bba4723883b8a4f25e9d02bb23802cad1cc5f5cb2aab53098691bf7c4c0d",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-fit-params-impl.dll",
+      "size_bytes": 43008,
+      "sha256": "b92509e2088e1fd2e4b0a3be809dc014019ed6430987ae6d30a2bae14ecf69ca",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-fit-params.exe",
+      "size_bytes": 9216,
+      "sha256": "c2bf85d263a04a73ed4af00e08a42296daac5a33255e31952e133b474848a494",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-gemma3-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "1031f697b423794b145c38818d1350d22b07d6526aececbf84299a568a47184c",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-gguf-split.exe",
+      "size_bytes": 60416,
+      "sha256": "8743e2535624e84b0bba34a36bb7b7fdfea8dc5648d8139048644ddc03d4253d",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-imatrix.exe",
+      "size_bytes": 252416,
+      "sha256": "bd0e416ace4c93b30a110ce231d0afe9307b3a0ae7dc0438b4ca4b020fe9a7c6",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-llava-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "1031f697b423794b145c38818d1350d22b07d6526aececbf84299a568a47184c",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-minicpmv-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "193513388b62212ee816f752e64db9a377288f3bd3acb3fb509e23ca547fa387",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-mtmd-cli.exe",
+      "size_bytes": 92672,
+      "sha256": "e0f682258ece3fb940d8f0e6f334208ba3b8a1810739384093cfae63fb671851",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-mtmd-debug.exe",
+      "size_bytes": 55808,
+      "sha256": "bff6e878ab5814fadc82509558b81b9c17b25fee708db2fb76695c99722db527",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-perplexity-impl.dll",
+      "size_bytes": 197632,
+      "sha256": "7c07c54f84dfa2c6503e83f6f2bfe9788e7f0d00280517f10e7deddcf38beb99",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-perplexity.exe",
+      "size_bytes": 9216,
+      "sha256": "dda4774f04508bf4092e3d4e2cd13bc47b5433d3581793556f91284fb8b3c567",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-quantize-impl.dll",
+      "size_bytes": 137216,
+      "sha256": "a46a92fcd97eaf4db39a7460f48b744387ce257c02fa48f43f591f086d4f9f1a",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-quantize.exe",
+      "size_bytes": 9216,
+      "sha256": "645013b453bd71f82c7849b8ceb57a745aab69fdf30fca022b20afba9cfcf3cf",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-qwen2vl-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "193513388b62212ee816f752e64db9a377288f3bd3acb3fb509e23ca547fa387",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-results.exe",
+      "size_bytes": 46592,
+      "sha256": "c131056ff1c1b2e737ec2bb2506df4883d9791e0239ac4a8d398298d742f73ff",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-server-impl.dll",
+      "size_bytes": 9170944,
+      "sha256": "8bdf535224880cf5b919ada99e6cb225338cce4d444b8e5b4acd1e2bb10bc0a0",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-server.exe",
+      "size_bytes": 9216,
+      "sha256": "7e236243c9b670c6a49410c03186fd575c57a0efe3fd8a21d8727503d571d5b6",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-tokenize.exe",
+      "size_bytes": 58880,
+      "sha256": "cdfc60f1714c630c5bc8e4c798e0399370688fb252ee7c6064f522247ae756ad",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama-tts.exe",
+      "size_bytes": 41984,
+      "sha256": "a040c7203eb66dd61591f1c309165117d517e5d6c01ca086de126451b24ff847",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama.dll",
+      "size_bytes": 3311616,
+      "sha256": "48d2b52f4d6b2d7db2ca4698edbb95ecb4511b792396c566e1340668b6415a71",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/llama.exe",
+      "size_bytes": 104448,
+      "sha256": "466d9ea880c580baaea54d83dee8c70fa3b711e19076fe97a03bcd919924aa92",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cpu-x64/mtmd.dll",
+      "size_bytes": 1795072,
+      "sha256": "817ba2841e73b9ef1170f2e235d30ef4cca5d4ec520a4817ca60e3737cff79ad",
+      "origin": "llama-b11429-bin-win-cpu-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/LICENSE-LLVM-OpenMP",
+      "size_bytes": 19741,
+      "sha256": "fdad1758a9e1f9d5a81e18879b3406772115edc92c24bfa36b70c654f325e8e4",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/cublas64_12.dll",
+      "size_bytes": 100033536,
+      "sha256": "e40202fe4223c1cd2d2dce7beec59e1ed61c7801bd827309183be9b50e358f4c",
+      "origin": "cudart-llama-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/cublasLt64_12.dll",
+      "size_bytes": 473551360,
+      "sha256": "2a896460bef60ed57ef32b0875812f355a6984e671d638bb632f5e8c1d7a831f",
+      "origin": "cudart-llama-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/cudart64_12.dll",
+      "size_bytes": 553984,
+      "sha256": "d28e42265da7462162a54da6b7a99ea4fa2caf8139d862bb500db875d0b32dfc",
+      "origin": "cudart-llama-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-base.dll",
+      "size_bytes": 803328,
+      "sha256": "19b7666b4cd7dc01e219e247783ffd1979694d6f1635bbf3209ae5fa0fc169c0",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-alderlake.dll",
+      "size_bytes": 1434624,
+      "sha256": "176045703530b923eb565052d9c622e1453c7013ac11823926f89260768cdddd",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-cannonlake.dll",
+      "size_bytes": 1614336,
+      "sha256": "c9723eab21d1d80e38f3791088739c56a8a36f7db5ad2340811eac2d3fd45af7",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-cascadelake.dll",
+      "size_bytes": 1598976,
+      "sha256": "1db7a13737763d444c278ac218ad9dc5dc850e1fcd98bc07ece307ae6f64dda6",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-cooperlake.dll",
+      "size_bytes": 1608704,
+      "sha256": "482a40664f87b8e94bdab53c13b14fa6b722ffd743a7a7c4fa7d5cec6ed44852",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-haswell.dll",
+      "size_bytes": 1439232,
+      "sha256": "8022a1d17a56f537b956683a484dc1a0f95ab4b01e95b4c57d53bb1e6c3e529f",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-icelake.dll",
+      "size_bytes": 1606144,
+      "sha256": "c096a02ec4a9fecca14a14bd9ed5d6c9fa7569cc2a678b08dd1978646abe1e2a",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-ivybridge.dll",
+      "size_bytes": 1314816,
+      "sha256": "1792967edf602b0a459cbb519e71a3037fba5854ba273b8328467c9d9dc201f1",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-piledriver.dll",
+      "size_bytes": 1307648,
+      "sha256": "b47a82e5d9087f03a54a840e848e4f2e0b44312309065e60b8d0cd421202233c",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-sandybridge.dll",
+      "size_bytes": 1289728,
+      "sha256": "007dc9fca693bf1e3941c1d46bb273de587c2d0947625884ccd68154d190e03c",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-sapphirerapids.dll",
+      "size_bytes": 1885696,
+      "sha256": "72b1203f01d4aa12f22d45415d91dc046f15e3eb3da49f7110b59c888bee9978",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-skylakex.dll",
+      "size_bytes": 1608192,
+      "sha256": "ccf578111e9688c2c51f0279ab4e56351fa084f7d6e43e7c091d961fdbb03081",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-sse42.dll",
+      "size_bytes": 915456,
+      "sha256": "740d3e84289733501b70274904c9d1135bdc579babf7c82825f5ae0133e5afbd",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-x64.dll",
+      "size_bytes": 908288,
+      "sha256": "b1089f3ad0cc1363519c3583b033648cf471297bdd5482e72c71dcf5c5cb0765",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cpu-zen4.dll",
+      "size_bytes": 1615360,
+      "sha256": "7f257519148e3b81fc718acad0f7afcd381d2b429fe0032a1f97e365d7ff2db5",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-cuda.dll",
+      "size_bytes": 570216448,
+      "sha256": "e839574a72208d598c3c7e8bd19edfa1b8ab8fb523108f8853cad0df9e25cd6c",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-rpc-server.exe",
+      "size_bytes": 117248,
+      "sha256": "621d99411e46c721cc7a479cfb38491525f857b9159ad2656193994751d183fa",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml-rpc.dll",
+      "size_bytes": 168960,
+      "sha256": "7ba393c88878711014e57bfe77a45ec99bbcc106f945baec1c90614370dd9459",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/ggml.dll",
+      "size_bytes": 79872,
+      "sha256": "2dc74873c47a09294431af997f7d5c31bdbc0eafc49c2c30ea03b7331c1a5c3c",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/libomp.dll",
+      "size_bytes": 768000,
+      "sha256": "a12116ba72d1d6820407cf30be23da04ce79d6bb8a71a5ee71759c5a1faa6f1c",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-batched-bench-impl.dll",
+      "size_bytes": 61952,
+      "sha256": "fffda75084850c467df634417ac29b0aa814146021f334cd18d91a16e97b3048",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-batched-bench.exe",
+      "size_bytes": 9216,
+      "sha256": "0185ab3a5799d3452282ee01d0b501ef385769c0642a9375af2983a1834792c3",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-bench-impl.dll",
+      "size_bytes": 403968,
+      "sha256": "34e052bc21d7e81a174c4cb2f48aa93b26863a2fb6f326d70e17c732179b55ae",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-bench.exe",
+      "size_bytes": 9216,
+      "sha256": "168ad39c85bb45b1b43b133074317bc577ed7b0a34d380d6a559207683b94114",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-cli-impl.dll",
+      "size_bytes": 3315712,
+      "sha256": "5dc73fb3fecc0da17f6b18999a4516e6e346dcc0e1cff10379ab16a4fca182cc",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-cli.exe",
+      "size_bytes": 9216,
+      "sha256": "db2ca6b1255759101d8933370c992a9f2e219a0d62bc6528072eb4e0e7a323ba",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-common.dll",
+      "size_bytes": 7924224,
+      "sha256": "cb5011455243a8b6a91fed00fbb33d93fdb53fa7c417fc59f27a004af85d7d9b",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-completion-impl.dll",
+      "size_bytes": 136192,
+      "sha256": "92c753b5d1328540a43349466f892abbd34c3f902351f19b0aa58bc1752a97af",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-completion.exe",
+      "size_bytes": 9216,
+      "sha256": "aaf0bba4723883b8a4f25e9d02bb23802cad1cc5f5cb2aab53098691bf7c4c0d",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-fit-params-impl.dll",
+      "size_bytes": 43008,
+      "sha256": "b92509e2088e1fd2e4b0a3be809dc014019ed6430987ae6d30a2bae14ecf69ca",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-fit-params.exe",
+      "size_bytes": 9216,
+      "sha256": "c2bf85d263a04a73ed4af00e08a42296daac5a33255e31952e133b474848a494",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-gemma3-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "1031f697b423794b145c38818d1350d22b07d6526aececbf84299a568a47184c",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-gguf-split.exe",
+      "size_bytes": 60416,
+      "sha256": "8743e2535624e84b0bba34a36bb7b7fdfea8dc5648d8139048644ddc03d4253d",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-imatrix.exe",
+      "size_bytes": 252416,
+      "sha256": "bd0e416ace4c93b30a110ce231d0afe9307b3a0ae7dc0438b4ca4b020fe9a7c6",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-llava-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "1031f697b423794b145c38818d1350d22b07d6526aececbf84299a568a47184c",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-minicpmv-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "193513388b62212ee816f752e64db9a377288f3bd3acb3fb509e23ca547fa387",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-mtmd-cli.exe",
+      "size_bytes": 92672,
+      "sha256": "e0f682258ece3fb940d8f0e6f334208ba3b8a1810739384093cfae63fb671851",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-mtmd-debug.exe",
+      "size_bytes": 55808,
+      "sha256": "bff6e878ab5814fadc82509558b81b9c17b25fee708db2fb76695c99722db527",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-perplexity-impl.dll",
+      "size_bytes": 197632,
+      "sha256": "7c07c54f84dfa2c6503e83f6f2bfe9788e7f0d00280517f10e7deddcf38beb99",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-perplexity.exe",
+      "size_bytes": 9216,
+      "sha256": "dda4774f04508bf4092e3d4e2cd13bc47b5433d3581793556f91284fb8b3c567",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-quantize-impl.dll",
+      "size_bytes": 137216,
+      "sha256": "a46a92fcd97eaf4db39a7460f48b744387ce257c02fa48f43f591f086d4f9f1a",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-quantize.exe",
+      "size_bytes": 9216,
+      "sha256": "645013b453bd71f82c7849b8ceb57a745aab69fdf30fca022b20afba9cfcf3cf",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-qwen2vl-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "193513388b62212ee816f752e64db9a377288f3bd3acb3fb509e23ca547fa387",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-results.exe",
+      "size_bytes": 46592,
+      "sha256": "c131056ff1c1b2e737ec2bb2506df4883d9791e0239ac4a8d398298d742f73ff",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-server-impl.dll",
+      "size_bytes": 9170944,
+      "sha256": "8bdf535224880cf5b919ada99e6cb225338cce4d444b8e5b4acd1e2bb10bc0a0",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-server.exe",
+      "size_bytes": 9216,
+      "sha256": "7e236243c9b670c6a49410c03186fd575c57a0efe3fd8a21d8727503d571d5b6",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-tokenize.exe",
+      "size_bytes": 58880,
+      "sha256": "cdfc60f1714c630c5bc8e4c798e0399370688fb252ee7c6064f522247ae756ad",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama-tts.exe",
+      "size_bytes": 41984,
+      "sha256": "a040c7203eb66dd61591f1c309165117d517e5d6c01ca086de126451b24ff847",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama.dll",
+      "size_bytes": 3311616,
+      "sha256": "48d2b52f4d6b2d7db2ca4698edbb95ecb4511b792396c566e1340668b6415a71",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/llama.exe",
+      "size_bytes": 104448,
+      "sha256": "466d9ea880c580baaea54d83dee8c70fa3b711e19076fe97a03bcd919924aa92",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-12.4-x64/mtmd.dll",
+      "size_bytes": 1795072,
+      "sha256": "817ba2841e73b9ef1170f2e235d30ef4cca5d4ec520a4817ca60e3737cff79ad",
+      "origin": "llama-b11429-bin-win-cuda-12.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/LICENSE-LLVM-OpenMP",
+      "size_bytes": 19741,
+      "sha256": "fdad1758a9e1f9d5a81e18879b3406772115edc92c24bfa36b70c654f325e8e4",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/cublas64_13.dll",
+      "size_bytes": 54942320,
+      "sha256": "1119dbca0a808e0c8850bb4221e330daf0b5ddb348d62d37b6ac533854723df9",
+      "origin": "cudart-llama-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/cublasLt64_13.dll",
+      "size_bytes": 492752496,
+      "sha256": "0f5bc315fef706b5626248ebd74e8a48a9e82fa2f0cad38330f5f70984913107",
+      "origin": "cudart-llama-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/cudart64_13.dll",
+      "size_bytes": 551024,
+      "sha256": "05bfafcb97bd53b0089568a96e1e5bd6921637bd0853ff7f5342bd31a6a16890",
+      "origin": "cudart-llama-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-base.dll",
+      "size_bytes": 803328,
+      "sha256": "19b7666b4cd7dc01e219e247783ffd1979694d6f1635bbf3209ae5fa0fc169c0",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-alderlake.dll",
+      "size_bytes": 1434624,
+      "sha256": "176045703530b923eb565052d9c622e1453c7013ac11823926f89260768cdddd",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-cannonlake.dll",
+      "size_bytes": 1614336,
+      "sha256": "c9723eab21d1d80e38f3791088739c56a8a36f7db5ad2340811eac2d3fd45af7",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-cascadelake.dll",
+      "size_bytes": 1598976,
+      "sha256": "1db7a13737763d444c278ac218ad9dc5dc850e1fcd98bc07ece307ae6f64dda6",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-cooperlake.dll",
+      "size_bytes": 1608704,
+      "sha256": "482a40664f87b8e94bdab53c13b14fa6b722ffd743a7a7c4fa7d5cec6ed44852",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-haswell.dll",
+      "size_bytes": 1439232,
+      "sha256": "8022a1d17a56f537b956683a484dc1a0f95ab4b01e95b4c57d53bb1e6c3e529f",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-icelake.dll",
+      "size_bytes": 1606144,
+      "sha256": "c096a02ec4a9fecca14a14bd9ed5d6c9fa7569cc2a678b08dd1978646abe1e2a",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-ivybridge.dll",
+      "size_bytes": 1314816,
+      "sha256": "1792967edf602b0a459cbb519e71a3037fba5854ba273b8328467c9d9dc201f1",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-piledriver.dll",
+      "size_bytes": 1307648,
+      "sha256": "b47a82e5d9087f03a54a840e848e4f2e0b44312309065e60b8d0cd421202233c",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-sandybridge.dll",
+      "size_bytes": 1289728,
+      "sha256": "007dc9fca693bf1e3941c1d46bb273de587c2d0947625884ccd68154d190e03c",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-sapphirerapids.dll",
+      "size_bytes": 1885696,
+      "sha256": "72b1203f01d4aa12f22d45415d91dc046f15e3eb3da49f7110b59c888bee9978",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-skylakex.dll",
+      "size_bytes": 1608192,
+      "sha256": "ccf578111e9688c2c51f0279ab4e56351fa084f7d6e43e7c091d961fdbb03081",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-sse42.dll",
+      "size_bytes": 915456,
+      "sha256": "740d3e84289733501b70274904c9d1135bdc579babf7c82825f5ae0133e5afbd",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-x64.dll",
+      "size_bytes": 908288,
+      "sha256": "b1089f3ad0cc1363519c3583b033648cf471297bdd5482e72c71dcf5c5cb0765",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cpu-zen4.dll",
+      "size_bytes": 1615360,
+      "sha256": "7f257519148e3b81fc718acad0f7afcd381d2b429fe0032a1f97e365d7ff2db5",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-cuda.dll",
+      "size_bytes": 147816448,
+      "sha256": "ecf203f220cff5589119f39d8d4e9a2dcca8c47681187d5cf36363a8c29cd178",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-rpc-server.exe",
+      "size_bytes": 117248,
+      "sha256": "621d99411e46c721cc7a479cfb38491525f857b9159ad2656193994751d183fa",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml-rpc.dll",
+      "size_bytes": 168960,
+      "sha256": "7ba393c88878711014e57bfe77a45ec99bbcc106f945baec1c90614370dd9459",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/ggml.dll",
+      "size_bytes": 79872,
+      "sha256": "2dc74873c47a09294431af997f7d5c31bdbc0eafc49c2c30ea03b7331c1a5c3c",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/libomp.dll",
+      "size_bytes": 768000,
+      "sha256": "a12116ba72d1d6820407cf30be23da04ce79d6bb8a71a5ee71759c5a1faa6f1c",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-batched-bench-impl.dll",
+      "size_bytes": 61952,
+      "sha256": "fffda75084850c467df634417ac29b0aa814146021f334cd18d91a16e97b3048",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-batched-bench.exe",
+      "size_bytes": 9216,
+      "sha256": "0185ab3a5799d3452282ee01d0b501ef385769c0642a9375af2983a1834792c3",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-bench-impl.dll",
+      "size_bytes": 403968,
+      "sha256": "34e052bc21d7e81a174c4cb2f48aa93b26863a2fb6f326d70e17c732179b55ae",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-bench.exe",
+      "size_bytes": 9216,
+      "sha256": "168ad39c85bb45b1b43b133074317bc577ed7b0a34d380d6a559207683b94114",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-cli-impl.dll",
+      "size_bytes": 3315712,
+      "sha256": "5dc73fb3fecc0da17f6b18999a4516e6e346dcc0e1cff10379ab16a4fca182cc",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-cli.exe",
+      "size_bytes": 9216,
+      "sha256": "db2ca6b1255759101d8933370c992a9f2e219a0d62bc6528072eb4e0e7a323ba",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-common.dll",
+      "size_bytes": 7924224,
+      "sha256": "cb5011455243a8b6a91fed00fbb33d93fdb53fa7c417fc59f27a004af85d7d9b",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-completion-impl.dll",
+      "size_bytes": 136192,
+      "sha256": "92c753b5d1328540a43349466f892abbd34c3f902351f19b0aa58bc1752a97af",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-completion.exe",
+      "size_bytes": 9216,
+      "sha256": "aaf0bba4723883b8a4f25e9d02bb23802cad1cc5f5cb2aab53098691bf7c4c0d",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-fit-params-impl.dll",
+      "size_bytes": 43008,
+      "sha256": "b92509e2088e1fd2e4b0a3be809dc014019ed6430987ae6d30a2bae14ecf69ca",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-fit-params.exe",
+      "size_bytes": 9216,
+      "sha256": "c2bf85d263a04a73ed4af00e08a42296daac5a33255e31952e133b474848a494",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-gemma3-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "1031f697b423794b145c38818d1350d22b07d6526aececbf84299a568a47184c",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-gguf-split.exe",
+      "size_bytes": 60416,
+      "sha256": "8743e2535624e84b0bba34a36bb7b7fdfea8dc5648d8139048644ddc03d4253d",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-imatrix.exe",
+      "size_bytes": 252416,
+      "sha256": "bd0e416ace4c93b30a110ce231d0afe9307b3a0ae7dc0438b4ca4b020fe9a7c6",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-llava-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "1031f697b423794b145c38818d1350d22b07d6526aececbf84299a568a47184c",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-minicpmv-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "193513388b62212ee816f752e64db9a377288f3bd3acb3fb509e23ca547fa387",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-mtmd-cli.exe",
+      "size_bytes": 92672,
+      "sha256": "e0f682258ece3fb940d8f0e6f334208ba3b8a1810739384093cfae63fb671851",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-mtmd-debug.exe",
+      "size_bytes": 55808,
+      "sha256": "bff6e878ab5814fadc82509558b81b9c17b25fee708db2fb76695c99722db527",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-perplexity-impl.dll",
+      "size_bytes": 197632,
+      "sha256": "7c07c54f84dfa2c6503e83f6f2bfe9788e7f0d00280517f10e7deddcf38beb99",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-perplexity.exe",
+      "size_bytes": 9216,
+      "sha256": "dda4774f04508bf4092e3d4e2cd13bc47b5433d3581793556f91284fb8b3c567",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-quantize-impl.dll",
+      "size_bytes": 137216,
+      "sha256": "a46a92fcd97eaf4db39a7460f48b744387ce257c02fa48f43f591f086d4f9f1a",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-quantize.exe",
+      "size_bytes": 9216,
+      "sha256": "645013b453bd71f82c7849b8ceb57a745aab69fdf30fca022b20afba9cfcf3cf",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-qwen2vl-cli.exe",
+      "size_bytes": 27136,
+      "sha256": "193513388b62212ee816f752e64db9a377288f3bd3acb3fb509e23ca547fa387",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-results.exe",
+      "size_bytes": 46592,
+      "sha256": "c131056ff1c1b2e737ec2bb2506df4883d9791e0239ac4a8d398298d742f73ff",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-server-impl.dll",
+      "size_bytes": 9170944,
+      "sha256": "8bdf535224880cf5b919ada99e6cb225338cce4d444b8e5b4acd1e2bb10bc0a0",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-server.exe",
+      "size_bytes": 9216,
+      "sha256": "7e236243c9b670c6a49410c03186fd575c57a0efe3fd8a21d8727503d571d5b6",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-tokenize.exe",
+      "size_bytes": 58880,
+      "sha256": "cdfc60f1714c630c5bc8e4c798e0399370688fb252ee7c6064f522247ae756ad",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama-tts.exe",
+      "size_bytes": 41984,
+      "sha256": "a040c7203eb66dd61591f1c309165117d517e5d6c01ca086de126451b24ff847",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama.dll",
+      "size_bytes": 3311616,
+      "sha256": "48d2b52f4d6b2d7db2ca4698edbb95ecb4511b792396c566e1340668b6415a71",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/llama.exe",
+      "size_bytes": 104448,
+      "sha256": "466d9ea880c580baaea54d83dee8c70fa3b711e19076fe97a03bcd919924aa92",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/bin/win-cuda-13.4-x64/mtmd.dll",
+      "size_bytes": 1795072,
+      "sha256": "817ba2841e73b9ef1170f2e235d30ef4cca5d4ec520a4817ca60e3737cff79ad",
+      "origin": "llama-b11429-bin-win-cuda-13.4-x64.zip"
+    },
+    {
+      "path": "offline-assets/ai/models/Qwen3.5-4B-Q4_K_M.gguf",
+      "size_bytes": 2740937888,
+      "sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+      "origin": "Qwen3.5-4B-Q4_K_M.gguf"
+    },
+    {
+      "path": "prerequisites/vc_redist.x64.exe",
+      "size_bytes": 18731856,
+      "sha256": "843068991daaa1f73ad9f6239bce4d0f6a07a51f18c37ea2a867e9beca71295c",
+      "origin": "vc_redist.x64.exe"
+    },
+    {
+      "path": "licenses/CUDA-12.4-EULA.html",
+      "size_bytes": 82548,
+      "sha256": "182734e0cee7c6217b911ef88fc92c4a1f487d1003c24dd9dab1597a399fb7c5",
+      "origin": "CUDA-12.4-EULA.html"
+    },
+    {
+      "path": "licenses/CUDA-12.4-EULA.txt",
+      "size_bytes": 59521,
+      "sha256": "513347fb2122abcdd492689a640545db7fa991913cf77afa55f6708eb9d9887b",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/CUDA-13.4-EULA.html",
+      "size_bytes": 103131,
+      "sha256": "dae4884999a096f1e61e976336344e95a3705eca1a87caf519c3f70b6d859a06",
+      "origin": "CUDA-13.4-EULA.html"
+    },
+    {
+      "path": "licenses/CUDA-13.4-EULA.txt",
+      "size_bytes": 77536,
+      "sha256": "ee17d538a38712bb4ea8c14cd69050e543403d5586660e2f913fb40823a7f9dc",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/LICENSE-LLVM-OpenMP.txt",
+      "size_bytes": 19741,
+      "sha256": "fdad1758a9e1f9d5a81e18879b3406772115edc92c24bfa36b70c654f325e8e4",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/Qwen-LICENSE.txt",
+      "size_bytes": 11544,
+      "sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
+      "origin": "Qwen-LICENSE.txt"
+    },
+    {
+      "path": "licenses/THIRD_PARTY_NOTICES.md",
+      "size_bytes": 2876,
+      "sha256": "06c33529ff9f13956dc4965f66d0e9d5d89d1f87efd1a468a2dca6192a1a9def",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/VC-REDIST-LICENSE.docx",
+      "size_bytes": 39553,
+      "sha256": "08651651a7602fc7c0e2763de0fde1ff9f868df2780597cd1775ee9d6441c783",
+      "origin": "VC-REDIST-LICENSE.docx"
+    },
+    {
+      "path": "licenses/VC-REDIST-LICENSE.txt",
+      "size_bytes": 11893,
+      "sha256": "3dfd057b91025067c08bd73c3cb0e6f712f76b6198b54413e14365d529f17ea6",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/VC-REDIST-TERMS.html",
+      "size_bytes": 236931,
+      "sha256": "f48e1ee4e7f4cc300fe0859eb3ebff53aaa51dd6ac0da304c7548f239cd444dc",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/VC-REDIST-TERMS.txt",
+      "size_bytes": 2209,
+      "sha256": "e36f65fdfd86a793d658f48e9f6ba6c79a74be4d5e59754734a3a850750def55",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-LICENSE.txt",
+      "size_bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "origin": "llama-LICENSE.txt"
+    },
+    {
+      "path": "licenses/llama-source-notices/AUTHORS",
+      "size_bytes": 89268,
+      "sha256": "71cc2a5e46e4d1da0d1f78f186d3252a2c01f7829a8eda36e8aef5dcfebcf17f",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/LICENSE",
+      "size_bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/cmake/license.cmake",
+      "size_bytes": 1445,
+      "sha256": "083515dff8a9b8696e348c7c616934e53941a7db30e1b3f092576632e9a2d1d4",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/gguf-py/LICENSE",
+      "size_bytes": 1072,
+      "sha256": "ef78c7e6659e34c798194f0d344e807c722de70cbca1359ef54772661e11ca38",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/licenses/LICENSE-jsonhpp",
+      "size_bytes": 1075,
+      "sha256": "c0d068392ea65358b798b8c165103560f06e9e3b38c4ab4e2d8810a7b931af86",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/tools/ui/src/lib/vendors/big-integer/LICENSE",
+      "size_bytes": 1234,
+      "sha256": "e9b0e94f628e00b5ed98046cfa041696ff89eebbbdd54108ee350625bc6d0363",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/tools/ui/src/lib/vendors/nerdamer-prime/LICENSE",
+      "size_bytes": 1073,
+      "sha256": "c9f52548869a0a2e63a7100055c54cebf36b9327c8fc2da7cf9ca8dddc2f1cca",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/vendor/cpp-httplib/LICENSE",
+      "size_bytes": 1075,
+      "sha256": "4b45cbe16d7b71b89ae6127e26e0d90a029198ca5e958ad8e3d0b8bbed364d8b",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/vendor/hash/rotate-bits/LICENSE.md",
+      "size_bytes": 1088,
+      "sha256": "ca0b44aec101afb6b46f4c39b23369fa06a64fb9c0add37c2689d702156fee55",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/vendor/hash/sha256/LICENSE",
+      "size_bytes": 41,
+      "sha256": "b81d0022ca6367918c67b57e9647d3513ee58809fd4b0ef0b3492f1356bced25",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/llama-source-notices/vendor/hash/xxhash/LICENSE",
+      "size_bytes": 1389,
+      "sha256": "6ffedbc0f7878612d2b23589f1ff2ab15633e1df7963a5d9fc750ec5500c7e7a",
+      "origin": "preserved/extracted upstream license notice"
+    },
+    {
+      "path": "licenses/upstream-source/llama.cpp-b11429.tar.gz",
+      "size_bytes": 37875044,
+      "sha256": "098ddd709b03b1973229fc96464be2e098fd54f76ded653ce98242c1b90f91b4",
+      "origin": "llama-source.tar.gz"
+    }
+  ],
+  "cuda_pe_metadata": "validation/PE_DEPENDENCIES.json",
+  "hash_scope": "GitHub release and HF model publisher hashes verified. VC installer and license/source snapshots have local hashes only.",
+  "original_zip_sha256": "c6933f55925fe6f3575c409ccfcb226e787a37f2bba47a86704a1f4a277ccb72"
+}

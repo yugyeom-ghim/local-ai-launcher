@@ -1,0 +1,1 @@
+Executed on Linux/.NET 8.0.31. Core.cs and Library.cs compiled unchanged. JavaScriptSerializer replaced ONLY IN TEST HARNESS with System.Text.Json IncludeFields adapter. Windows .NET Framework serializer behavior, WinForms, Job Objects, file-sharing semantics and server lifecycle are NOT verified by this run. Windows Run-Core-Tests.cmd uses the original .NET Framework serializer.

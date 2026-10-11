@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProjectGuid>{D59BCE24-457F-4F89-AD19-BB2F369E3E16}</ProjectGuid>
+    <OutputType>WinExe</OutputType><RootNamespace>SILocalAI</RootNamespace>
+    <AssemblyName>SI.LocalAI.Launcher</AssemblyName><TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <PlatformTarget>x64</PlatformTarget><LangVersion>5</LangVersion><Optimize>true</Optimize>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <OutputPath>..\</OutputPath><ApplicationManifest>app.manifest</ApplicationManifest>
+    <AppConfig>SI.LocalAI.Launcher.exe.config</AppConfig><StartupObject>SILocalAI.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/><Reference Include="System.Drawing"/>
+    <Reference Include="System.Windows.Forms"/><Reference Include="System.Management"/><Reference Include="System.Net.Http"/><Reference Include="System.Web.Extensions"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs"/><Compile Include="Core.cs"/><Compile Include="WindowsHost.cs"/><Compile Include="App.cs"/><Compile Include="Library.cs"/><Compile Include="Theme.cs"/><Compile Include="Layout.cs"/><Compile Include="Dashboard.cs"/><Compile Include="ApiIntegration.cs"/><Compile Include="Connections.cs"/>
+    <EmbeddedResource Include="Resources\si-logo.png"><LogicalName>SILocalAI.BrandLogo</LogicalName></EmbeddedResource>
+    <None Include="app.manifest"/><None Include="SI.LocalAI.Launcher.exe.config"/>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+</Project>

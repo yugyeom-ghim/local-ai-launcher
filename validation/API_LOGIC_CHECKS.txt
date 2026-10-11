@@ -1,0 +1,8 @@
+PASS all control endpoint requests carry bearer auth
+PASS keyless request does not send auth
+PASS external and malformed API paths rejected
+PASS credentials removed from process environment
+PASS log file and event both redact local API key
+PASS connection status never serializes bearer token
+PASS stopped server cannot export stale connection
+API logic checks: 7 passed, 0 failed; no live server/network inference test

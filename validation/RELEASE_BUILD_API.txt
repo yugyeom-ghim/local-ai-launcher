@@ -1,0 +1,2 @@
+Roslyn 8.0.425, net48 reference assemblies 1.0.3, x64, optimized, C# 5
+Exit code: 0

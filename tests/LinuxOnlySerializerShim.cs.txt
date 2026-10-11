@@ -1,0 +1,10 @@
+// Linux-only test adapter. Production uses .NET Framework JavaScriptSerializer.
+using System.Text.Json;
+namespace System.Web.Script.Serialization {
+ public class JavaScriptSerializer {
+  public int MaxJsonLength { get; set; }
+  static readonly JsonSerializerOptions Options = new JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true };
+  public string Serialize(object value) { return JsonSerializer.Serialize(value, Options); }
+  public T Deserialize<T>(string text) { return JsonSerializer.Deserialize<T>(text, Options); }
+ }
+}

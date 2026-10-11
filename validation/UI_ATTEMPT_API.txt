@@ -1,0 +1,20 @@
+
+Unhandled Exception:
+System.TypeInitializationException: The type initializer for 'System.Windows.Forms.XplatUI' threw an exception. ---> System.ArgumentNullException: Could not open display (X-Server required. Check your DISPLAY environment variable)
+Parameter name: Display
+  at System.Windows.Forms.XplatUIX11.SetDisplay (System.IntPtr display_handle) [0x00435] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at System.Windows.Forms.XplatUIX11..ctor () [0x00077] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at System.Windows.Forms.XplatUIX11.GetInstance () [0x0001c] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at System.Windows.Forms.XplatUI..cctor () [0x000e3] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+   --- End of inner exception stack trace ---
+  at System.Windows.Forms.Application.EnableVisualStyles () [0x00006] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at UiHarness.Main (System.String[] args) [0x00001] in <fb68e52f000a449f841c75b09e89b890>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.TypeInitializationException: The type initializer for 'System.Windows.Forms.XplatUI' threw an exception. ---> System.ArgumentNullException: Could not open display (X-Server required. Check your DISPLAY environment variable)
+Parameter name: Display
+  at System.Windows.Forms.XplatUIX11.SetDisplay (System.IntPtr display_handle) [0x00435] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at System.Windows.Forms.XplatUIX11..ctor () [0x00077] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at System.Windows.Forms.XplatUIX11.GetInstance () [0x0001c] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at System.Windows.Forms.XplatUI..cctor () [0x000e3] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+   --- End of inner exception stack trace ---
+  at System.Windows.Forms.Application.EnableVisualStyles () [0x00006] in <a3daa9b84fd241a497578a25f68bc3c7>:0 
+  at UiHarness.Main (System.String[] args) [0x00001] in <fb68e52f000a449f841c75b09e89b890>:0 

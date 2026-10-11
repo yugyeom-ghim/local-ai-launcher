@@ -1,0 +1,2 @@
+Windows test executable compiled against .NET Framework 4.8, NOT executed.
+Exit code: 0
