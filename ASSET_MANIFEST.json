@@ -1,12 +1,12 @@
 {
   "schema": 1,
-  "package": "SI Local AI Offline v1.2",
-  "prepared_date": "2026-10-08",
+  "package": "SI Local AI Offline 1.3.1",
+  "prepared_date": "2026-10-11",
   "llama_release": "b11429",
   "llama_commit": "d81235049384534c167caea52b85a694f6103d14",
   "release_marked_prerelease": true,
   "windows_execution_verified": false,
-  "launcher_build": "Release x64 net48, Linux cross-build",
+  "launcher_build": "Windows Server 2022, .NET Framework 4.8 x64 Release",
   "sources": [
     {
       "name": "cudart-llama-bin-win-cuda-12.4-x64.zip",
@@ -1291,5 +1291,6 @@
   ],
   "cuda_pe_metadata": "validation/PE_DEPENDENCIES.json",
   "hash_scope": "GitHub release and HF model publisher hashes verified. VC installer and license/source snapshots have local hashes only.",
-  "original_zip_sha256": "c6933f55925fe6f3575c409ccfcb226e787a37f2bba47a86704a1f4a277ccb72"
+  "original_zip_sha256": "c6933f55925fe6f3575c409ccfcb226e787a37f2bba47a86704a1f4a277ccb72",
+  "validation_note": "Windows build and logic checks passed; GUI/model inference/company MCP not verified. See validation/WINDOWS_CI.md."
 }

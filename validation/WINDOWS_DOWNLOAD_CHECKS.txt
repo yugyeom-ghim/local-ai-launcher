@@ -1,0 +1,10 @@
+PASS valid SHA256 accepted
+PASS unsafe output name rejected
+PASS all parts assembled and whole hash checked
+PASS verified archive reused
+PASS existing different ZIP preserved
+PASS corrupt part cannot publish a ZIP
+PASS cached part needs no network
+PASS HTTP Range resumes partial bytes
+PASS HTTP 200 restarts instead of appending duplicate bytes
+Download checks: 9 passed.
