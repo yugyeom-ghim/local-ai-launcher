@@ -5,15 +5,16 @@ Windows에서 GGUF 모델을 선택하고 로컬 llama.cpp 서버를 실행하�
 
 ## 다운로드
 
-**[v1.3.0 Windows 업데이트 ZIP 다운로드 — 171 KB](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.0/SI_Local_AI_Update_v1.3.0_Windows.zip)**
+**[전체 다운로드 — 실행기·DLL·Qwen 모델 포함](https://github.com/yugyeom-ghim/si_local_model/releases/latest/download/Download-SI-Local-AI.exe)**
 
-[Release와 SHA256](https://github.com/yugyeom-ghim/si_local_model/releases/tag/v1.3.0) · [소스 전체 ZIP](https://github.com/yugyeom-ghim/si_local_model/archive/refs/heads/main.zip) · [사용 안내](README_API_UPDATE_KO.md)
+[기존 설치용 작은 업데이트 ZIP](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.1/SI_Local_AI_Update_v1.3.1_Windows.zip) · [최신 Release와 SHA256](https://github.com/yugyeom-ghim/si_local_model/releases/latest) · [소스 전체 ZIP](https://github.com/yugyeom-ghim/si_local_model/archive/refs/heads/main.zip)
 
-- 업데이트 ZIP에는 빌드된 Windows x64 Release EXE가 들어 있습니다. 직원 PC에서 빌드할 필요가 없습니다.
-- 서버와 Launcher를 종료하고, ZIP 내용물 전체를 **기존 v1.2 / v1.2.1 설치 폴더**에 덮어쓰세요.
-- 기존 모델·CPU/CUDA 실행기·개인 설정을 그대로 사용합니다. 빈 폴더에 이 ZIP만 풀면 모델 서버를 실행할 수 없습니다.
-- 대용량 GGUF / CUDA 바이너리는 Git 소스 이력에 넣지 않았습니다. 기존 배포 자산의 고정 버전·원본 URL·크기·SHA256·라이선스는 [ASSET_LOCK.json](scripts/ASSET_LOCK.json)과 [ASSET_MANIFEST.json](ASSET_MANIFEST.json)에 기록되어 있습니다.
-- 복구 조각과 합치기 작업은 이번 업데이트 다운로드에 필요하지 않습니다.
+- **처음 설치:** 다운로드 EXE를 빈 폴더에 받아 실행하면 GitHub의 전체 파일을 이어받고 검증해 ZIP 하나로 합칩니다. ZIP을 승인된 절차로 사내 PC에 옮겨 압축을 풀고 Launcher를 실행하세요. [상세 다운로드 안내](README_FULL_DOWNLOAD_KO.md)
+- **이미 설치:** 서버와 Launcher를 종료하고 작은 업데이트 ZIP 내용물을 기존 설치 폴더에 덮어쓰세요. 기존 모델·실행기·개인 설정을 유지합니다.
+- 빌드된 Windows x64 Release EXE가 들어 있습니다. 직원 PC에서 빌드하거나 외부망 PC에서 모델·LM Studio를 실행할 필요가 없습니다.
+- 전체 배포본에는 CPU, CUDA 12.4 및 13.4 실행기와 DLL, Qwen3.5-4B-Q4_K_M.gguf가 실제로 포함됩니다. 대용량 파일은 GitHub Releases에, 소스는 Git 저장소에 있습니다.
+- GitHub 파일당 제한 때문에 전체 ZIP을 나눠 게시합니다. 다운로드 EXE가 자동으로 이어받고 합치며 별도 복구 파일은 없습니다.
+- 고정 버전·원본 URL·크기·SHA256·라이선스: [ASSET_LOCK.json](scripts/ASSET_LOCK.json), [ASSET_MANIFEST.json](ASSET_MANIFEST.json). [API 사용 안내](README_API_UPDATE_KO.md)
 
 ## OpenCode의 기존 MCP도 쓸 수 있나요?
 
@@ -45,6 +46,7 @@ Launcher의 llama-ui 대화창이나 SI코파일럿에 OpenCode의 MCP 설정이
 - 로컬 API 키 생성·복사와 실행 중 연결 정보 표시
 - 사고 모드 ON/OFF, OpenCode 설정 JSON 내보내기
 - 긴 CPU 이름 줄바꿈, 작은 화면의 세로 배치와 스크롤, SI 로고, 모델 추가 안내
+- 앱 화면·창 제목에는 버전 숫자를 표시하지 않으며 내부 메타데이터와 GitHub 릴리스에서 관리
 
 ## 소스 빌드와 검증
 
@@ -57,6 +59,6 @@ Launcher의 llama-ui 대화창이나 SI코파일럿에 OpenCode의 MCP 설정이
 - 실제 Windows GUI/DPI, 모델 추론, 사내 OpenCode/MCP 연동은 미검증입니다. 위 로직 검사 성공과 구분합니다.
 - 새 버전은 `release-version.txt`를 올려 게시합니다. 이미 게시한 Release 파일은 자동으로 덮어쓰지 않습니다.
 
-다운로드한 기존 v1.2 실행기·모델의 SHA256을 유지합니다. 새 모델 다운로드나 서버 실행을 외부망 PC에서 요구하지 않습니다. 서버 주소는 `127.0.0.1`이며 회사 보안 정책·방화벽·실행 정책을 바꾸지 않습니다.
+전체 배포 과정에서 고정된 실행기·모델을 다운로드하고 기존 SHA256과 대조합니다. 다운로드 프로그램은 이미 GitHub에 게시된 전체 패키지만 받습니다. 외부망 PC에서 모델을 실행할 필요는 없습니다. 서버 주소는 `127.0.0.1`이며 회사 보안 정책·방화벽·실행 정책을 바꾸지 않습니다.
 
 공식 참고: [OpenCode MCP](https://opencode.ai/docs/mcp-servers/) · [OpenCode llama.cpp](https://opencode.ai/docs/providers/#llamacpp) · [llama.cpp b11429](https://github.com/ggml-org/llama.cpp/tree/b11429).

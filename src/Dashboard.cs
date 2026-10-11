@@ -93,7 +93,7 @@ namespace SILocalAI
             heading.ColumnStyles[2] = new ColumnStyle(SizeType.AutoSize);
             var local = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, FlowDirection = FlowDirection.TopDown,
                 WrapContents = false, Anchor = AnchorStyles.Top | AnchorStyles.Right, Margin = new Padding(12, 7, 0, 0) };
-            var localTitle = new Label { Text = "LOCAL ONLY  ·  v1.3.0", AutoSize = true, Font = new Font("Malgun Gothic", 9F, FontStyle.Bold),
+            var localTitle = new Label { Text = "LOCAL ONLY", AutoSize = true, Font = new Font("Malgun Gothic", 9F, FontStyle.Bold),
                 ForeColor = Theme.Accent, Margin = new Padding(0), Anchor = AnchorStyles.Right };
             var address = new Label { Text = "127.0.0.1 전용", AutoSize = true, Font = new Font("Malgun Gothic", 9F),
                 ForeColor = Theme.Muted, Margin = new Padding(0, 6, 0, 0), Anchor = AnchorStyles.Right };

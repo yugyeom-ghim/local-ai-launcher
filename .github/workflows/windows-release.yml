@@ -8,7 +8,8 @@ on:
       - 'tests/**'
       - 'Build.cmd'
       - 'release-version.txt'
-      - 'scripts/Build-GitHub-Release.ps1'
+      - 'scripts/**'
+      - 'tools/**'
       - '.github/workflows/windows-release.yml'
   workflow_dispatch:
 
@@ -22,7 +23,7 @@ concurrency:
 jobs:
   windows:
     runs-on: windows-2022
-    timeout-minutes: 15
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -30,7 +31,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Compile and run Windows logic checks
+      - name: Build, verify and prepare full offline package
         shell: pwsh
         run: ./scripts/Build-GitHub-Release.ps1
       - name: Publish GitHub download

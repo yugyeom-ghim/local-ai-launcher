@@ -1,6 +1,6 @@
-# 현재 Launcher v1.3 검증
+# 현재 Launcher 검증
 
-최신 결과는 `validation/API_v1.3.md`를 확인하세요. 아래는 기존 v1.2 자산·빌드의 보존 기록입니다. 이번 v1.3 Windows 실행을 증명하는 결과가 아닙니다.
+최신 Windows 빌드·로직 검사 결과는 `validation/WINDOWS_CI.md`를 확인하세요. 전체 배포본은 Release의 `FULL_PACKAGE_VALIDATION.json`에서 자산 다운로드·해시·ZIP 검증 결과를 구분합니다. 아래는 기존 v1.2 자산·빌드의 보존 기록이며 최신 Windows UI·추론 실행을 증명하지 않습니다.
 
 # 검증 기록 — 2026-10-08
 

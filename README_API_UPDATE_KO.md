@@ -6,7 +6,7 @@
 
 1. Launcher에서 서버를 중지한 뒤 앱을 완전히 종료합니다. 트레이에 남아 있다면 트레이 메뉴에서 종료하세요.
 2. 이 ZIP의 **내용물 전체**를 기존 `SI.LocalAI.Launcher.exe`가 있는 폴더에 풀고 같은 파일은 덮어씁니다. 압축 파일 안에서 바로 실행하지 마세요.
-3. 기존 폴더의 EXE를 실행하고 오른쪽 위 **v1.3.0**을 확인합니다.
+3. 기존 폴더의 EXE를 실행합니다. 앱 화면과 창 제목에는 버전을 표시하지 않습니다. 내부 버전은 EXE 속성과 `release-version.txt`에서 확인할 수 있습니다.
 
 `offline-assets`, `state/settings.json` 및 개인 키는 이 ZIP에 포함하지 않습니다. 기존 모델·실행기·설정은 그대로 사용합니다. 이 업데이트만 빈 폴더에 풀면 실행기와 모델이 없으므로 서버를 시작할 수 없습니다.
 
@@ -52,8 +52,8 @@
 | 항목 | 이번 작업 결과 |
 |---|---|
 | 다운로드 | 기존 모델·CPU·CUDA 파일 재다운로드 없음. v1.2 자산과 출처·라이선스·해시 기록 유지 |
-| Release EXE | Microsoft Roslyn으로 .NET Framework 4.8 / x64 최적화 교차 빌드 완료 |
-| 코어·API 로직 | Linux Mono에서 62 + 7개 검사 통과 |
+| Release EXE | GitHub Actions Windows에서 .NET Framework 4.8 / x64 최적화 빌드. 최신 결과: validation/WINDOWS_CI.md |
+| 코어·API 로직 | Windows에서 62 + 7개 검사. 로그는 Release와 validation 폴더에 포함 |
 | 새 UI 실행 검사 | 디스플레이 연결이 환경에서 차단되어 완료하지 못함 |
 | 실제 Windows 실행 | 미검증: GUI/DPI, CPU·CUDA 모델 추론, API 인증, 사고 ON/OFF 출력 |
 | 사내 OpenCode / VSIX | 사내 실환경 연동 미검증. VSIX 생성·수정 없음 |

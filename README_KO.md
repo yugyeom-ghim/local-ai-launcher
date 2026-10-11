@@ -1,8 +1,8 @@
-# SI Local AI Launcher v1.3 / Offline 자산 v1.2
+# SI Local AI Launcher / Offline 패키지
 
-**v1.3 업데이트 ZIP 적용 방법과 API 키 / OpenCode / 사고 모드 사용법은 [README_API_UPDATE_KO.md](README_API_UPDATE_KO.md)를 먼저 확인하세요. 업데이트 ZIP은 기존 전체 패키지에 덮어쓰는 파일이며 아래 자산은 재포함하지 않습니다.**
+**처음 설치하는 경우 [전체 다운로드 안내](README_FULL_DOWNLOAD_KO.md)를 확인하세요. 기존 설치 업데이트 적용 방법과 API 키 / OpenCode / 사고 모드 사용법은 [README_API_UPDATE_KO.md](README_API_UPDATE_KO.md)를 먼저 확인하세요. 업데이트 ZIP은 기존 전체 패키지에 덮어쓰는 파일이며 아래 자산은 재포함하지 않습니다.**
 
-기존 v1.2 전체 패키지에는 CPU, CUDA 12.4, CUDA 13.4 실행기·DLL과 Qwen 모델이 포함되어 있습니다. Windows x64 / .NET Framework 4.8용 Release EXE를 Linux에서 교차 빌드했습니다. **Windows UI와 실제 CPU/GPU 추론은 아직 검증하지 못했습니다.** 검증 범위는 VALIDATION.md를 확인하세요.
+전체 배포본에는 CPU, CUDA 12.4, CUDA 13.4 실행기·DLL과 Qwen 모델이 포함되어 있습니다. Windows x64 / .NET Framework 4.8용 Release EXE를 GitHub Actions Windows에서 빌드합니다. **Windows UI와 실제 CPU/GPU 추론은 아직 검증하지 못했습니다.** 검증 범위는 VALIDATION.md를 확인하세요.
 
 ## 직원 사용
 
@@ -18,7 +18,7 @@
 
 | 항목 | 고정 버전 / 위치 |
 |---|---|
-| Launcher | 1.3.0.0, x64, C# 5, .NET Framework 4.8, 최적화 Release EXE |
+| Launcher | 1.3.1.0, x64, C# 5, .NET Framework 4.8, 최적화 Release EXE |
 | llama.cpp | b11429, commit `d81235049384534c167caea52b85a694f6103d14` (GitHub의 pre-release 표기) |
 | CPU | `offline-assets/ai/bin/win-cpu-x64`, 공식 CPU ZIP 전체 |
 | CUDA 12.4 | `offline-assets/ai/bin/win-cuda-12.4-x64`, 같은 릴리스의 실행기 ZIP 전체 + CUDA 12.4 DLL ZIP 전체 |

@@ -1,11 +1,9 @@
-# Launcher 다운로드
+# 다운로드
 
-현재 권장 파일은 **[Windows에서 빌드한 v1.3.0 업데이트 ZIP](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.0/SI_Local_AI_Update_v1.3.0_Windows.zip)**입니다.
+처음 설치할 때는 [전체 다운로드 프로그램](https://github.com/yugyeom-ghim/si_local_model/releases/latest/download/Download-SI-Local-AI.exe)을 받으세요. 모델과 CPU/CUDA 실행기를 포함한 전체 ZIP을 자동으로 이어받고 검사하여 합칩니다.
 
-- 크기: 171,031 bytes
-- SHA256: `da8f949501957a2d38b17d57b287a33f466cf85d5491b7ba84778fab6854625a`
-- [Release와 검사 결과](https://github.com/yugyeom-ghim/si_local_model/releases/tag/v1.3.0)
+[전체 다운로드 안내](../README_FULL_DOWNLOAD_KO.md) · [최신 Release](https://github.com/yugyeom-ghim/si_local_model/releases/latest)
 
-기존 설치 폴더에 덮어쓰는 파일입니다. 모델·CUDA·개인 설정은 기존 파일을 사용합니다.
+이미 설치했다면 [작은 업데이트 ZIP](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.1/SI_Local_AI_Update_v1.3.1_Windows.zip)을 기존 설치 폴더에 덮어쓰세요.
 
-이 폴더의 `SI_Local_AI_Update_v1.3.zip`은 이전에 전달한 교차 빌드본의 보존 사본입니다. 새로 다운로드할 때는 위 Windows Release 파일을 사용하세요.
+이 폴더의 SI_Local_AI_Update_v1.3.zip은 이전 교차 빌드본의 보존 사본입니다. 새로 받을 때는 위 최신 Release 파일을 사용하세요.

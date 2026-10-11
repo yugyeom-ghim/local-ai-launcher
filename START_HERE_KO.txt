@@ -1,0 +1,20 @@
+SI Local AI Launcher
+
+전체 배포본: 압축을 완전히 풀고 SI.LocalAI.Launcher.exe를 실행하세요.
+업데이트 ZIP: 서버와 트레이 앱을 종료한 뒤 기존 설치 폴더에 덮어쓰세요.
+앱 화면에는 버전을 표시하지 않습니다. 버전 기록은 release-version.txt에서 관리합니다.
+
+모델 라이브러리: 모델 선택 / 사고 모드 OFF 또는 ON / 시작
+API 연결: 로컬 API 키 사용 → 저장하고 서버에 적용
+준비 완료: 주소·모델 ID·키 복사 / OpenCode 설정 내보내기
+기존 OpenCode 설정에는 provider.si-local 항목을 추가하고 기존 MCP 설정은 유지하세요.
+
+전체 배포본에는 모델, CPU, CUDA 12.4 / 13.4 실행기와 DLL이 포함됩니다.
+LM Studio, 외부망 PC의 모델 실행, 직원 PC의 소스 빌드는 필요하지 않습니다.
+SI코파일럿은 Visual Studio에 설치하는 별도 VSIX입니다.
+회사 정책을 따르며 방화벽·실행 정책을 바꾸지 않습니다.
+
+전체 다운로드: README_FULL_DOWNLOAD_KO.md
+API 사용 안내: README_API_UPDATE_KO.md
+최신 Windows 빌드·검사 범위: validation/WINDOWS_CI.md
+실제 GUI/DPI·모델 추론·사내 OpenCode/MCP 연동은 별도 실환경 확인이 필요합니다.

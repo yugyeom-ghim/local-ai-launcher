@@ -41,7 +41,7 @@ namespace SILocalAI
                 }
                 Directory.CreateDirectory(Path.Combine(state, "cache"));
                 var logger = new AppLog(Path.Combine(state, "launcher.log"));
-                logger.Write("SI Local AI Launcher 1.3.0 / 시작 위치 " + root);
+                logger.Write("SI Local AI Launcher / 시작 위치 " + root);
                 Application.ThreadException += delegate(object sender, ThreadExceptionEventArgs e) { logger.Write(e.Exception.ToString()); MessageBox.Show(e.Exception.Message, "실행 오류", MessageBoxButtons.OK, MessageBoxIcon.Error); };
                 Application.Run(new MainForm(root, state, logger, args.Contains("--start-minimized")));
                 return 0;
@@ -83,7 +83,7 @@ namespace SILocalAI
             root = packageRoot; state = statePath; log = logger; initialMinimized = minimized;
             configFile = Path.Combine(state, "settings.json"); config = LoadSettings();
             server = new ServerController(root, state, log);
-            Text = "SI Local AI Launcher 1.3.0";
+            Text = "SI Local AI Launcher";
             Font = new Font("Malgun Gothic", 9F);
             ForeColor = ink; BackColor = paper;
             StartPosition = FormStartPosition.CenterScreen;
