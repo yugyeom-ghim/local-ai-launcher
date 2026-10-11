@@ -37,12 +37,15 @@ foreach ($line in [IO.File]::ReadLines((Join-Path $PayloadRoot 'SHA256SUMS.txt')
     $count++
 }
 Check ($count -gt 187) "all $count installed payload files match SHA256"
-$menu = Join-Path ([Environment]::GetFolderPath('Programs')) 'SI Local AI/SI Local AI Launcher.lnk'
+$menu = [IO.Path]::GetFullPath((Join-Path ([Environment]::GetFolderPath('Programs')) 'SI Local AI/SI Local AI Launcher.lnk'))
 $desktop = Join-Path ([Environment]::GetFolderPath('DesktopDirectory')) 'SI Local AI Launcher.lnk'
 Check (Test-Path $menu) 'Start menu shortcut created'
 Check (Test-Path $desktop) 'optional desktop shortcut created'
 $shell = New-Object -ComObject WScript.Shell
-Check ($shell.CreateShortcut($menu).TargetPath -eq (Join-Path $installPath 'SI.LocalAI.Launcher.exe')) 'shortcut targets the installed Launcher'
+$shortcutTarget = $shell.CreateShortcut($menu).TargetPath
+$expectedTarget = [IO.Path]::GetFullPath((Join-Path $installPath 'SI.LocalAI.Launcher.exe'))
+Write-Host "Shortcut target: $shortcutTarget; expected: $expectedTarget"
+Check (-not [String]::IsNullOrWhiteSpace($shortcutTarget) -and [IO.Path]::GetFullPath($shortcutTarget) -eq $expectedTarget) 'shortcut targets the installed Launcher'
 
 $state = Join-Path $installPath 'state'; New-Item $state -ItemType Directory -Force | Out-Null
 $settings = Join-Path $state 'settings.json'; $key = Join-Path $state 'local-api-key.txt'
