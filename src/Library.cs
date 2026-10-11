@@ -40,6 +40,7 @@ namespace SILocalAI
         public bool RefreshDue { get { lock (gate) { return !disposed && DateTime.UtcNow >= due; } } }
         void Changed(object sender, FileSystemEventArgs e)
         {
+            if (e.ChangeType == WatcherChangeTypes.Changed && Directory.Exists(e.FullPath)) return;
             string ext = Path.GetExtension(e.FullPath);
             var renamed = e as RenamedEventArgs;
             string oldExt = renamed == null ? "" : Path.GetExtension(renamed.OldFullPath);

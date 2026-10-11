@@ -136,29 +136,32 @@ namespace SILocalAI
             var add = Action("+ 모델 추가", delegate { ShowModelGuide(); }, false); add.Margin = new Padding(0, 0, 0, 14); bar.Controls.Add(add, 1, 0); list.Controls.Add(bar, 0, 0);
             modelGrid = MakeGrid(); modelGrid.Columns.Add("name", "모델"); modelGrid.Columns.Add("size", "용량");
             modelGrid.Columns[0].FillWeight = 76; modelGrid.Columns[1].FillWeight = 24;
-            modelGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells; modelGrid.RowTemplate.MinimumHeight = 76;
+            modelGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells; modelGrid.RowTemplate.MinimumHeight = 68;
             modelGrid.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             modelGrid.SelectionChanged += delegate { if (bindingModels) return; var m = modelGrid.CurrentRow == null ? null : modelGrid.CurrentRow.Tag as ModelInfo; if (m != null) modelBox.SelectedItem = m; };
             list.Controls.Add(modelGrid, 0, 1);
             catalogNote = new Label { Text = "", Dock = DockStyle.Fill, AutoEllipsis = true, ForeColor = Theme.Muted, TextAlign = ContentAlignment.BottomLeft, Font = new Font("Malgun Gothic", 9F) }; list.Controls.Add(catalogNote, 0, 2);
             var details = new Surface { Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(20) }; columns.Controls.Add(details, 1, 0);
-            var viewport = new ContentViewport(); details.Controls.Add(viewport);
+            var detailShell = Table(1, 100); detailShell.RowCount = 2;
+            detailShell.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); detailShell.RowStyles.Add(new RowStyle(SizeType.Absolute, 106));
+            details.Controls.Add(detailShell); var viewport = new ContentViewport(); detailShell.Controls.Add(viewport, 0, 0);
             var detail = AutoTable(1, 100);
             var tag = L("선택한 모델", 9F, false); tag.ForeColor = Theme.Muted; tag.Margin = new Padding(0, 0, 0, 12); AddRow(detail, tag);
             selectedName = L("모델을 추가하세요", 18F, true); selectedName.Margin = new Padding(0, 0, 0, 10); AddRow(detail, selectedName);
-            selectedMeta = L("", 10F, false); selectedMeta.ForeColor = Theme.Muted; selectedMeta.Margin = new Padding(0, 0, 0, 26); AddRow(detail, selectedMeta);
+            selectedMeta = L("", 10F, false); selectedMeta.ForeColor = Theme.Muted; selectedMeta.Margin = new Padding(0, 0, 0, 18); AddRow(detail, selectedMeta);
             selectedPath = L("", 9F, false); // Full filename is available as a tooltip, not a repeated paragraph.
             AddRow(detail, L("실행 장치", 10F, true));
-            backendBox = Combo(new[] { "자동", "CPU", "CUDA 12.4", "CUDA 13.1 (기존)", "CUDA 13.4" }); backendBox.Margin = new Padding(0, 8, 0, 22); AddRow(detail, backendBox);
+            backendBox = Combo(new[] { "자동", "CPU", "CUDA 12.4", "CUDA 13.1 (기존)", "CUDA 13.4" }); backendBox.Margin = new Padding(0, 8, 0, 16); AddRow(detail, backendBox);
             AddRow(detail, L("사고 모드", 10F, true));
-            thinkingModeBox = Combo(new[] { "OFF — 빠른 답변", "ON — 깊이 생각" }); thinkingModeBox.Margin = new Padding(0, 8, 0, 24); AddRow(detail, thinkingModeBox);
+            thinkingModeBox = Combo(new[] { "OFF — 빠른 답변", "ON — 깊이 생각" }); thinkingModeBox.Margin = new Padding(0, 8, 0, 12); AddRow(detail, thinkingModeBox);
             selectedState = L("", 9F, false); selectedState.ForeColor = Theme.Accent; selectedState.Margin = new Padding(0, 0, 0, 12); AddRow(detail, selectedState);
             startButton = Action("시작", async delegate { await Work(StartFromUi); }, true);
             stopButton = Action("중지", delegate { cancelRequested = true; if (modelImport != null) modelImport.Cancel(); else server.Stop(); }, false);
             var run = Table(2, 70, 30); run.Height = 48; run.Dock = DockStyle.Top; startButton.AutoSize = false; stopButton.AutoSize = false;
-            startButton.Margin = new Padding(0, 0, 8, 0); stopButton.Margin = new Padding(0); run.Controls.Add(startButton, 0, 0); run.Controls.Add(stopButton, 1, 0); AddRow(detail, run); loadButton = startButton;
+            startButton.Margin = new Padding(0, 0, 8, 0); stopButton.Margin = new Padding(0); run.Controls.Add(startButton, 0, 0); run.Controls.Add(stopButton, 1, 0); loadButton = startButton;
+            var runArea = Table(1, 100); runArea.RowCount = 2; runArea.RowStyles.Add(new RowStyle(SizeType.Absolute, 48)); runArea.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); runArea.Controls.Add(run, 0, 0); detailShell.Controls.Add(runArea, 0, 1);
             runningNote = L("", 9F, false); runningNote.ForeColor = Theme.Muted; runningNote.Margin = new Padding(0, 16, 0, 0); AddRow(detail, runningNote);
-            webButton = Action("대화 열기", delegate { OpenUi(); }, false); AddRow(detail, Actions(webButton));
+            webButton = Action("대화 열기", delegate { OpenUi(); }, false); runArea.Controls.Add(Actions(webButton), 0, 1);
             viewport.SetContent(detail);
             // Compatibility fields remain internal; connection details have a single home in the API tab.
             baseUrl = ReadonlyText(); chatUrl = ReadonlyText(); modelId = ReadonlyText(); hardwareLabel = L("", 9F, false);
@@ -225,7 +228,7 @@ namespace SILocalAI
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, SelectionMode = DataGridViewSelectionMode.FullRowSelect, EnableHeadersVisualStyles = false,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal, ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
                 ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
-                Font = new Font("Malgun Gothic", 10.5F), Margin = new Padding(0), AccessibleName = "사용 가능한 로컬 모델" };
+                Font = new Font("Segoe UI", 11F), Margin = new Padding(0), AccessibleName = "사용 가능한 로컬 모델" };
             g.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Theme.Background, ForeColor = Theme.Muted, Font = new Font("Malgun Gothic", 8.5F, FontStyle.Bold), Padding = new Padding(8, 6, 0, 6), SelectionBackColor = Theme.Background, SelectionForeColor = Theme.Muted };
             g.DefaultCellStyle = new DataGridViewCellStyle { Font = g.Font, BackColor = Color.White, ForeColor = Theme.Ink, SelectionBackColor = Theme.Pale, SelectionForeColor = Theme.Ink, Padding = new Padding(8, 8, 6, 8) };
             return g;
@@ -280,7 +283,7 @@ namespace SILocalAI
                 foreach(var m in inventory.Models)
                 {
                     bool running=server.Status.Ready && server.Status.ModelId==m.Id;
-                    int r=modelGrid.Rows.Add(DisplayModel(m) + (running ? "\n실행 중" : "\n" + m.Architecture), (m.Bytes/1073741824.0).ToString("0.0")+" GB"); modelGrid.Rows[r].Tag=m;
+                    int r=modelGrid.Rows.Add(DisplayModel(m) + (running ? " · 실행 중" : ""), (m.Bytes/1e9).ToString("0.0")+" GB"); modelGrid.Rows[r].Tag=m;
                     modelGrid.Rows[r].Cells[0].ToolTipText = m.RelativePath;
                 }
                 modelGrid.ClearSelection();

@@ -7,15 +7,24 @@ namespace SILocalAI
     // Text rows ask for the height they need at their allocated column width.
     public sealed class WrappingLabel : Label
     {
+        readonly System.Collections.Generic.Dictionary<int, Size> measuredSizes = new System.Collections.Generic.Dictionary<int, Size>();
+        string measuredText;
+        Font measuredFont;
+        Padding measuredPadding;
         public WrappingLabel() { AutoSize = true; AutoEllipsis = false; UseMnemonic = false; }
         public override Size GetPreferredSize(Size proposedSize)
         {
             int width = proposedSize.Width;
             if (width <= 1 || width >= 100000) width = Width > 1 ? Width : 280;
+            if (measuredText != Text || measuredFont != Font || measuredPadding != Padding)
+            { measuredSizes.Clear(); measuredText = Text; measuredFont = Font; measuredPadding = Padding; }
+            Size cached;
+            if (measuredSizes.TryGetValue(width, out cached)) return cached;
             int inner = Math.Max(1, width - Padding.Horizontal);
             var measured = TextRenderer.MeasureText(String.IsNullOrEmpty(Text) ? " " : Text,
                 Font, new Size(inner, Int32.MaxValue), TextFormatFlags.WordBreak | TextFormatFlags.NoPrefix | TextFormatFlags.TextBoxControl);
-            return new Size(Math.Min(width, measured.Width + Padding.Horizontal), measured.Height + Padding.Vertical + 2);
+            var result = new Size(Math.Min(width, measured.Width + Padding.Horizontal), measured.Height + Padding.Vertical + 2);
+            if (measuredSizes.Count >= 16) measuredSizes.Clear(); measuredSizes[width] = result; return result;
         }
     }
 
@@ -71,19 +80,23 @@ namespace SILocalAI
             Controls.Add(child); child.SizeChanged += delegate { if (!arranging) PerformLayout(); };
             PerformLayout();
         }
+        protected override void OnVisibleChanged(EventArgs e) { base.OnVisibleChanged(e); if (Visible) PerformLayout(); }
+        protected override void OnHandleCreated(EventArgs e) { base.OnHandleCreated(e); PerformLayout(); }
         protected override void OnLayout(LayoutEventArgs e)
         {
-            base.OnLayout(e);
-            if (content == null || arranging) return;
+            if (arranging) return;
             arranging = true;
             try
             {
+                base.OnLayout(e);
+                if (content == null || !IsHandleCreated || !Visible) return;
                 // Always reserve the scrollbar gutter: adding a scrollbar cannot make text oscillate.
                 int width = Math.Max(1, ClientSize.Width - Padding.Horizontal - SystemInformation.VerticalScrollBarWidth);
-                content.Width = width;
+                if (content.Width != width) content.Width = width;
                 int height = content.GetPreferredSize(new Size(width, 0)).Height;
                 content.SetBounds(Padding.Left + Math.Min(0, AutoScrollPosition.X), Padding.Top + Math.Min(0, AutoScrollPosition.Y), width, height);
-                AutoScrollMinSize = new Size(0, height + Padding.Vertical);
+                var scrollSize = new Size(0, height + Padding.Vertical);
+                if (AutoScrollMinSize != scrollSize) AutoScrollMinSize = scrollSize;
             }
             finally { arranging = false; }
         }

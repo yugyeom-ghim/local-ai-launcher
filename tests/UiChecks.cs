@@ -93,21 +93,21 @@ class UiChecks
                         foreach (var model in inventory.Models) { var entry = ModelCatalog.Current.models.FirstOrDefault(m => m.file == Path.GetFileName(model.FullPath)); if (entry != null) model.Bytes = entry.size; }
                         typeof(MainForm).GetMethod("BindModelGrid", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, null);
                         var nav = (Control)Field("pages"); var selected = nav.GetType().GetProperty("SelectedIndex");
-                        foreach (Size size in new[] { new Size(1120, 740), new Size(800, 600) })
+                        foreach (Size size in new[] { new Size(1000, 680), new Size(800, 600) })
                         {
                             form.ClientSize = size; form.PerformLayout(); Application.DoEvents();
                             Capture(Path.Combine(output, "models-" + size.Width + ".png"));
                             var start = (Control)Field("startButton"); var stop = (Control)Field("stopButton");
-                            if (start.Width < 65 || stop.Width < 50 || start.Bounds.IntersectsWith(stop.Bounds)) Fail("Run controls clipped/overlap");
+                            if (start.Width < 65 || stop.Width < 50 || start.Bounds.IntersectsWith(stop.Bounds) || !form.ClientRectangle.Contains(form.PointToClient(start.PointToScreen(new Point(start.Width - 1, start.Height - 1))))) Fail("Run controls clipped/overlap");
                         }
-                        form.ClientSize = new Size(1120, 740);
+                        form.ClientSize = new Size(1000, 680);
                         for (int i = 1; i < 4; i++) { selected.SetValue(nav, i, null); Application.DoEvents(); Capture(Path.Combine(output, "page-" + i + ".png")); }
                         selected.SetValue(nav, 2, null);
                         var nested = All(nav).First(c => c != nav && c.GetType().Name == "WorkspaceTabs");
                         nested.GetType().GetProperty("SelectedIndex").SetValue(nested, 2, null); Application.DoEvents(); Capture(Path.Combine(output, "pc-info.png"));
                         selected.SetValue(nav, 0, null);
-                        form.Scale(new SizeF(1.5F, 1.5F)); form.ClientSize = new Size(1500, 1050); Application.DoEvents(); Capture(Path.Combine(output, "models-scale150.png"));
-                        result["render_checks"] = "1120x740, 800x600, API, settings, logs, long CPU, simulated 150% scale";
+                        form.Scale(new SizeF(1.5F, 1.5F)); form.MinimumSize = new Size(750, 540); form.ClientSize = new Size(1000, 680); Application.DoEvents(); Capture(Path.Combine(output, "models-scale150.png"));
+                        result["render_checks"] = "1000x680, 800x600, API, settings, logs, long CPU, simulated 150% scale";
                     }
                 }
                 catch (Exception e) { result["error"] = e.ToString(); exit = 1; }
