@@ -1,33 +1,9 @@
 {
-  "version": "1.3.1",
-  "commit": "63924ef478b3719498428ddcb15b9fd5c26ccd68",
-  "archive": {
-    "name": "SI_Local_AI_Full_v1.3.1_Windows.zip",
-    "size": 4070155634,
-    "sha256": "c6fb7c2e042ea43431cc047f875df12154993832192e7604f792850eb30fe8f6"
-  },
-  "parts": [
-    {
-      "name": "SI_Local_AI_Full_v1.3.1_Windows.zip.part01",
-      "size": 1610612736,
-      "sha256": "a6e6c918f6ddc5022f0de95b2bfa8e61a6f87ce68945fc57e1cfb65486f37a8a",
-      "url": "https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.1/SI_Local_AI_Full_v1.3.1_Windows.zip.part01"
-    },
-    {
-      "name": "SI_Local_AI_Full_v1.3.1_Windows.zip.part02",
-      "size": 1610612736,
-      "sha256": "91ed3acee973b33135740b21fec128a433ed852e10038e7358282987ed64f017",
-      "url": "https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.1/SI_Local_AI_Full_v1.3.1_Windows.zip.part02"
-    },
-    {
-      "name": "SI_Local_AI_Full_v1.3.1_Windows.zip.part03",
-      "size": 848930162,
-      "sha256": "c6f5f59024ba6b0a43963b8d4da46fc82bb5d8fb676de09e2de7a707fb071858",
-      "url": "https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.1/SI_Local_AI_Full_v1.3.1_Windows.zip.part03"
-    }
-  ],
+  "version": "1.4.0",
+  "commit": "fcd11908de928e37eda5bbb64f860c671734a507",
   "asset_files_verified": 187,
-  "zip_crc_verified": true,
+  "asset_bytes_verified": 4787202922,
   "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
-  "model_executed": false
+  "model_executed": false,
+  "installer_validation": "See INSTALLER_VALIDATION.md for installed-file hash checks."
 }

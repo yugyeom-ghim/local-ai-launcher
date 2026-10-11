@@ -1,0 +1,29 @@
+{
+  "version": "1.4.0",
+  "files": [
+    {
+      "size": 2223516,
+      "name": "SI_Local_AI_Offline_Setup.exe",
+      "sha256": "eb1a480d35f102ed5d96186436cb456c3ce5efe0e22ae5e72dd5bc05df868f45",
+      "url": "https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.4.0/SI_Local_AI_Offline_Setup.exe"
+    },
+    {
+      "size": 1608389120,
+      "name": "SI_Local_AI_Offline_Setup-1.bin",
+      "sha256": "ffc4fbae5d33803936326f397158cfb8cf95d14fd5cefd1c735538c3acb741b5",
+      "url": "https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.4.0/SI_Local_AI_Offline_Setup-1.bin"
+    },
+    {
+      "size": 1610612736,
+      "name": "SI_Local_AI_Offline_Setup-2.bin",
+      "sha256": "a7123afed4f54affd542afa70ec2ecf8af37ec516c4e08c7b952f64d70ad38e5",
+      "url": "https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.4.0/SI_Local_AI_Offline_Setup-2.bin"
+    },
+    {
+      "size": 847039597,
+      "name": "SI_Local_AI_Offline_Setup-3.bin",
+      "sha256": "a5c99d5eb6f70955538d6655ef1fa8945b8a43aa01a9c9800b73645df55391e3",
+      "url": "https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.4.0/SI_Local_AI_Offline_Setup-3.bin"
+    }
+  ]
+}

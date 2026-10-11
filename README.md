@@ -60,9 +60,11 @@ Launcher의 llama-ui 대화창이나 SI코파일럿에 OpenCode의 MCP 설정이
 - `Run-Core-Tests.cmd`: 설정·모델 검색·명령 인자·내보내기 회귀 검사
 - `Run-API-Checks.cmd`: API 요청 헤더·키 처리 등 로직 검사
 - [Windows 빌드와 검사 결과](validation/WINDOWS_CI.md): GitHub의 Windows Server 2022 환경에서 네이티브 Release 빌드 및 코어/API 로직 **69개**, 다운로드/합치기 **9개** 검사 통과. 분할 경계·기존 파일 보호 검사 2개도 통과했습니다.
-- [전체 패키지 검증 결과](validation/FULL_PACKAGE_VALIDATION.json): 실제 자산 187개 크기·SHA256 및 전체 ZIP CRC 확인.
-- [성공한 Windows 작업](https://github.com/yugyeom-ghim/si_local_model/actions/runs/38121462254) · [이전 Linux 검증 범위](validation/API_v1.3.md)
-- 실제 Windows GUI/DPI, 모델 추론, 사내 OpenCode/MCP 연동은 미검증입니다. 위 로직 검사 성공과 구분합니다.
+- [전체 패키지 검증 결과](validation/FULL_PACKAGE_VALIDATION.json): 실제 자산 187개 크기·SHA256 확인.
+- [오프라인 설치 검증 결과](validation/INSTALLER_VALIDATION.md): Windows에서 한글 경로 설치·바로가기·재설치·제거·개인 파일 보존 검사 15개 통과, 설치된 270개 파일 SHA256 확인.
+- [공개 다운로드 확인](validation/RELEASE_DOWNLOAD_CHECKS.md): Setup·BIN 3개 게시 및 매니페스트와 GitHub SHA256 일치 확인.
+- [성공한 Windows 작업](https://github.com/yugyeom-ghim/si_local_model/actions/runs/38128563074) · [이전 Linux 검증 범위](validation/API_v1.3.md)
+- 설치 프로그램은 실제 Windows에서 무인 설치·재설치·제거를 실행했습니다. 대화형 설치 화면·Launcher GUI/DPI, 모델 추론, 사내 OpenCode/MCP 연동은 미검증입니다. 네트워크를 물리적으로 끊거나 패킷을 캡처한 검사는 수행하지 않았으며, 설치 스크립트에 다운로드 동작이 없음을 확인했습니다.
 - 새 버전은 `release-version.txt`를 올려 게시합니다. 이미 게시한 Release 파일은 자동으로 덮어쓰지 않습니다.
 
 전체 배포 과정에서 고정된 실행기·모델을 다운로드하고 기존 SHA256과 대조합니다. 다운로드 프로그램은 이미 GitHub에 게시된 전체 패키지만 받습니다. 외부망 PC에서 모델을 실행할 필요는 없습니다. 서버 주소는 `127.0.0.1`이며 회사 보안 정책·방화벽·실행 정책을 바꾸지 않습니다.
