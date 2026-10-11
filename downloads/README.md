@@ -1,9 +1,9 @@
 # 다운로드
 
-처음 설치할 때는 [전체 다운로드 프로그램](https://github.com/yugyeom-ghim/si_local_model/releases/latest/download/Download-SI-Local-AI.exe)을 받으세요. 모델과 CPU/CUDA 실행기를 포함한 전체 ZIP을 자동으로 이어받고 검사하여 합칩니다.
+[최신 오프라인 설치 파일](https://github.com/yugyeom-ghim/si_local_model/releases/latest)을 받으세요. Setup EXE와 모든 BIN을 같은 폴더에 모아 업무망으로 반입한 뒤 Setup을 실행합니다. 설치 중 인터넷 다운로드는 없습니다.
 
-[전체 다운로드 안내](../README_FULL_DOWNLOAD_KO.md) · [최신 Release](https://github.com/yugyeom-ghim/si_local_model/releases/latest)
+[상세 안내](../README_FULL_DOWNLOAD_KO.md)
 
-이미 설치했다면 [작은 업데이트 ZIP](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.1/SI_Local_AI_Update_v1.3.1_Windows.zip)을 기존 설치 폴더에 덮어쓰세요.
+Internet-PC-Download-Installer.exe는 인터넷 PC용 편의 도구이며 GitHub에 접속합니다. 업무망 설치용은 SI_Local_AI_Offline_Setup.exe입니다.
 
-이 폴더의 SI_Local_AI_Update_v1.3.zip은 이전 교차 빌드본의 보존 사본입니다. 새로 받을 때는 위 최신 Release 파일을 사용하세요.
+기존 포터블용 Update ZIP과 Source code ZIP은 전체 설치본이 아닙니다. 이 폴더의 오래된 ZIP은 보존 사본입니다.

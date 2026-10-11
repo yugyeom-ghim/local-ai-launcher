@@ -1,3 +1,4 @@
 # License snapshots are verified against upstream byte-level hashes.
 # Do not let Windows checkout convert their line endings.
 licenses/** -text
+installer/assets/** -text

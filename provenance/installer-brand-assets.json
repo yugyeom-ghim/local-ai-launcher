@@ -1,0 +1,38 @@
+{
+  "brand": "Satrec Initiative",
+  "source_page": "https://www.satreci.com/kr/page/13",
+  "source_logo": "https://www.satreci.com/kr/theme/responsive_satreci/include/img/top_logo_c.svg",
+  "license": "Brand/trademark asset, rights retained by Satrec Initiative; not relicensed under software licenses.",
+  "assets": [
+    {
+      "path": "installer/assets/satreci-logo.svg",
+      "size": 9602,
+      "sha256": "038368632a87b9328ff51a8b4571af7b44853d6483d3a79688222f91e45f7a31"
+    },
+    {
+      "path": "installer/assets/satreci.ico",
+      "size": 105975,
+      "sha256": "4caa098b60ed4c0e0e6e97fb954cfcff702bd304b871dabe26a1f893b9de15ae"
+    },
+    {
+      "path": "installer/assets/wizard-mark.png",
+      "size": 6342,
+      "sha256": "e182a2588eaeefaf854cdf57b30329a9f8b1882ae06a341e7c7a35b35b1e6052"
+    },
+    {
+      "path": "installer/assets/wizard-mark.svg",
+      "size": 9757,
+      "sha256": "35e109df349884ea8a843549255dd97f6fce0ee44cf0e24c020ee814465ed3e7"
+    },
+    {
+      "path": "installer/assets/wizard-panel.png",
+      "size": 45003,
+      "sha256": "105d3627c51c5de7c0f66b4077215ef8a99984cbb513879f583d0f7eeabc9f81"
+    },
+    {
+      "path": "installer/assets/wizard-panel.svg",
+      "size": 10694,
+      "sha256": "4109733b8cd0d02e70b65b99e3a5545c42cd3260e98ee89067d020dac3931d3a"
+    }
+  ]
+}

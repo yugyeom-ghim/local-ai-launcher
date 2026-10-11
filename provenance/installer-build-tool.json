@@ -1,0 +1,12 @@
+{
+  "name": "Inno Setup",
+  "version": "6.7.3",
+  "url": "https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe",
+  "size": 10592232,
+  "sha256": "9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732",
+  "source_commit": "4adf37ed7f3fd2bd11c6836ba056e3de170fbabf",
+  "license": "Inno Setup License",
+  "license_file": "licenses/Inno-Setup-LICENSE.txt",
+  "license_sha256": "2e5346868c2a18434489824e11d65c3031620f792fefc415d05f19cd441abf5c",
+  "usage": "Build runner only; generated offline installer is distributed."
+}

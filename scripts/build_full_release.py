@@ -45,6 +45,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--overlay", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--installer-only", action="store_true")
     args = parser.parse_args()
     repo = Path(__file__).resolve().parent.parent
     version = (repo / "release-version.txt").read_text().strip()
@@ -61,9 +62,9 @@ def main():
     subprocess.run([sys.executable, str(repo / "scripts/prepare_assets.py"), "--cache", str(cache), "--destination", str(root)], check=True)
     shutil.rmtree(cache)
     shutil.copytree(args.overlay, root, dirs_exist_ok=True)
-    for folder in ("licenses", "provenance", "scripts", "tools"):
+    for folder in ("licenses", "provenance", "scripts", "tools", "installer"):
         shutil.copytree(repo / folder, root / folder, dirs_exist_ok=True, ignore=shutil.ignore_patterns("__pycache__"))
-    for name in ("ASSET_MANIFEST.json", "Verify-Package.cmd", "Verify-Package.ps1", "README.md", "README_FULL_DOWNLOAD_KO.md"):
+    for name in ("ASSET_MANIFEST.json", "Verify-Package.cmd", "Verify-Package.ps1", "README.md", "README_FULL_DOWNLOAD_KO.md", "README_INSTALL_KO.txt"):
         shutil.copyfile(repo / name, root / name)
     manifest_path = root / "ASSET_MANIFEST.json"
     assets = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -76,6 +77,21 @@ def main():
     (root / "README_API_UPDATE_KO.md").write_text(
         "이 전체 패키지는 모델과 CPU/CUDA 실행기를 포함합니다. 아래 업데이트 적용 단계는 기존 사용자용입니다. 신규 설치는 START_HERE_KO.txt를 확인하세요.\n\n"
         + (root / "README_API_UPDATE_KO.md").read_text(encoding="utf-8-sig"), encoding="utf-8")
+    if args.installer_only:
+        subprocess.run([sys.executable, str(repo / "scripts/package_release.py"), "--root", str(root), "--manifest-only"], check=True)
+        receipt = {
+            "version": version, "commit": os.environ["GITHUB_SHA"],
+            "asset_files_verified": len(assets["files"]),
+            "asset_bytes_verified": sum(x["size_bytes"] for x in assets["files"]),
+            "model_sha256": next(x["sha256"] for x in lock["assets"] if x["name"].endswith(".gguf")),
+            "model_executed": False,
+            "installer_validation": "See INSTALLER_VALIDATION.md for installed-file hash checks.",
+        }
+        (args.output / "FULL_PACKAGE_VALIDATION.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+        shutil.copyfile(root / "ASSET_MANIFEST.json", args.output / "ASSET_MANIFEST.json")
+        shutil.copyfile(repo / "scripts/ASSET_LOCK.json", args.output / "ASSET_LOCK.json")
+        print("Complete offline installer payload ready:", root, flush=True)
+        return
     archive = work / ("SI_Local_AI_Full_v" + version + "_Windows.zip")
     subprocess.run([sys.executable, str(repo / "scripts/package_release.py"), "--root", str(root), "--output", str(archive)], check=True)
     # Reading every member checks CRC and proves the final ZIP is complete.

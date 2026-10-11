@@ -1,6 +1,7 @@
 SI Local AI Launcher
 
-전체 배포본: 압축을 완전히 풀고 SI.LocalAI.Launcher.exe를 실행하세요.
+업무망 오프라인 설치: Setup EXE와 모든 BIN을 같은 폴더에 반입한 뒤 Setup을 실행하세요.
+설치 중 인터넷 다운로드는 없습니다. 설치 안내: README_INSTALL_KO.txt
 업데이트 ZIP: 서버와 트레이 앱을 종료한 뒤 기존 설치 폴더에 덮어쓰세요.
 앱 화면에는 버전을 표시하지 않습니다. 버전 기록은 release-version.txt에서 관리합니다.
 

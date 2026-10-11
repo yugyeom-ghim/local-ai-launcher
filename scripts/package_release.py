@@ -18,10 +18,13 @@ def sha256(path):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--root", type=Path, required=True)
-    p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--output", type=Path)
+    p.add_argument("--manifest-only", action="store_true")
     args = p.parse_args()
     root = args.root.resolve()
-    if root in args.output.resolve().parents:
+    if not args.manifest_only and args.output is None:
+        p.error("--output is required when creating a ZIP")
+    if args.output is not None and root in args.output.resolve().parents:
         raise ValueError("Write ZIP outside the release tree")
     required = ["SI.LocalAI.Launcher.exe", "SI.LocalAI.Launcher.exe.config", "ASSET_MANIFEST.json", "VALIDATION.md",
                 "licenses/llama-LICENSE.txt", "licenses/Qwen-LICENSE.txt", "licenses/CUDA-12.4-EULA.html",
@@ -53,6 +56,9 @@ def main():
     checksum_file = root / "SHA256SUMS.txt"
     checksum_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
     files.append(checksum_file)
+    if args.manifest_only:
+        print("Payload verified:", len(files), "files; SHA256 manifest written.")
+        return
     args.output.parent.mkdir(parents=True, exist_ok=True)
     temporary = args.output.with_name(args.output.name + ".partial")
     with zipfile.ZipFile(temporary, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=1, allowZip64=True) as z:

@@ -10,6 +10,7 @@ on:
       - 'release-version.txt'
       - 'scripts/**'
       - 'tools/**'
+      - 'installer/**'
       - '.gitattributes'
       - '.github/workflows/windows-release.yml'
   workflow_dispatch:

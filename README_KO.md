@@ -18,7 +18,7 @@
 
 | 항목 | 고정 버전 / 위치 |
 |---|---|
-| Launcher | 1.3.1.0, x64, C# 5, .NET Framework 4.8, 최적화 Release EXE |
+| Launcher | 1.4.0.0, x64, C# 5, .NET Framework 4.8, 최적화 Release EXE |
 | llama.cpp | b11429, commit `d81235049384534c167caea52b85a694f6103d14` (GitHub의 pre-release 표기) |
 | CPU | `offline-assets/ai/bin/win-cpu-x64`, 공식 CPU ZIP 전체 |
 | CUDA 12.4 | `offline-assets/ai/bin/win-cuda-12.4-x64`, 같은 릴리스의 실행기 ZIP 전체 + CUDA 12.4 DLL ZIP 전체 |

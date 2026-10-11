@@ -3,18 +3,23 @@
 Windows에서 GGUF 모델을 선택하고 로컬 llama.cpp 서버를 실행하는 도구입니다.
 **SI코파일럿은 Visual Studio에 설치하는 별도 VSIX**이며, 이 저장소는 Launcher 소스와 배포 파일을 관리합니다.
 
-## 다운로드
+## 업무망용 오프라인 설치
 
-**[전체 다운로드 — 실행기·DLL·Qwen 모델 포함](https://github.com/yugyeom-ghim/si_local_model/releases/latest/download/Download-SI-Local-AI.exe)**
+**[GitHub에서 전체 설치 파일 받기](https://github.com/yugyeom-ghim/si_local_model/releases/latest)**
 
-[기존 설치용 작은 업데이트 ZIP](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.1/SI_Local_AI_Update_v1.3.1_Windows.zip) · [최신 Release와 SHA256](https://github.com/yugyeom-ghim/si_local_model/releases/latest) · [소스 전체 ZIP](https://github.com/yugyeom-ghim/si_local_model/archive/refs/heads/main.zip)
+`SI_Local_AI_Offline_Setup.exe`와 **모든 `SI_Local_AI_Offline_Setup-*.bin`**을 같은 폴더에 받으세요. **EXE 하나만으로는 설치할 수 없습니다.**
 
-- **처음 설치:** 다운로드 EXE를 빈 폴더에 받아 실행하면 GitHub의 전체 파일을 이어받고 검증해 ZIP 하나로 합칩니다. ZIP을 승인된 절차로 사내 PC에 옮겨 압축을 풀고 Launcher를 실행하세요. [상세 다운로드 안내](README_FULL_DOWNLOAD_KO.md)
-- **이미 설치:** 서버와 Launcher를 종료하고 작은 업데이트 ZIP 내용물을 기존 설치 폴더에 덮어쓰세요. 기존 모델·실행기·개인 설정을 유지합니다.
-- 빌드된 Windows x64 Release EXE가 들어 있습니다. 직원 PC에서 빌드하거나 외부망 PC에서 모델·LM Studio를 실행할 필요가 없습니다.
-- 전체 배포본에는 CPU, CUDA 12.4 및 13.4 실행기와 DLL, Qwen3.5-4B-Q4_K_M.gguf가 실제로 포함됩니다. 대용량 파일은 GitHub Releases에, 소스는 Git 저장소에 있습니다.
-- GitHub 파일당 제한 때문에 전체 ZIP을 나눠 게시합니다. 다운로드 EXE가 자동으로 이어받고 합치며 별도 복구 파일은 없습니다.
-- 고정 버전·원본 URL·크기·SHA256·라이선스: [ASSET_LOCK.json](scripts/ASSET_LOCK.json), [ASSET_MANIFEST.json](ASSET_MANIFEST.json). [API 사용 안내](README_API_UPDATE_KO.md)
+1. 인터넷이 승인된 PC에서 위 설치 파일 세트를 다운로드합니다.
+2. 회사의 승인된 반입 절차로 업무망에 옮깁니다.
+3. 업무망에서 **Offline Setup EXE**를 실행합니다. 설치 중 GitHub 접속이나 파일 다운로드가 없습니다.
+
+쎄트렉아이 로고를 적용한 설치 화면, 설치 위치 선택, 시작 메뉴·선택적 바탕화면 바로가기, 제거 기능을 제공합니다. 모델·CPU·CUDA 12.4/13.4 실행기와 DLL이 모두 포함됩니다. 앱·설치 화면에는 버전을 표시하지 않습니다.
+
+인터넷 PC에서는 [다운로드 편의 도구](https://github.com/yugyeom-ghim/si_local_model/releases/latest/download/Internet-PC-Download-Installer.exe)로 전체 세트를 자동으로 이어받을 수 있습니다. **이 도구만 인터넷에 연결하며 업무망 설치용이 아닙니다.**
+
+[설치 안내](README_FULL_DOWNLOAD_KO.md) · [기존 포터블용 업데이트](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.4.0/SI_Local_AI_Update_v1.4.0_Windows.zip) · [소스 전체 ZIP](https://github.com/yugyeom-ghim/si_local_model/archive/refs/heads/main.zip)
+
+기존 포터블 폴더에 덮어쓰는 Update ZIP과 Source code ZIP에는 대용량 모델이 없습니다. 전체 설치에는 위 Setup과 BIN이 필요합니다. .NET Framework 4.8 및 GPU 사용 시 호환 드라이버는 회사가 승인한 환경으로 준비합니다. 설치 파일에는 VC++ 오프라인 재배포 파일이 포함됩니다.
 
 ## OpenCode의 기존 MCP도 쓸 수 있나요?
 

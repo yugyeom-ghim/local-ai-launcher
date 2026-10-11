@@ -90,45 +90,52 @@ Copy-Item state/windows-download-checks.txt $out
 
 & python -m unittest discover -s tests -p test_distribution.py
 if ($LASTEXITCODE -ne 0) { throw 'Distribution split checks failed' }
-& python scripts/build_full_release.py --overlay $stage --output $out
-if ($LASTEXITCODE -ne 0) { throw 'Full offline package preparation failed' }
-& $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:SILocalAI.Distribution.FullDownload '/out:release-output\Download-SI-Local-AI.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:release-output\full-download-manifest.json,FullDownloadManifest' 'tools\FullDownload.cs'
-if ($LASTEXITCODE -ne 0) { throw 'Full downloader compilation failed' }
-Copy-Item src/SI.LocalAI.Launcher.exe.config (Join-Path $out 'Download-SI-Local-AI.exe.config')
+& python scripts/build_full_release.py --overlay $stage --output $out --installer-only
+if ($LASTEXITCODE -ne 0) { throw 'Full offline payload preparation failed' }
+$payloadRoot = Join-Path $env:RUNNER_TEMP ("si-full-$version/SI_Local_AI")
+& ./scripts/Build-Offline-Installer.ps1 -PayloadRoot $payloadRoot -OutDirectory $out
+if (-not $?) { throw 'Offline installer build/validation failed' }
+& $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:InstallerDownload '/out:release-output\Internet-PC-Download-Installer.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:release-output\installer-download-manifest.json,InstallerManifest' 'tools\FullDownload.cs' 'tools\InstallerDownload.cs'
+if ($LASTEXITCODE -ne 0) { throw 'Internet-PC download helper compilation failed' }
+& ./release-output/Internet-PC-Download-Installer.exe --verify-only --directory $out --no-pause
+if ($LASTEXITCODE -ne 0) { throw 'Download helper manifest verification failed' }
+Remove-Item (Join-Path $out 'download.lock')
 Copy-Item README_FULL_DOWNLOAD_KO.md $out
-$full = Get-Content (Join-Path $out 'full-download-manifest.json') -Raw | ConvertFrom-Json
-$fullSize = [Math]::Round($full.archive.size / 1GB, 2)
-$fullHash = $full.archive.sha256
+Copy-Item README_INSTALL_KO.txt $out
+$installer = Get-Content (Join-Path $out 'installer-download-manifest.json') -Raw | ConvertFrom-Json
+$size = [Math]::Round(($installer.files | Measure-Object size -Sum).Sum / 1GB, 2)
+$fileLinks = ($installer.files | ForEach-Object { '- ['+$_.name+']('+$_.url+')' }) -join "`n"
 Get-ChildItem $out -File | Where-Object { $_.Name -notin @('SHA256SUMS.txt', 'RELEASE_NOTES.md') } | Sort-Object Name | ForEach-Object {
     (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name
 } | Set-Content (Join-Path $out 'SHA256SUMS.txt') -Encoding ascii
 @"
-**모델·CPU·CUDA 12.4/13.4 DLL을 포함한 전체 배포본**과 기존 설치용 업데이트입니다.
+## 업무망용 오프라인 인스톨러
 
-### 처음 설치하는 경우
+쎄트렉아이 로고를 적용한 **오프라인 설치 파일 세트**입니다. Setup은 인터넷에 접속하여 파일을 다운로드하지 않습니다.
 
-1. [Download-SI-Local-AI.exe](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Download-SI-Local-AI.exe)를 빈 폴더에 받아 실행하세요.
-2. GitHub에서 전체 파일을 이어받아 **$fullSize GiB ZIP 하나**로 합치고 SHA256을 검사합니다.
-3. ZIP을 사내 승인 절차로 옮기고 압축을 완전히 풀어 Launcher EXE를 실행하세요.
+### 필수 파일 — 모두 같은 폴더에 받으세요 (합계 약 $size GiB)
 
-외부망 PC에서 모델이나 LM Studio를 실행할 필요가 없습니다. 다운로드 EXE는 모델을 자동 실행하거나 정책을 바꾸지 않습니다.
-브라우저로 직접 받을 경우 모든 .zip.part 파일과 다운로드 EXE를 같은 폴더에 넣고 실행하면 됩니다.
-GitHub의 파일당 2GiB 제한 때문에 분할 게시하지만 자동 합치기로 전체 ZIP을 얻습니다. 복구 파일은 없습니다.
+$fileLinks
 
-### 이미 설치한 경우
+1. 인터넷 사용이 승인된 PC에서 위 **Setup EXE + 모든 BIN** 파일을 받습니다. EXE 하나만으로는 설치할 수 없습니다.
+2. 같은 폴더에 모아 회사가 승인한 반입 절차로 업무망에 옮깁니다.
+3. 업무망에서 **SI_Local_AI_Offline_Setup.exe**를 실행합니다. BIN 파일은 풀거나 합칠 필요가 없습니다.
 
-서버와 Launcher를 완전히 종료하고 **$zipName** 하나를 받아 기존 폴더에 덮어쓰세요. 기존 모델·실행기·개인 설정을 유지합니다.
-Source code ZIP은 소스 전용입니다. 대용량 모델은 위 전체 배포 파일에 들어 있습니다.
+인터넷 PC에서 편하게 받으려면 [Internet-PC-Download-Installer.exe](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Installer.exe)를 사용하세요. **이 편의 도구만 GitHub에 연결하며 업무망에서 사용하는 설치 프로그램이 아닙니다.** 완료된 SI_Local_AI_Offline_Installer 폴더를 옮기면 됩니다.
 
-앱 상단·창 제목·시작 로그에서 버전 숫자를 제거했습니다. 내부 버전과 GitHub 릴리스는 별도로 관리합니다.
+### 포함 및 동작
 
-Windows 네이티브 빌드, 코어/API 로직 69개, 다운로드/합치기 검사 9개 통과.
-고정 버전의 실제 자산 다운로드·SHA256·전체 ZIP CRC 검증 완료. 세부: FULL_PACKAGE_VALIDATION.json, ASSET_MANIFEST.json, ASSET_LOCK.json.
-GUI/DPI·실제 모델 추론·사내 OpenCode/MCP 연동은 미검증입니다.
-MCP는 기존 OpenCode 설정을 유지하고 제공자만 추가해 사용합니다.
-사고 ON/OFF는 하나를 선택해 시작하며 바꾸면 서버를 재시작합니다.
+- Qwen3.5-4B-Q4_K_M 실제 모델, llama.cpp CPU, CUDA 12.4/13.4 실행기와 일치 DLL, VC++ 오프라인 설치 파일, 전체 소스·라이선스·해시 포함.
+- 현재 사용자 계정에 설치, 시작 메뉴 및 선택한 바탕화면 바로가기, Windows 앱 목록에서 제거.
+- 재설치 시 개인 설정·API 키 유지. 제거 시 개인 설정과 사용자가 추가한 파일은 보존.
+- 앱·설치 화면에는 버전 숫자를 표시하지 않고 내부 메타데이터와 GitHub에서 관리.
+- .NET Framework 4.8 이상과 GPU 사용 시 호환 NVIDIA 드라이버가 필요합니다. 자동 다운로드·정책 변경·LM Studio·외부망 모델 실행은 없습니다.
 
-전체 ZIP SHA256: $fullHash
-업데이트 ZIP SHA256: $hash
+Windows에서 실제 설치·전체 설치 파일 SHA256·재설치·제거 및 개인 파일 보존 검사를 통과했습니다. 결과: INSTALLER_VALIDATION.md.
+Launcher Windows 빌드 및 코어/API 69개, 다운로드 9개 검사도 통과했습니다. 실제 GUI/DPI와 모델 추론·사내 OpenCode/MCP 연동은 별도 실환경 확인이 필요합니다.
+
+기존 포터블 사용자는 작은 **$zipName**을 기존 폴더에 덮어써도 됩니다. 이것은 전체 설치 파일이 아닙니다.
+Source code ZIP에는 대용량 모델이 없습니다. 위 필수 설치 파일을 받으세요.
+
 Commit: $env:GITHUB_SHA
 "@ | Set-Content (Join-Path $out 'RELEASE_NOTES.md') -Encoding utf8
