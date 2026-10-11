@@ -1,7 +1,7 @@
 # Offline installer validation
 
-Run: https://github.com/yugyeom-ghim/si_local_model/actions/runs/38137048627
-Commit: f96a66c19803555fbbdf8ed312ffaceaca6b7501
+Run: https://github.com/yugyeom-ghim/local-ai-launcher/actions/runs/38141372966
+Commit: 41cb2330b4faacd29223e6355b53a3de588ecab8
 Windows Server 2022: real setup/reinstall/uninstall executed in a temporary Korean path.
 
 PASS running Launcher blocks installation without being terminated
@@ -9,7 +9,7 @@ PASS native Windows unattended installation succeeds
 PASS Launcher EXE installed
 PASS legacy executable and shortcuts removed
 PASS application icon installed
-PASS all 283 installed payload files match SHA256
+PASS all 292 installed payload files match SHA256
 PASS Start menu shortcut created
 PASS optional desktop shortcut created
 PASS shortcut targets the installed Launcher

@@ -1,0 +1,21 @@
+PASS offline import is atomic and discoverable
+PASS existing file preserved
+PASS missing part leaves no model
+PASS same-size corruption removed before discovery
+PASS whole digest checked independently
+PASS traversal and Windows device names rejected
+PASS duplicate parts rejected
+PASS cancel removes partial file
+PASS non-GGUF with valid hash rejected
+PASS 4060 Ti 8GB and 16GB differ
+PASS Distributed catalog excludes large manual models
+PASS saved model remains selected after additions
+12 model pack checks passed
+PASS real model import, part/full SHA256 and GGUF bounds
+PASS discovery and saved model selection
+PASS selected GGUF passed to server
+MODEL Qwen3.5-2B-Q4_K_M.gguf SHA256 aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223 SIZE 1280835840
+PASS real model import, part/full SHA256 and GGUF bounds
+PASS discovery and saved model selection
+PASS selected GGUF passed to server
+MODEL Qwen3.5-9B-Q4_K_M.gguf SHA256 03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8 SIZE 5680522464

@@ -1,8 +1,8 @@
 {
-  "version": "1.4.1",
-  "commit": "f96a66c19803555fbbdf8ed312ffaceaca6b7501",
+  "version": "1.5.1",
+  "commit": "41cb2330b4faacd29223e6355b53a3de588ecab8",
   "asset_files_verified": 187,
-  "asset_bytes_verified": 4787202922,
+  "asset_bytes_verified": 4787203264,
   "model_sha256": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
   "model_executed": false,
   "installer_validation": "See INSTALLER_VALIDATION.md for installed-file hash checks."

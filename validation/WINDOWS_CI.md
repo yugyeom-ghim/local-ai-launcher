@@ -1,8 +1,8 @@
 # Windows GitHub Actions validation
 
-Version: 1.4.1
-Commit: f96a66c19803555fbbdf8ed312ffaceaca6b7501
-Run: https://github.com/yugyeom-ghim/si_local_model/actions/runs/38137048627
+Version: 1.5.1
+Commit: 41cb2330b4faacd29223e6355b53a3de588ecab8
+Run: https://github.com/yugyeom-ghim/local-ai-launcher/actions/runs/38141372966
 
 - Windows Server 2022 runner: native .NET Framework x64 Release build succeeded.
 - Core regression checks: 62 passed.

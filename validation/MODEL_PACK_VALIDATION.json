@@ -1,0 +1,32 @@
+{
+  "logic_checks": 12,
+  "commit": "41cb2330b4faacd29223e6355b53a3de588ecab8",
+  "gpu_inference_verified": false,
+  "models": [
+    {
+      "discovery_and_selected_path_verified": true,
+      "revision": "f6d5376be1edb4d416d56da11e5397a961aca8ae",
+      "gguf_header_and_tensor_bounds_verified": true,
+      "id": "qwen35-2b",
+      "windows_import_verified": true,
+      "sha256": "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223",
+      "download_verified": true,
+      "file": "Qwen3.5-2B-Q4_K_M.gguf",
+      "inference_verified": false,
+      "size": 1280835840
+    },
+    {
+      "discovery_and_selected_path_verified": true,
+      "revision": "3885219b6810b007914f3a7950a8d1b469d598a5",
+      "gguf_header_and_tensor_bounds_verified": true,
+      "id": "qwen35-9b",
+      "windows_import_verified": true,
+      "sha256": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8",
+      "download_verified": true,
+      "file": "Qwen3.5-9B-Q4_K_M.gguf",
+      "inference_verified": false,
+      "size": 5680522464
+    }
+  ],
+  "run": "https://github.com/yugyeom-ghim/local-ai-launcher/actions/runs/38141372966"
+}
