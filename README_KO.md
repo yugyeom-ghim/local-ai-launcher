@@ -39,3 +39,5 @@
 | VC++ 런타임 | `prerequisites/vc_redist.x64.exe` |
 
 출처·크기·SHA256: `ASSET_MANIFEST.json`, `scripts/ASSET_LOCK.json`. 무결성 검사: `Verify-Package.cmd`.
+
+사양별 추가 팩: [모델 선택·설치](MODEL_PACKS.md). 앱의 **모델 팩 설치**에서 반입한 팩을 선택합니다.

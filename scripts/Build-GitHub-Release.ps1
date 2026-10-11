@@ -37,7 +37,7 @@ foreach ($folder in @('src', 'tests', 'tools', 'validation')) {
     New-Item (Join-Path $stage $folder) -ItemType Directory -Force | Out-Null
     Copy-Item "$folder/*" (Join-Path $stage $folder) -Recurse -Force
 }
-foreach ($file in @('LocalAI.Launcher.exe', 'LocalAI.Launcher.exe.config', 'LocalAI.Launcher.sln', 'Build.cmd', 'Start.cmd', 'Run-Core-Tests.cmd', 'Run-API-Checks.cmd', 'Verify-Package.cmd', 'Verify-Package.ps1', 'release-version.txt', 'settings.example.json', 'ASSET_MANIFEST.json', 'START_HERE_KO.txt', 'README.md', 'README_KO.md', 'README_INSTALL_KO.txt', 'VALIDATION.md', 'API_CONTRACT.md', 'README_API_UPDATE_KO.md', 'README_FULL_DOWNLOAD_KO.md')) {
+foreach ($file in @('LocalAI.Launcher.exe', 'LocalAI.Launcher.exe.config', 'LocalAI.Launcher.sln', 'Build.cmd', 'Start.cmd', 'Run-Core-Tests.cmd', 'Run-API-Checks.cmd', 'Verify-Package.cmd', 'Verify-Package.ps1', 'release-version.txt', 'settings.example.json', 'ASSET_MANIFEST.json', 'START_HERE_KO.txt', 'README.md', 'MODEL_PACKS.md', 'README_KO.md', 'README_INSTALL_KO.txt', 'VALIDATION.md', 'API_CONTRACT.md', 'README_API_UPDATE_KO.md', 'README_FULL_DOWNLOAD_KO.md')) {
     Copy-Item $file (Join-Path $stage $file) -Force
 }
 Copy-Item state/windows-core-tests.txt (Join-Path $stage 'validation/WINDOWS_CORE_TESTS.txt')
@@ -116,9 +116,22 @@ $fileLinks
 
 - 포함: Qwen3.5-4B-Q4_K_M, llama.cpp CPU·CUDA 12.4/13.4, VC++ 런타임
 - 환경: Windows 10/11 x64, .NET Framework 4.8+, 여유 공간 6GB 이상
-- 변경: 앱 이름 정리, 문서·앱 안내 간소화
+- 변경: 사양별 추천, VRAM 표시, 오프라인 모델 팩 설치
 - 기존 포터블 업데이트: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)
 
-Windows 빌드·설치·재설치·제거 검사 통과. GUI/DPI·모델 추론·사내 MCP는 미검증입니다.
-검사 기록: INSTALLER_VALIDATION.md · WINDOWS_CI.md
+## 사양별 추가 모델
+
+| PC | 모델 | 크기 |
+|---|---|---:|
+| CPU · RAM 8GB+ | Qwen3.5 2B | 1.28GB |
+| 4060 Ti 8GB / GPU 6–8GB | Qwen3.5 4B (기본 포함) | 2.74GB |
+| 4060 Ti 16GB / GPU 12–16GB | Qwen3.5 9B | 5.68GB |
+| GPU 24GB+ · RAM 32GB+ | Qwen3.8 27B | 16.46GB |
+
+[인터넷 PC용 모델 다운로드 도구](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Models.exe)에서 필요한 모델 또는 전체를 선택합니다.
+팩 폴더를 반입한 뒤 Launcher의 **모델 팩 설치**에서 해당 .modelpack.json을 선택하세요.
+메모리 권장은 문맥 4K–8K 기준 추정치입니다.
+
+Windows 빌드·설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·팩 설치 검사 통과. GUI/DPI·모델 추론·사내 MCP는 미검증입니다.
+검사 기록: INSTALLER_VALIDATION.md · WINDOWS_CI.md · MODEL_PACK_VALIDATION.json
 "@ | Set-Content (Join-Path $out 'RELEASE_NOTES.md') -Encoding utf8

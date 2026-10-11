@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Threading;
+using System.Globalization;
 
 namespace SILocalAI
 {
@@ -28,6 +30,9 @@ namespace SILocalAI
         Image brandImage;
         float uiScale = 1F;
         bool sizingDashboard, dashboardSizeQueued;
+        double detectedVram, detectedRam;
+        Label recommendation;
+        CancellationTokenSource modelImport;
 
         Label L(string text, float size, bool bold) { return Theme.Text(text, size, bold); }
         TableLayoutPanel Table(int columns, params float[] widths)
@@ -169,7 +174,10 @@ namespace SILocalAI
             modelCount = L("로컬 모델", 12F, true); AddRow(list, modelCount);
             scanButton = Action("새로고침", async delegate { await Work(RescanFromUi); }, false);
             AddRow(list, Actions(Action("models 폴더 열기", delegate { OpenModels(); }, false), scanButton,
-                Action("모델 추가 방법", delegate { ShowModelGuide(); }, false)));
+                Action("모델 팩 설치", async delegate { await Work(ImportModelPack); }, false),
+                Action("사양별 모델 / 추가 방법", delegate { ShowModelGuide(); }, false)));
+            recommendation = L("사양 확인 중", 9F, true); recommendation.ForeColor = Theme.Accent;
+            recommendation.Margin = new Padding(0, 0, 0, 10); AddRow(list, recommendation);
             var search = AutoTable(2, -46, 100); search.RowStyles.Add(new RowStyle(SizeType.AutoSize)); search.Margin = new Padding(0, 0, 0, 12);
             var searchLabel = L("검색", 9F, false); searchLabel.Padding = new Padding(0, 4, 0, 0); search.Controls.Add(searchLabel, 0, 0);
             searchBox = new TextBox { Dock = DockStyle.Fill, Margin = new Padding(0), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Malgun Gothic", 10F), AccessibleName = "모델 검색" };
@@ -182,7 +190,7 @@ namespace SILocalAI
             modelGrid.CellDoubleClick += async delegate(object sender, DataGridViewCellEventArgs e) { if (e.RowIndex >= 0 && modelGrid.Rows[e.RowIndex].Tag is ModelInfo) await Work(StartFromUi); };
             int gridRow = list.RowStyles.Count; list.RowCount = gridRow + 1; list.RowStyles.Add(new RowStyle(SizeType.Absolute, 230)); list.Controls.Add(modelGrid, 0, gridRow);
             catalogNote = L("models 폴더에 GGUF 파일을 넣으면 자동으로 검색합니다.", 8.5F, false); catalogNote.ForeColor = Theme.Muted; catalogNote.Margin = new Padding(0, 10, 0, 10); AddRow(list, catalogNote);
-            var guide = L("모델 추가  ·  models 폴더 열기 → .gguf 파일 복사 → 목록에서 선택 후 시작", 9F, true);
+            var guide = L("추가 팩은 ‘모델 팩 설치’ · GGUF 파일은 models 폴더에 복사", 9F, true);
             guide.ForeColor = Theme.Accent; guide.BackColor = Theme.Pale; guide.Padding = new Padding(12); AddRow(list, guide);
             var library = Card(list, new Padding(16)); columns.Controls.Add(library);
 
@@ -201,7 +209,7 @@ namespace SILocalAI
             thinkingHint.ForeColor = Theme.Muted; thinkingHint.Margin = new Padding(0, 0, 0, 10); AddRow(detail, thinkingHint);
             selectedState = L("선택 후 실행 버튼을 누르세요.", 9F, false); selectedState.ForeColor = Theme.Accent; selectedState.Margin = new Padding(0, 0, 0, 6); AddRow(detail, selectedState);
             startButton = Action("선택한 모델 시작", async delegate { await Work(StartFromUi); }, true);
-            stopButton = Action("중지", delegate { cancelRequested = true; server.Stop(); }, false);
+            stopButton = Action("중지", delegate { cancelRequested = true; if (modelImport != null) modelImport.Cancel(); else server.Stop(); }, false);
             AddRow(detail, Actions(startButton, stopButton)); loadButton = startButton; AddRow(side, Card(detail, new Padding(16)));
 
             var ct = AutoTable(1, 100); var ctTitle = L("로컬 API 연결 정보", 12F, true); ctTitle.Margin = new Padding(0, 0, 0, 8); AddRow(ct, ctTitle);
@@ -225,24 +233,50 @@ namespace SILocalAI
         }
         void ShowModelGuide()
         {
-            using (var dialog = new Form { Text = "모델 추가 방법", Font = Font, BackColor = paper, StartPosition = FormStartPosition.CenterParent,
-                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(600, 480), MinimumSize = new Size(400, 320), MaximizeBox = false, MinimizeBox = false, ShowInTaskbar = false })
+            using (var dialog = new Form { Text = "사양별 모델 / 추가 방법", Font = Font, BackColor = paper, StartPosition = FormStartPosition.CenterParent,
+                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(660, 610), MinimumSize = new Size(400, 320), MaximizeBox = false, MinimizeBox = false, ShowInTaskbar = false })
             {
                 var viewport = new ContentViewport { Padding = new Padding(22) }; dialog.Controls.Add(viewport);
                 var body = AutoTable(1, 100); viewport.SetContent(body);
-                var heading = L("GGUF 파일을 넣으면 자동으로 표시됩니다", 15F, true); heading.Margin = new Padding(0, 0, 0, 16); AddRow(body, heading);
+                var heading = L("사양에 맞는 모델 선택", 15F, true); heading.Margin = new Padding(0, 0, 0, 16); AddRow(body, heading);
+                foreach (var model in ModelCatalog.Current.models)
+                {
+                    bool installed = inventory.Models.Any(x => Path.GetFileName(x.FullPath) == model.file && x.Bytes == model.size);
+                    var item = L(model.name + "  ·  " + (model.size / 1e9).ToString("0.00") + " GB" + (installed ? "  ·  설치됨" : "  ·  추가 팩") + "\n" + model.tier + "  /  문맥 " + (model.context / 1024) + "K", 10F, false);
+                    item.Margin = new Padding(0, 0, 0, 12); AddRow(body, item);
+                }
                 foreach (string step in new[] {
-                    "1. ‘models 폴더 열기’를 눌러 현재 사용 중인 모델 폴더를 엽니다.",
-                    "2. 승인된 GGUF 모델 파일(.gguf)을 그 폴더에 복사합니다. 기본 위치는 offline-assets/ai/models 입니다.",
-                    "3. 복사가 끝나면 잠시 후 목록에 나타납니다. 원하는 모델을 선택하고 ‘선택한 모델 시작’을 누르세요." })
+                    "1. 인터넷 PC용 모델 다운로드 도구에서 필요한 모델을 받습니다.",
+                    "2. 팩 폴더를 반입한 뒤 ‘모델 팩 설치’에서 .modelpack.json을 선택합니다.",
+                    "3. 목록에 추가된 모델을 선택하고 시작합니다. GGUF 파일은 models 폴더에 직접 복사해도 됩니다." })
                 { var text = L(step, 10F, false); text.Margin = new Padding(0, 0, 0, 14); AddRow(body, text); }
-                var note = L("· 파일을 추가하거나 선택하는 것만으로 서버가 바뀌지 않습니다.\n· 분할 GGUF는 모든 조각을 같은 폴더에 복사하세요.\n· mmproj 등 이미지용 파일은 텍스트 모델 목록에서 제외됩니다.\n· 목록에 없으면 ‘새로고침’과 ‘진단 로그’를 확인하세요.\n· 실제 실행 가능 여부는 llama.cpp 버전과 PC 메모리에 따라 달라집니다.", 9F, false);
+                var note = L("메모리 권장은 문맥 4K–8K 기준 추정치입니다. 다른 앱의 GPU 사용량과 문맥 길이에 따라 달라집니다. 9B는 8GB GPU에서도 문맥을 줄여 시도할 수 있지만 여유가 적습니다.\n추가 팩 설치에는 모델 크기만큼의 빈 공간이 더 필요합니다.", 9F, false);
                 note.ForeColor = Theme.Muted; AddRow(body, note);
                 var folder = new TextBox { ReadOnly = true, Dock = DockStyle.Top, Margin = new Padding(0, 14, 0, 8), Text = Paths.Full(Paths.Full(root, config.AssetRoot), config.ModelsPath), AccessibleName = "현재 모델 폴더" }; AddRow(body, folder);
                 var close = Action("닫기", delegate { dialog.Close(); }, true); dialog.AcceptButton = close; dialog.CancelButton = close;
                 AddRow(body, Actions(Action("models 폴더 열기", delegate { OpenModels(); }, false), close));
                 dialog.Shown += delegate { var area = Screen.FromControl(dialog).WorkingArea; dialog.MinimumSize = new Size(Math.Min(dialog.MinimumSize.Width, area.Width), Math.Min(dialog.MinimumSize.Height, area.Height)); dialog.Size = new Size(Math.Min(dialog.Width, area.Width), Math.Min(dialog.Height, area.Height)); };
                 dialog.ShowDialog(this);
+            }
+        }
+        async Task ImportModelPack()
+        {
+            using (var picker = new OpenFileDialog { Title = "오프라인 모델 팩 선택", Filter = "모델 팩|*.modelpack.json", CheckFileExists = true })
+            {
+                if (picker.ShowDialog(this) != DialogResult.OK) return;
+                string path = picker.FileName;
+                string folder = Paths.Full(Paths.Full(root, config.AssetRoot), config.ModelsPath);
+                var reporter = new Progress<int>(delegate(int percent) { if (!closing) statusLabel.Text = "모델 팩 설치 · SHA256 검사 " + percent + "%"; });
+                int last = -1;
+                using (var cancellation = new CancellationTokenSource())
+                {
+                    modelImport = cancellation; stopButton.Text = "설치 취소";
+                    try { await Task.Run(delegate { ModelPacks.Import(path, folder, delegate(long done, long total) {
+                        int percent = (int)(done * 100 / total); if (percent != last) { last = percent; ((IProgress<int>)reporter).Report(percent); }
+                    }, cancellation.Token); }); }
+                    finally { modelImport = null; if (!closing) stopButton.Text = "중지"; }
+                }
+                if (!closing) { await ScanAsync(); statusLabel.Text = "모델 추가 완료 · 목록에서 선택 후 시작하세요."; }
             }
         }
         DataGridView MakeGrid()
@@ -316,6 +350,8 @@ namespace SILocalAI
             if(selectedName==null || modelBox==null) return; var m=SelectedModel();
             selectedName.Text=m==null?"사용할 모델이 없습니다":m.Name;
             selectedMeta.Text=m==null?"models 폴더에 GGUF 파일을 넣으세요.":m.Architecture+"  ·  "+(m.Bytes/1073741824.0).ToString("0.00")+" GiB";
+            var profile = ModelCatalog.Current.Find(m);
+            if (profile != null) selectedMeta.Text += "\n" + profile.tier + " · 문맥 " + (profile.context / 1024) + "K 권장";
             selectedPath.Text=m==null?"":m.RelativePath;
             if(m!=null) { tips.SetToolTip(selectedPath,m.FullPath); tips.SetToolTip(selectedName,m.Name); }
             bool same=m!=null && server.Status.Ready && server.Status.ModelId==m.Id;
@@ -363,7 +399,26 @@ namespace SILocalAI
                 });
                 if(closing || IsDisposed)return;
                 cpuValue.Text=result[0]; cpuNote.Text=(result[1].Length>0?result[1]+"  ·  ":"")+Environment.ProcessorCount+" 논리 프로세서";
-                gpuValue.Text=result[2]; gpuNote.Text=result[3]; tips.SetToolTip(cpuValue,result[0]); tips.SetToolTip(gpuValue,result[2]);
+                double.TryParse(result[1].Split(' ')[0], NumberStyles.Float, CultureInfo.CurrentCulture, out detectedRam);
+                detectedVram = 0;
+                string smi = new[] { Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "nvidia-smi.exe"),
+                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "NVIDIA Corporation", "NVSMI", "nvidia-smi.exe") }.FirstOrDefault(File.Exists);
+                if (smi != null)
+                {
+                    try
+                    {
+                        var probe = await Probe.Run(smi, new[] { "--query-gpu=memory.total", "--format=csv,noheader,nounits" }, root, state, 6, CancellationToken.None);
+                        if (probe.Exit == 0) foreach (string line in probe.Text.Split('\n'))
+                        { double mib; if (Double.TryParse(line.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out mib)) detectedVram = Math.Max(detectedVram, mib / 1024); }
+                    }
+                    catch (Exception e) { log.Write("VRAM 확인 불가: " + e.Message); }
+                }
+                if (closing || IsDisposed) return;
+                gpuValue.Text=result[2]; gpuNote.Text=(detectedVram > 0 ? detectedVram.ToString("0.#") + " GiB VRAM · " : "") + result[3];
+                tips.SetToolTip(cpuValue,result[0]); tips.SetToolTip(gpuValue,result[2]);
+                var recommended = ModelCatalog.Current.Recommend(detectedVram, detectedRam);
+                recommendation.Text = recommended == null ? "사양별 모델 / 추가 방법에서 모델을 선택하세요." : "사양 기준 추천 · " + recommended.name + "  (문맥 " + (recommended.context / 1024) + "K)";
+                if (detectedVram == 0 && result[2].IndexOf("NVIDIA", StringComparison.OrdinalIgnoreCase) >= 0) recommendation.Text = "VRAM 확인 불가 · 4060 Ti 8GB → 4B / 16GB → 9B";
                 if(result[4].Length>0) log.Write("PC 환경 일부 확인 불가 (서버 실행과 별개): "+result[4]);
             } catch(Exception e) { if(!closing) log.Write("PC 감지 실패: "+e.Message); }
         }

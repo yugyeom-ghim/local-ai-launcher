@@ -21,6 +21,11 @@ Setup EXE와 BIN 파일을 같은 폴더에 받은 뒤 Setup을 실행합니다.
 
 사고 모드 변경은 서버 재시작 후 적용됩니다. 기존 OpenCode 설정에는 `provider.si-local`을 병합해 MCP 설정을 유지합니다.
 
+## 사양별 추가 모델
+
+CPU용 2B, GPU 12–16GB용 9B, GPU 24GB 이상용 Qwen3.8 27B를 제공합니다.
+[모델 선택·추가 방법](MODEL_PACKS.md) · [모델 다운로드 도구](https://github.com/yugyeom-ghim/local-ai-launcher/releases/latest/download/Internet-PC-Download-Models.exe)
+
 ## 개발
 
 `Build.cmd` 또는 `LocalAI.Launcher.sln`으로 빌드합니다. 대상은 .NET Framework 4.8 / x64입니다.
