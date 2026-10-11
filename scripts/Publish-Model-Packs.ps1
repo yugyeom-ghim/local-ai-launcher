@@ -12,12 +12,6 @@ $catalog = Get-Content src/Resources/ModelCatalog.json -Raw | ConvertFrom-Json
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
 $csc = Join-Path $framework 'csc.exe'
 $web = (Get-ChildItem (Join-Path $env:WINDIR 'Microsoft.NET/assembly/GAC_MSIL/System.Web.Extensions') -Filter System.Web.Extensions.dll -Recurse | Select-Object -First 1).FullName
-& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output '/out:state\ModelPackTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/r:LocalAI.Launcher.exe' 'tests/ModelPackTests.cs'
-if ($LASTEXITCODE -ne 0) { throw 'Model pack test build failed' }
-$checks = & ./state/ModelPackTests.exe 2>&1
-$exit = $LASTEXITCODE
-$checks | Set-Content (Join-Path $out 'MODEL_PACK_CHECKS.txt') -Encoding utf8
-if ($exit -ne 0) { throw 'Model pack checks failed' }
 $downloads = @()
 $records = @()
 $hashes = @()

@@ -28,6 +28,14 @@ $downloadOutput | Set-Content state/windows-download-checks.txt -Encoding utf8
 $downloadOutput | Write-Host
 if ($downloadExit -ne 0) { throw 'Download checks failed' }
 
+& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output '/out:state\ModelPackTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/r:LocalAI.Launcher.exe' 'tests/ModelPackTests.cs'
+if ($LASTEXITCODE -ne 0) { throw 'Model pack test build failed' }
+$modelChecks = & ./state/ModelPackTests.exe 2>&1
+$modelExit = $LASTEXITCODE
+$modelChecks | Set-Content state/windows-model-pack-checks.txt -Encoding utf8
+$modelChecks | Write-Host
+if ($modelExit -ne 0) { throw 'Model pack logic checks failed' }
+
 $version = (Get-Content release-version.txt -Raw).Trim()
 if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
 $stage = Join-Path $env:RUNNER_TEMP ('si-local-release-' + [Guid]::NewGuid().ToString('N'))
@@ -83,6 +91,7 @@ Copy-Item (Join-Path $stage 'validation/WINDOWS_CI.md') $out
 Copy-Item state/windows-core-tests.txt $out
 Copy-Item state/windows-api-checks.txt $out
 Copy-Item state/windows-download-checks.txt $out
+Copy-Item state/windows-model-pack-checks.txt (Join-Path $out 'MODEL_PACK_CHECKS.txt')
 
 & python -m unittest discover -s tests -p test_distribution.py
 if ($LASTEXITCODE -ne 0) { throw 'Distribution split checks failed' }

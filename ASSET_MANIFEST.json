@@ -1182,8 +1182,8 @@
     },
     {
       "path": "licenses/THIRD_PARTY_NOTICES.md",
-      "size_bytes": 2876,
-      "sha256": "06c33529ff9f13956dc4965f66d0e9d5d89d1f87efd1a468a2dca6192a1a9def",
+      "size_bytes": 3231,
+      "sha256": "19f1de7f497df032065a66f800d5b55168018bcab02d9f7df02c1671859aa3a2",
       "origin": "preserved/extracted upstream license notice"
     },
     {
