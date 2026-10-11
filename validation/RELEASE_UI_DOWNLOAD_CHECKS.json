@@ -1,0 +1,94 @@
+{
+  "release": "https://github.com/yugyeom-ghim/local-ai-launcher/releases/tag/v1.6.0",
+  "checked_at_utc": "2026-10-11T15:57:42Z",
+  "release_assets": 39,
+  "full_downloads": [
+    "installer-download-manifest.json",
+    "model-download-manifest.json",
+    "MODEL_PACK_VALIDATION.json",
+    "MODEL_PACK_CHECKS.txt",
+    "MODEL_CATALOG.json",
+    "MODEL_PACK_SHA256SUMS.txt",
+    "SHA256SUMS.txt",
+    "WINDOWS_CI.md",
+    "INSTALLER_VALIDATION.md",
+    "FULL_PACKAGE_VALIDATION.json",
+    "Internet-PC-Download-Models.exe",
+    "Internet-PC-Download-Installer.exe",
+    "Local_AI_Offline_Setup.exe",
+    "Local_AI_Update_v1.6.0_Windows.zip",
+    "UI_CHECKS.json",
+    "REAL_ASSET_UI_CHECKS.json",
+    "UI_PREVIEW.png",
+    "windows-library-watch-checks.txt",
+    "qwen35-2b.modelpack.json",
+    "qwen35-9b.modelpack.json"
+  ],
+  "github_digests_matched": [
+    "Local_AI_Offline_Setup-1.bin",
+    "Local_AI_Offline_Setup-2.bin",
+    "Local_AI_Offline_Setup-3.bin",
+    "Local_AI_Offline_Setup.exe",
+    "Qwen3.5-2B-Q4_K_M.gguf.part01",
+    "Qwen3.5-9B-Q4_K_M.gguf.part01",
+    "Qwen3.5-9B-Q4_K_M.gguf.part02",
+    "Qwen3.5-9B-Q4_K_M.gguf.part03",
+    "Qwen3.5-9B-Q4_K_M.gguf.part04",
+    "qwen35-2b-LICENSE.txt",
+    "qwen35-2b.modelpack.json",
+    "qwen35-9b-LICENSE.txt",
+    "qwen35-9b.modelpack.json"
+  ],
+  "range_samples": [
+    {
+      "name": "Local_AI_Offline_Setup-1.bin",
+      "status": 206,
+      "content_range": "bytes 0-4095/1608393216",
+      "bytes_sampled": 4096
+    },
+    {
+      "name": "Local_AI_Offline_Setup-2.bin",
+      "status": 206,
+      "content_range": "bytes 0-4095/1610612736",
+      "bytes_sampled": 4096
+    },
+    {
+      "name": "Local_AI_Offline_Setup-3.bin",
+      "status": 206,
+      "content_range": "bytes 0-4095/847127064",
+      "bytes_sampled": 4096
+    },
+    {
+      "name": "Qwen3.5-2B-Q4_K_M.gguf.part01",
+      "status": 206,
+      "content_range": "bytes 0-4095/1280835840",
+      "bytes_sampled": 4096
+    },
+    {
+      "name": "Qwen3.5-9B-Q4_K_M.gguf.part01",
+      "status": 206,
+      "content_range": "bytes 0-4095/1610612736",
+      "bytes_sampled": 4096
+    },
+    {
+      "name": "Qwen3.5-9B-Q4_K_M.gguf.part02",
+      "status": 206,
+      "content_range": "bytes 0-4095/1610612736",
+      "bytes_sampled": 4096
+    },
+    {
+      "name": "Qwen3.5-9B-Q4_K_M.gguf.part03",
+      "status": 206,
+      "content_range": "bytes 0-4095/1610612736",
+      "bytes_sampled": 4096
+    },
+    {
+      "name": "Qwen3.5-9B-Q4_K_M.gguf.part04",
+      "status": 206,
+      "content_range": "bytes 0-4095/848684256",
+      "bytes_sampled": 4096
+    }
+  ],
+  "additional_model_bytes": 6961358304,
+  "note": "Small files, EXEs and update ZIP fully downloaded and hashed. Large assets: GitHub server digests matched against manifests, plus 4096-byte HTTP Range samples. Full original GGUF downloads and Windows imports are recorded by CI in MODEL_PACK_VALIDATION.json; no inference performed."
+}

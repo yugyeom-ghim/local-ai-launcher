@@ -1,0 +1,7 @@
+PASS no idle directory scans
+PASS new model waits for copy stability
+PASS invalid model excluded after settling
+PASS renamed model discovered
+PASS deleted model removed
+PASS unrelated text does not rescan
+PASS new configured folder detected
