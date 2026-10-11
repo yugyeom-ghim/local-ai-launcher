@@ -1,0 +1,38 @@
+[
+  {
+    "repository": "unsloth/Qwen3.5-2B-GGUF",
+    "metadata_url": "https://huggingface.co/api/models/unsloth/Qwen3.5-2B-GGUF/revision/f6d5376be1edb4d416d56da11e5397a961aca8ae?blobs=true",
+    "revision": "f6d5376be1edb4d416d56da11e5397a961aca8ae",
+    "file": {
+      "rfilename": "Qwen3.5-2B-Q4_K_M.gguf",
+      "blobId": "2dd42a93d110e1a333c7464693e3c38b979a940e",
+      "size": 1280835840,
+      "lfs": {
+        "sha256": "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223",
+        "size": 1280835840,
+        "pointerSize": 135
+      }
+    },
+    "license": "apache-2.0",
+    "architecture": "qwen35",
+    "checked_at": "2026-10-11"
+  },
+  {
+    "repository": "unsloth/Qwen3.5-9B-GGUF",
+    "metadata_url": "https://huggingface.co/api/models/unsloth/Qwen3.5-9B-GGUF/revision/3885219b6810b007914f3a7950a8d1b469d598a5?blobs=true",
+    "revision": "3885219b6810b007914f3a7950a8d1b469d598a5",
+    "file": {
+      "rfilename": "Qwen3.5-9B-Q4_K_M.gguf",
+      "blobId": "111d9180ac190fcfea6f515887e3c1716ba1bba8",
+      "size": 5680522464,
+      "lfs": {
+        "sha256": "03b74727a860a56338e042c4420bb3f04b2fec5734175f4cb9fa853daf52b7e8",
+        "size": 5680522464,
+        "pointerSize": 135
+      }
+    },
+    "license": "apache-2.0",
+    "architecture": "qwen35",
+    "checked_at": "2026-10-11"
+  }
+]

@@ -135,10 +135,10 @@ $fileLinks
 | CPU · RAM 8GB+ | Qwen3.5 2B | 1.28GB |
 | 4060 Ti 8GB / GPU 6–8GB | Qwen3.5 4B (기본 포함) | 2.74GB |
 | 4060 Ti 16GB / GPU 12–16GB | Qwen3.5 9B | 5.68GB |
-| GPU 24GB+ · RAM 32GB+ | Qwen3.8 27B | 16.46GB |
 
 [인터넷 PC용 모델 다운로드 도구](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Models.exe)에서 필요한 모델 또는 전체를 선택합니다.
 팩 폴더를 반입한 뒤 Launcher의 **모델 팩 설치**에서 해당 .modelpack.json을 선택하세요.
+27B 등 큰 모델은 models 폴더에 GGUF를 직접 추가해 사용할 수 있습니다.
 메모리 권장은 문맥 4K–8K 기준 추정치입니다.
 
 Windows 빌드·설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·팩 설치 검사 통과. GUI/DPI·모델 추론·사내 MCP는 미검증입니다.

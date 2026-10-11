@@ -4,8 +4,8 @@ Set-StrictMode -Version Latest
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 $out = Join-Path $repoRoot 'release-output'
-$volume = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -gt 36GB } | Sort-Object Free -Descending | Select-Object -First 1
-if (-not $volume) { throw 'A build volume with 36 GiB free is required for the largest pack import check' }
+$volume = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -gt 14GB } | Sort-Object Free -Descending | Select-Object -First 1
+if (-not $volume) { throw 'A build volume with 14 GiB free is required for the largest pack import check' }
 $buildRoot = Join-Path $volume.Root ('local-ai-model-packs-' + [Guid]::NewGuid().ToString('N'))
 $packRoot = Join-Path $buildRoot 'packs'
 $catalog = Get-Content src/Resources/ModelCatalog.json -Raw | ConvertFrom-Json

@@ -59,25 +59,6 @@
       "context": 8192,
       "tier": "GPU 12–16GB · 4060 Ti 16GB",
       "bundled": false
-    },
-    {
-      "id": "qwen38-27b",
-      "name": "Qwen3.8 27B",
-      "file": "Qwen3.8-27B-UD-Q4_K_M.gguf",
-      "repository": "unsloth/Qwen3.8-27B-GGUF",
-      "revision": "4ca720788d1e01f1bff70c033e0d0028fd02e502",
-      "url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/4ca720788d1e01f1bff70c033e0d0028fd02e502/Qwen3.8-27B-UD-Q4_K_M.gguf",
-      "size": 16464440224,
-      "sha256": "322e194ff79741c7baa497c240f677f54b201b0efab44ca8e50f122b39123482",
-      "license": "Apache-2.0",
-      "license_url": "https://huggingface.co/Qwen/Qwen3.8-27B/resolve/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0/LICENSE",
-      "license_sha256": "bbedc3fda3305820b977265f01b8619d87570a6739de3a5582c3464840f1e57a",
-      "license_size": 11544,
-      "vram_gib": 24,
-      "ram_gib": 32,
-      "context": 8192,
-      "tier": "GPU 24GB+ · RAM 32GB+",
-      "bundled": false
     }
   ]
 }

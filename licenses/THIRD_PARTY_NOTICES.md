@@ -28,4 +28,4 @@ The launcher source came from the user-provided v1.1 package. These third-party 
 
 ## Optional model packs
 
-Qwen3.5-2B, Qwen3.5-9B and Qwen3.8-27B: Alibaba Qwen, Apache-2.0. GGUF quantization: Unsloth. Exact revisions, hashes and original license URLs are recorded in `src/Resources/ModelCatalog.json`. Each released pack includes the verified original license. The quantized weights are distributed without further tensor modification.
+Qwen3.5-2B and Qwen3.5-9B: Alibaba Qwen, Apache-2.0. GGUF quantization: Unsloth. Exact revisions, hashes and original license URLs are recorded in `src/Resources/ModelCatalog.json`. Each released pack includes the verified original license. The quantized weights are distributed without further tensor modification.

@@ -75,7 +75,7 @@ public static class ModelPackTests
             Check("cancel removes partial file",delegate {var cancel=new CancellationTokenSource();cancel.Cancel();Reject(delegate{ModelPacks.Import(manifest,failures,null,cancel.Token);});Assert(!Directory.GetFiles(failures).Any());});
             Check("non-GGUF with valid hash rejected",delegate {packFixture=Pack(root,new byte[256]);save();Reject(delegate{ModelPacks.Import(manifest,failures,null,CancellationToken.None);});Assert(!Directory.GetFiles(failures).Any());});
             Check("4060 Ti 8GB and 16GB differ",delegate {Assert(ModelCatalog.Current.Recommend(8,16).id=="qwen35-4b");Assert(ModelCatalog.Current.Recommend(16,32).id=="qwen35-9b");});
-            Check("24GB GPU recommendation requires RAM",delegate {Assert(ModelCatalog.Current.Recommend(24,32).id=="qwen38-27b");Assert(ModelCatalog.Current.Recommend(24,16).id=="qwen35-9b");Assert(ModelCatalog.Current.Recommend(0,8).id=="qwen35-2b");});
+            Check("Distributed catalog excludes large manual models",delegate {Assert(ModelCatalog.Current.models.Length==3);Assert(ModelCatalog.Current.Recommend(24,32).id=="qwen35-9b");Assert(ModelCatalog.Current.Recommend(24,8).id=="qwen35-2b");Assert(ModelCatalog.Current.Recommend(0,8).id=="qwen35-2b");});
             Check("saved model remains selected after additions",delegate {
                 var original=new ModelInfo{Name="Qwen3.5-4B-Q4_K_M",RelativePath="old.gguf",Bytes=4};var extra=new ModelInfo{Name="extra",RelativePath="new.gguf",Bytes=1};
                 Assert(Discovery.Choose(new System.Collections.Generic.List<ModelInfo>{extra,original},"old.gguf")==original);

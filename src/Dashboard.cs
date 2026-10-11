@@ -248,7 +248,7 @@ namespace SILocalAI
                 foreach (string step in new[] {
                     "1. 인터넷 PC용 모델 다운로드 도구에서 필요한 모델을 받습니다.",
                     "2. 팩 폴더를 반입한 뒤 ‘모델 팩 설치’에서 .modelpack.json을 선택합니다.",
-                    "3. 목록에 추가된 모델을 선택하고 시작합니다. GGUF 파일은 models 폴더에 직접 복사해도 됩니다." })
+                    "3. 목록에서 모델을 선택하고 시작합니다. 27B 등 다른 GGUF는 아래 모델 폴더에 직접 복사하면 자동으로 표시됩니다." })
                 { var text = L(step, 10F, false); text.Margin = new Padding(0, 0, 0, 14); AddRow(body, text); }
                 var note = L("메모리 권장은 문맥 4K–8K 기준 추정치입니다. 다른 앱의 GPU 사용량과 문맥 길이에 따라 달라집니다. 9B는 8GB GPU에서도 문맥을 줄여 시도할 수 있지만 여유가 적습니다.\n추가 팩 설치에는 모델 크기만큼의 빈 공간이 더 필요합니다.", 9F, false);
                 note.ForeColor = Theme.Muted; AddRow(body, note);

@@ -5,11 +5,10 @@
 | CPU · RAM 8GB 이상 | Qwen3.5 2B Q4_K_M | 1.28GB | 4K |
 | GPU 6–8GB · 4060 Ti 8GB | Qwen3.5 4B Q4_K_M (기본 포함) | 2.74GB | 4K |
 | GPU 12–16GB · 4060 Ti 16GB | Qwen3.5 9B Q4_K_M | 5.68GB | 8K |
-| GPU 24GB 이상 · RAM 32GB 이상 | Qwen3.8 27B UD-Q4_K_M | 16.46GB | 8K |
 
 단일 GPU와 문맥 4K–8K 기준의 메모리 추정입니다. GPU 추론 성능을 실측한 값은 아닙니다.
 9B는 8GB GPU에서도 문맥 4K로 시도할 수 있지만 다른 프로그램의 GPU 사용량에 따라 부족할 수 있습니다.
-24GB 이상 GPU에서는 27B를, 속도가 더 중요하면 9B를 선택하세요.
+27B 등 큰 모델은 배포 팩에서 제외합니다. **models 폴더 열기**에서 GGUF를 복사하면 자동으로 목록에 표시됩니다. 실행 가능 여부는 llama.cpp 지원 형식과 PC 메모리에 따라 달라집니다.
 
 ## 추가
 
@@ -22,7 +21,7 @@
 
 ## 출처
 
-2026-10-11 확인. 원본은 [Qwen3.5 2B](https://huggingface.co/Qwen/Qwen3.5-2B), [Qwen3.5 9B](https://huggingface.co/Qwen/Qwen3.5-9B), [Qwen3.8 27B](https://huggingface.co/Qwen/Qwen3.8-27B), GGUF 변환은 Unsloth입니다. 라이선스는 Apache-2.0입니다.
+2026-10-11 확인. 원본은 [Qwen3.5 2B](https://huggingface.co/Qwen/Qwen3.5-2B), [Qwen3.5 9B](https://huggingface.co/Qwen/Qwen3.5-9B), GGUF 변환은 Unsloth입니다. 라이선스는 Apache-2.0입니다.
 이 팩은 텍스트/API용 모델이며 이미지 인코더는 포함하지 않습니다.
 
 고정 revision·파일 크기·SHA256·라이선스 URL: [ModelCatalog.json](src/Resources/ModelCatalog.json).
