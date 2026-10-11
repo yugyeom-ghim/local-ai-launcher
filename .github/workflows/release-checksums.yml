@@ -1,0 +1,64 @@
+name: Final release checksums
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/release-checksums.yml']
+  workflow_run:
+    workflows: ['Windows build, checks and release']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: final-release-checksums
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - name: Consolidate checksums after all model packs are uploaded
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: python
+        run: |
+          import hashlib, json, os, re, subprocess, time
+          from pathlib import Path
+          version = Path('release-version.txt').read_text().strip()
+          if not re.fullmatch(r'\d+\.\d+\.\d+', version): raise RuntimeError('Invalid version')
+          tag = 'v' + version
+          repo = os.environ['GITHUB_REPOSITORY']
+          for attempt in range(32):
+              result = subprocess.run(['gh', 'api', 'repos/' + repo + '/releases/tags/' + tag], capture_output=True, text=True)
+              release = json.loads(result.stdout) if result.returncode == 0 else None
+              if release and not release['draft']: break
+              time.sleep(30)
+          else: raise RuntimeError('Release was not published; no checksum file changed')
+          # GitHub computes these digests from the uploaded bytes. Include model
+          # chunks and the final import receipt, which is extended during packing.
+          records = []
+          for asset in release['assets']:
+              if asset['name'] == 'SHA256SUMS.txt': continue
+              digest = asset.get('digest') or ''
+              if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest): raise RuntimeError('Missing digest: ' + asset['name'])
+              if not re.fullmatch(r'[A-Za-z0-9._-]+', asset['name']): raise RuntimeError('Unsafe asset name')
+              records.append((asset['name'], digest[7:]))
+          data = ''.join(sha + '  ' + name + '\n' for name, sha in sorted(records)).encode('ascii')
+          existing = next((a for a in release['assets'] if a['name'] == 'SHA256SUMS.txt'), None)
+          if not existing or existing.get('digest') != 'sha256:' + hashlib.sha256(data).hexdigest():
+              Path('SHA256SUMS.txt').write_bytes(data)
+              subprocess.run(['gh', 'release', 'upload', tag, 'SHA256SUMS.txt', '--repo', repo, '--clobber'], check=True)
+          print('Final SHA256SUMS covers', len(records), 'release assets.')
