@@ -1,5 +1,7 @@
 # v1.3 검증 기록 — 2026-10-11
 
+추가 검증: GitHub Windows Server 2022에서 네이티브 빌드 및 로직 69개 검사가 완료되었습니다. [WINDOWS_CI.md](WINDOWS_CI.md)와 함께 보세요. 아래는 GitHub 게시 전의 Linux 작업 기록이며 GUI/DPI·실제 추론·사내 MCP 연동은 여전히 미검증입니다.
+
 ## 빌드 및 다운로드 구분
 
 - Release EXE: 성공. .NET SDK 8.0.425 Roslyn, Microsoft.NETFramework.ReferenceAssemblies.net48 1.0.3, C# 5, x64, optimize+, .NET Framework 4.8 대상. 소스·솔루션·Build.cmd 포함. 새 NuGet 런타임 종속성 없음.

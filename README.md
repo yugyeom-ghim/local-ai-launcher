@@ -5,9 +5,9 @@ Windows에서 GGUF 모델을 선택하고 로컬 llama.cpp 서버를 실행하�
 
 ## 다운로드
 
-**[v1.3 업데이트 ZIP 다운로드 — 163 KB](https://github.com/yugyeom-ghim/si_local_model/raw/refs/heads/main/downloads/SI_Local_AI_Update_v1.3.zip)**
+**[v1.3.0 Windows 업데이트 ZIP 다운로드 — 171 KB](https://github.com/yugyeom-ghim/si_local_model/releases/download/v1.3.0/SI_Local_AI_Update_v1.3.0_Windows.zip)**
 
-[소스 전체 ZIP](https://github.com/yugyeom-ghim/si_local_model/archive/refs/heads/main.zip) · [다운로드 폴더와 SHA256](downloads/) · [사용 안내](README_API_UPDATE_KO.md)
+[Release와 SHA256](https://github.com/yugyeom-ghim/si_local_model/releases/tag/v1.3.0) · [소스 전체 ZIP](https://github.com/yugyeom-ghim/si_local_model/archive/refs/heads/main.zip) · [사용 안내](README_API_UPDATE_KO.md)
 
 - 업데이트 ZIP에는 빌드된 Windows x64 Release EXE가 들어 있습니다. 직원 PC에서 빌드할 필요가 없습니다.
 - 서버와 Launcher를 종료하고, ZIP 내용물 전체를 **기존 v1.2 / v1.2.1 설치 폴더**에 덮어쓰세요.
@@ -52,7 +52,10 @@ Launcher의 llama-ui 대화창이나 SI코파일럿에 OpenCode의 MCP 설정이
 
 - `Run-Core-Tests.cmd`: 설정·모델 검색·명령 인자·내보내기 회귀 검사
 - `Run-API-Checks.cmd`: API 요청 헤더·키 처리 등 로직 검사
-- [현재 검증 범위](validation/API_v1.3.md): Linux 교차 빌드 및 로직 69개 통과. 실제 Windows 모델 추론·사내 OpenCode/MCP 연동은 미검증입니다.
+- [Windows 빌드와 검사 결과](validation/WINDOWS_CI.md): GitHub의 Windows Server 2022 환경에서 네이티브 Release 빌드 및 코어/API 로직 **69개 통과**. 임시 출력 파일명 때문에 어셈블리 이름이 달라지던 Build.cmd 문제도 수정했습니다.
+- [성공한 Windows 작업](https://github.com/yugyeom-ghim/si_local_model/actions/runs/38118462620) · [이전 Linux 검증 범위](validation/API_v1.3.md)
+- 실제 Windows GUI/DPI, 모델 추론, 사내 OpenCode/MCP 연동은 미검증입니다. 위 로직 검사 성공과 구분합니다.
+- 새 버전은 `release-version.txt`를 올려 게시합니다. 이미 게시한 Release 파일은 자동으로 덮어쓰지 않습니다.
 
 다운로드한 기존 v1.2 실행기·모델의 SHA256을 유지합니다. 새 모델 다운로드나 서버 실행을 외부망 PC에서 요구하지 않습니다. 서버 주소는 `127.0.0.1`이며 회사 보안 정책·방화벽·실행 정책을 바꾸지 않습니다.
 
