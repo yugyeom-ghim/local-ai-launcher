@@ -1,0 +1,52 @@
+name: Windows UI and idle checks
+on:
+  push:
+    branches: [ui-refresh]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ui:
+    runs-on: windows-2022
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Build and check current UI
+        shell: pwsh
+        run: |
+          cmd /c Build.cmd
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+          ./scripts/Test-UI.ps1
+          $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
+          & "$framework/csc.exe" /nologo /target:exe /langversion:5 /r:System.dll /r:System.Core.dll '/r:LocalAI.Launcher.exe' '/out:LibraryWatchTests.exe' 'tests\LibraryWatchTests.cs'
+          if ($LASTEXITCODE -ne 0) { throw 'Watcher test build failed' }
+          ./LibraryWatchTests.exe
+          if ($LASTEXITCODE -ne 0) { throw 'Watcher test failed' }
+      - name: Compare previous UI
+        if: always()
+        shell: pwsh
+        run: |
+          $baseline = Join-Path $env:RUNNER_TEMP 'local-ai-baseline'
+          git worktree add --detach $baseline 3ca55aed238cb92e6c6a6d3b93b315c2172a1228
+          Copy-Item tests/UiChecks.cs "$baseline/tests/UiChecks.cs"
+          Copy-Item scripts/Test-UI.ps1 "$baseline/scripts/Test-UI.ps1"
+          Push-Location $baseline
+          cmd /c Build.cmd
+          if ($LASTEXITCODE -ne 0) { throw 'Baseline build failed' }
+          ./scripts/Test-UI.ps1 -Baseline
+          Pop-Location
+          Copy-Item "$baseline/state/ui-checks" state/ui-baseline -Recurse
+      - name: Export render evidence
+        if: always()
+        shell: pwsh
+        run: |
+          Get-ChildItem state/ui-* -Recurse -Filter '*.json' | ForEach-Object { Write-Host $_.FullName; Get-Content $_.FullName }
+          Get-ChildItem state/ui-* -Recurse -Filter '*.png' | ForEach-Object {
+            Write-Host "UI_IMAGE_BEGIN:$($_.Name)"
+            $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName))
+            for ($i=0; $i -lt $b64.Length; $i+=6000) { Write-Host $b64.Substring($i, [Math]::Min(6000, $b64.Length-$i)) }
+            Write-Host 'UI_IMAGE_END'
+          }

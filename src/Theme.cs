@@ -7,9 +7,9 @@ namespace SILocalAI
 {
     public static class Theme
     {
-        public static readonly Color Ink = Color.FromArgb(27, 40, 60), Muted = Color.FromArgb(103, 118, 136);
-        public static readonly Color Background = Color.FromArgb(243, 246, 250), Line = Color.FromArgb(224, 230, 238);
-        public static readonly Color Accent = Color.FromArgb(21, 105, 185), Pale = Color.FromArgb(232, 243, 255);
+        public static readonly Color Ink = Color.FromArgb(26, 32, 44), Muted = Color.FromArgb(103, 118, 136);
+        public static readonly Color Background = Color.FromArgb(245, 246, 248), Line = Color.FromArgb(224, 230, 238);
+        public static readonly Color Accent = Color.FromArgb(34, 91, 214), Pale = Color.FromArgb(234, 240, 255);
         public static readonly Color Danger = Color.FromArgb(174, 62, 57), Amber = Color.FromArgb(155, 102, 22);
         public static GraphicsPath Round(Rectangle rect, int radius)
         {
@@ -43,7 +43,7 @@ namespace SILocalAI
         public ActionButton()
         {
             FlatStyle = FlatStyle.Flat; FlatAppearance.BorderSize = 0; Cursor = Cursors.Hand;
-            BackColor = Color.White; ForeColor = Theme.Ink; Font = new Font("Malgun Gothic", 9F);
+            BackColor = Color.White; ForeColor = Theme.Ink; Font = new Font("Malgun Gothic", 10F);
             Height = 38; MinimumSize = new Size(60, 36); Padding = new Padding(12, 7, 12, 7); Margin = new Padding(0, 0, 8, 0);
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         }

@@ -84,12 +84,12 @@ namespace SILocalAI
             configFile = Path.Combine(state, "settings.json"); config = LoadSettings();
             server = new ServerController(root, state, log);
             Text = "Local AI Launcher";
-            Font = new Font("Malgun Gothic", 9F);
+            Font = new Font("Malgun Gothic", 10F);
             ForeColor = ink; BackColor = paper;
             StartPosition = FormStartPosition.CenterScreen;
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            ClientSize = new Size(1180, 860); MinimumSize = new Size(720, 540);
+            ClientSize = new Size(1120, 740); MinimumSize = new Size(760, 560);
             Icon = SystemIcons.Application;
             BuildUi(); ApplyConfig(); SetBusy(false);
             log.Line += OnLog;
@@ -103,11 +103,10 @@ namespace SILocalAI
                 try { await server.MonitorAsync(); } catch (Exception e) { log.Write(e.Message); }
                 finally { monitoring = false; }
             };
-            monitorTimer.Start();
-            libraryTimer.Interval = 3000;
+            libraryTimer.Interval = 500;
             libraryTimer.Tick += async delegate
             {
-                if (uiBusy || catalogRefreshing || closing) return;
+                if (uiBusy || catalogRefreshing || closing || !catalog.RefreshDue) return;
                 catalogRefreshing = true;
                 try { await ScanAsync(false); }
                 catch (Exception e) { log.Write("폴더 자동 검색: " + e.Message); }
@@ -123,7 +122,6 @@ namespace SILocalAI
             Shown += async delegate
             {
                 FitToWorkingArea();
-                var hardwareTask = DetectHardwareAsync();
                 await Work(async delegate
                 {
                     await ScanAsync();
@@ -135,12 +133,11 @@ namespace SILocalAI
                     }
                     if (config.OpenBrowser && server.Status.Ready) OpenUi();
                 });
-                await hardwareTask;
                 if (closing) return;
                 if (initialMinimized && server.Alive) { WindowState = FormWindowState.Minimized; }
             };
             FormClosing += OnClosing;
-            FormClosed += delegate { server.Dispose(); log.Line -= OnLog; logTimer.Dispose(); monitorTimer.Dispose(); libraryTimer.Dispose(); tray.Dispose(); tips.Dispose(); modelBox.Dispose(); if (brandImage != null) brandImage.Dispose(); };
+            FormClosed += delegate { server.Dispose(); log.Line -= OnLog; logTimer.Dispose(); monitorTimer.Dispose(); libraryTimer.Dispose(); catalog.Dispose(); tray.Dispose(); tips.Dispose(); modelBox.Dispose(); if (brandImage != null) brandImage.Dispose(); };
         }
         Settings LoadSettings()
         {
@@ -197,10 +194,10 @@ namespace SILocalAI
                 var browse = ButtonText("찾기", delegate { BrowseAsset(key); }); browse.MinimumSize = new Size(75, 28); editable.Add(browse); t.Controls.Add(browse, 2, i);
             }
             t.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            applyButton = ButtonText("자산 경로 적용 / 다시 검색", async delegate { await Work(RescanFromUi); });
+            applyButton = ButtonText("폴더 적용", async delegate { await Work(RescanFromUi); });
             t.Controls.Add(applyButton, 0, keys.Length); t.SetColumnSpan(applyButton, 3); editable.Add(applyButton);
             t.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            var note = L("루트는 이 실행 도구 위치 기준, 나머지는 AI 자산 루트 기준 상대경로입니다. DLL은 각 실행기 폴더에 함께 두세요.\nocr / runtime 폴더와 mmproj는 텍스트 모델 목록에서 제외합니다.", 9F, false);
+            var note = L("상대경로는 AI 자산 루트를 기준으로 합니다.", 9F, false);
             note.ForeColor = Theme.Muted; note.Margin = new Padding(3, 12, 3, 12);
             t.Controls.Add(note, 0, keys.Length + 1); t.SetColumnSpan(note, 3);
             t.RowStyles.Add(new RowStyle(SizeType.Absolute, 260));
@@ -256,13 +253,13 @@ namespace SILocalAI
             if (warnings != warningSignature) { foreach (var warning in inventory.Warnings) log.Write(warning); warningSignature = warnings; }
             int pending = inventory.PendingFiles.Count;
             bool catalogChanged = server.Alive && loadedCatalogSignature != LibraryMonitor.ModelSignature(inventory.Models);
-            catalogNote.Text = pending > 0 ? "파일 확인 중 " + pending + "개 · 복사가 끝나면 자동 반영합니다."
-                : catalogChanged ? "목록 변경 감지 · 새 모델 실행 시 서버에 반영됩니다."
+            catalogNote.Text = pending > 0 ? "복사 확인 중 · " + pending + "개"
+                : catalogChanged ? "모델 목록 갱신됨"
                 : inventory.Warnings.Count > 0 ? "제외/확인 항목 " + inventory.Warnings.Count + "개 · 진단 로그를 확인하세요."
-                : "폴더 자동 확인 켜짐 · " + DateTime.Now.ToString("HH:mm:ss") + " 갱신";
-            if (!server.Alive && server.Status.State != "error") statusLabel.Text = pending>0 ? "GGUF 파일 확인 중..." : selected==null ? "models 폴더에 GGUF 파일을 넣어주세요." : "파일 발견 · 모델을 선택하고 서버를 시작하세요.";
+                : "";
+            if (!server.Alive && server.Status.State != "error") statusLabel.Text = pending>0 ? "GGUF 파일 확인 중..." : selected==null ? "모델 없음" : "준비됨";
             log.Write("라이브러리 갱신 · 모델 " + inventory.Models.Count + "개 / 파일 확인 중 " + pending + "개");
-            UpdateRuntimeCards(); BindModelGrid(); SaveConfig(); SetBusy(uiBusy);
+            UpdateRuntimeCards(); BindModelGrid(); SetBusy(uiBusy);
         }
         async Task StartFromUi()
         {
@@ -278,13 +275,13 @@ namespace SILocalAI
             modelBox.SelectedItem = chosen; config.Model = chosen.RelativePath; SaveConfig();
             server.Stop();
             await server.StartAsync(config, inventory, chosen);
-            if (server.Status.Ready) { loadedCatalogSignature = LibraryMonitor.ModelSignature(inventory.Models); catalogNote.Text = "선택 모델 사용 가능 · 새 파일은 자동으로 검색합니다."; }
+            if (server.Status.Ready) { loadedCatalogSignature = LibraryMonitor.ModelSignature(inventory.Models); catalogNote.Text = ""; }
             if (config.OpenBrowser && server.Status.Ready) OpenUi();
         }
         async Task RescanFromUi()
         {
             ReadConfig(); await ScanAsync(); SaveConfig();
-            if (server.Alive) statusLabel.Text = "목록을 갱신했습니다. 실행 중인 서버는 유지합니다. 새 모델은 선택 후 실행하세요.";
+            if (server.Alive) statusLabel.Text = "목록 갱신됨";
         }
         async Task Work(Func<Task> work)
         {
@@ -298,7 +295,7 @@ namespace SILocalAI
         void SetBusy(bool value)
         {
             foreach (var c in editable) c.Enabled = !value;
-            scanButton.Enabled = !value; modelGrid.Enabled = !value; searchBox.Enabled = !value;
+            scanButton.Enabled = !value; modelGrid.Enabled = !value;
             stopButton.Enabled = value || server.Alive;
             testButton.Enabled = !value && server.Status.Ready;
             webButton.Enabled = server.Status.Listening;
@@ -308,6 +305,7 @@ namespace SILocalAI
         }
         void UpdateStatus(ServerStatus s)
         {
+            monitorTimer.Enabled = server.Alive;
             statusLabel.Text = s.Message.Replace("\r", " ").Replace("\n", " ");
             tips.SetToolTip(statusLabel, s.Message.Length > 1500 ? s.Message.Substring(0, 1500) : s.Message);
             statusLabel.ForeColor = s.State == "error" ? Color.Firebrick : s.Ready ? Color.FromArgb(27, 102, 69) : ink;

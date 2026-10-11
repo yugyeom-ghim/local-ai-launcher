@@ -88,4 +88,42 @@ namespace SILocalAI
             finally { arranging = false; }
         }
     }
+    // Navigation owns fixed viewport bounds. Hidden pages never influence the window height.
+    public sealed class WorkspaceTabs : Panel
+    {
+        readonly FlowLayoutPanel navigation;
+        readonly Panel host;
+        readonly System.Collections.Generic.List<Control> pages = new System.Collections.Generic.List<Control>();
+        readonly System.Collections.Generic.List<ActionButton> buttons = new System.Collections.Generic.List<ActionButton>();
+        int selected = -1;
+        public WorkspaceTabs()
+        {
+            Dock = DockStyle.Fill; Margin = new Padding(0); BackColor = Color.White;
+            host = new Panel { Dock = DockStyle.Fill, Margin = new Padding(0) };
+            navigation = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 52, Padding = new Padding(24, 4, 0, 4), WrapContents = false, BackColor = Color.White };
+            Controls.Add(host); Controls.Add(navigation);
+        }
+        public void AddPage(string title, Control page)
+        {
+            int index = pages.Count;
+            page.Dock = DockStyle.Fill; page.Visible = false; pages.Add(page); host.Controls.Add(page);
+            var button = new ActionButton { Text = title, AutoSize = true, MinimumSize = new Size(84, 40), Margin = new Padding(0, 0, 8, 0) };
+            button.Click += delegate { SelectedIndex = index; }; buttons.Add(button); navigation.Controls.Add(button);
+            if (selected < 0) SelectedIndex = 0;
+        }
+        public int SelectedIndex
+        {
+            get { return selected; }
+            set
+            {
+                if (value < 0 || value >= pages.Count || value == selected) return;
+                host.SuspendLayout();
+                if (selected >= 0) { pages[selected].Visible = false; buttons[selected].Primary = false; buttons[selected].Invalidate(); }
+                selected = value; pages[selected].Visible = true; pages[selected].BringToFront(); buttons[selected].Primary = true; buttons[selected].Invalidate();
+                host.ResumeLayout(true);
+            }
+        }
+        public Control SelectedTab { get { return selected < 0 ? null : pages[selected]; } set { SelectedIndex = pages.IndexOf(value); } }
+    }
+
 }

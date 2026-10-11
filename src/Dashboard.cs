@@ -22,14 +22,12 @@ namespace SILocalAI
         Label selectedName, selectedMeta, selectedPath, selectedState, catalogNote, runningNote;
         Badge stateBadge;
         ProgressBar progress;
-        TextBox searchBox;
         DataGridView modelGrid;
-        TabControl pages;
-        Control dashboardHead, dashboardStats, dashboardFoot;
-        TableLayoutPanel dashboardLayout;
+        WorkspaceTabs pages;
         Image brandImage;
         float uiScale = 1F;
-        bool sizingDashboard, dashboardSizeQueued;
+        bool buildingUi, detectingHardware;
+        readonly List<Control> layoutBatch = new List<Control>();
         double detectedVram, detectedRam;
         Label recommendation;
         CancellationTokenSource modelImport;
@@ -38,6 +36,7 @@ namespace SILocalAI
         TableLayoutPanel Table(int columns, params float[] widths)
         {
             var t = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = columns, Margin = new Padding(0), BackColor = Color.Transparent };
+            if (buildingUi) { t.SuspendLayout(); layoutBatch.Add(t); }
             foreach (float w in widths) t.ColumnStyles.Add(new ColumnStyle(w < 0 ? SizeType.Absolute : SizeType.Percent, Math.Abs(w)));
             return t;
         }
@@ -73,154 +72,103 @@ namespace SILocalAI
         {
             var t = AutoTable(1, 100);
             var heading = L(title, 8.5F, true); heading.ForeColor = Theme.Muted; heading.Margin = new Padding(0, 0, 0, 8);
-            value = L("감지 중...", 11F, true); value.Margin = new Padding(0, 0, 0, 8);
-            note = L("PC 환경을 확인하고 있습니다.", 8.5F, false); note.ForeColor = Theme.Muted;
+            value = L("확인 전", 11F, true); value.Margin = new Padding(0, 0, 0, 8);
+            note = L("", 9F, false); note.ForeColor = Theme.Muted;
             AddRow(t, heading); AddRow(t, value); AddRow(t, note);
             var card = Card(t, new Padding(16)); card.Dock = DockStyle.Fill; return card;
         }
         void BuildUi()
         {
-            SuspendLayout();
-            var viewport = new ContentViewport { Padding = new Padding(20, 16, 8, 12) }; Controls.Add(viewport);
-            dashboardLayout = AutoTable(1, 100);
-            var heading = AutoTable(3, -90, 100, -176); heading.Margin = new Padding(0, 0, 12, 16); heading.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            SuspendLayout(); buildingUi = true;
+            var shell = Table(1, 100); shell.BackColor = Color.White; shell.RowCount = 3;
+            shell.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
+            shell.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            shell.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
+            var header = Table(2, -92, 100); header.Padding = new Padding(24, 12, 24, 10);
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SILocalAI.BrandLogo"))
-            {
-                if (stream != null) using (var original = Image.FromStream(stream)) brandImage = new Bitmap(original);
-            }
-            var logo = new PictureBox { Image = brandImage, SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(78, 60),
-                Margin = new Padding(0, 4, 12, 4), BackColor = Color.White, AccessibleName = "SI 로고" };
-            heading.Controls.Add(logo, 0, 0);
-            var titles = AutoTable(1, 100);
-            AddRow(titles, L("Local AI Launcher", 20F, true));
-            var sub = L("내 PC에서 실행하는 오프라인 AI", 9.5F, false); sub.ForeColor = Theme.Muted; sub.Margin = new Padding(0, 4, 0, 0); AddRow(titles, sub);
-            heading.Controls.Add(titles, 1, 0);
-            heading.ColumnStyles[2] = new ColumnStyle(SizeType.AutoSize);
-            var local = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, FlowDirection = FlowDirection.TopDown,
-                WrapContents = false, Anchor = AnchorStyles.Top | AnchorStyles.Right, Margin = new Padding(12, 7, 0, 0) };
-            var localTitle = new Label { Text = "LOCAL ONLY", AutoSize = true, Font = new Font("Malgun Gothic", 9F, FontStyle.Bold),
-                ForeColor = Theme.Accent, Margin = new Padding(0), Anchor = AnchorStyles.Right };
-            var address = new Label { Text = "127.0.0.1 전용", AutoSize = true, Font = new Font("Malgun Gothic", 9F),
-                ForeColor = Theme.Muted, Margin = new Padding(0, 6, 0, 0), Anchor = AnchorStyles.Right };
-            local.Controls.Add(localTitle); local.Controls.Add(address); heading.Controls.Add(local, 2, 0); dashboardHead = heading; AddRow(dashboardLayout, heading);
-
-            var stats = new ResponsiveColumns(610, 36, 34, 30);
-            stats.Controls.Add(Stat("CPU · 메모리", out cpuValue, out cpuNote));
-            stats.Controls.Add(Stat("그래픽 장치", out gpuValue, out gpuNote));
-            stats.Controls.Add(Stat("로컬 실행기", out runtimeValue, out runtimeNote)); dashboardStats = stats; AddRow(dashboardLayout, stats);
-
-            pages = new TabControl { Height = 530, Dock = DockStyle.Top, Padding = new Point(18, 8),
-                Font = new Font("Malgun Gothic", 9F, FontStyle.Bold), Margin = new Padding(0, 2, 12, 0) };
-            var main = new TabPage("모델 라이브러리") { BackColor = paper, Padding = new Padding(12) };
-            var assets = new TabPage("경로 · 고급 설정") { BackColor = paper, Padding = new Padding(12) };
-            var diagnostic = new TabPage("진단 로그") { BackColor = paper, Padding = new Padding(12) };
-            apiPage = new TabPage("API 연결") { BackColor = paper, Padding = new Padding(12) };
-            pages.Multiline = true;
-            pages.TabPages.AddRange(new[] { main, apiPage, assets, diagnostic });
-            BuildLibrary(main); BuildSettings(assets); BuildApiPage(apiPage); BuildLogs(diagnostic); AddRow(dashboardLayout, pages);
-
-            var foot = AutoTable(3, -112, 100, -132); foot.Margin = new Padding(0, 12, 12, 0); foot.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            stateBadge = new Badge { Text = "대기", Dock = DockStyle.Fill, MinimumSize = new Size(98, 34), Margin = new Padding(0, 0, 12, 0) }; foot.Controls.Add(stateBadge, 0, 0);
-            statusLabel = L("모델과 실행기를 검색합니다.", 9F, false); statusLabel.Padding = new Padding(0, 7, 0, 7); foot.Controls.Add(statusLabel, 1, 0);
-            progress = new ProgressBar { Dock = DockStyle.Fill, Style = ProgressBarStyle.Continuous, Maximum = 100, MinimumSize = new Size(0, 6), Margin = new Padding(12, 12, 0, 12) }; foot.Controls.Add(progress, 2, 0);
-            dashboardFoot = foot; AddRow(dashboardLayout, foot); viewport.SetContent(dashboardLayout);
+            { if (stream != null) using (var original = Image.FromStream(stream)) brandImage = new Bitmap(original); }
+            var logo = new PictureBox { Image = brandImage, SizeMode = PictureBoxSizeMode.Zoom, Dock = DockStyle.Fill,
+                Margin = new Padding(0, 0, 20, 0), BackColor = Color.White, AccessibleName = "회사 로고" };
+            header.Controls.Add(logo, 0, 0);
+            header.Controls.Add(new Label { Text = "Local AI Launcher", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font("Segoe UI", 21F, FontStyle.Bold), ForeColor = Theme.Ink, Margin = new Padding(0) }, 1, 0);
+            shell.Controls.Add(header, 0, 0);
+            pages = new WorkspaceTabs();
+            var main = new Panel { BackColor = paper, Padding = new Padding(24, 20, 24, 16) };
+            var settings = new Panel { BackColor = paper, Padding = new Padding(24, 20, 24, 16) };
+            var diagnostic = new Panel { BackColor = paper, Padding = new Padding(24, 20, 24, 16) };
+            apiPage = new Panel { BackColor = paper, Padding = new Padding(24, 20, 24, 16) };
+            pages.AddPage("모델", main); pages.AddPage("API 연결", apiPage); pages.AddPage("설정", settings); pages.AddPage("로그", diagnostic);
+            BuildLibrary(main); BuildSettings(settings); BuildApiPage(apiPage); BuildLogs(diagnostic);
+            shell.Controls.Add(pages, 0, 1);
+            var foot = Table(3, -92, 100, -116); foot.Padding = new Padding(24, 6, 24, 6);
+            stateBadge = new Badge { Text = "대기", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 14, 0) };
+            statusLabel = new Label { Text = "모델 확인 중", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft,
+                AutoEllipsis = true, ForeColor = Theme.Muted, Margin = new Padding(0) };
+            progress = new ProgressBar { Dock = DockStyle.Fill, Style = ProgressBarStyle.Continuous, Maximum = 100, Margin = new Padding(12, 12, 0, 12) };
+            foot.Controls.Add(stateBadge, 0, 0); foot.Controls.Add(statusLabel, 1, 0); foot.Controls.Add(progress, 2, 0); shell.Controls.Add(foot, 0, 2);
             modelBox = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
             modelBox.SelectedIndexChanged += delegate { if (!bindingModels) { RememberSelection(); RefreshSelection(); } };
-            Resize += delegate { QueueDashboardSize(); };
-            dashboardLayout.Layout += delegate { QueueDashboardSize(); };
-            dashboardHead.SizeChanged += delegate { SizeDashboard(); };
-            dashboardStats.SizeChanged += delegate { SizeDashboard(); };
-            dashboardFoot.SizeChanged += delegate { SizeDashboard(); };
-            ResumeLayout(true);
+            Controls.Add(shell);
+            for (int i = layoutBatch.Count - 1; i >= 0; i--) layoutBatch[i].ResumeLayout(false);
+            layoutBatch.Clear(); buildingUi = false; ResumeLayout(true);
         }
         protected override void ScaleControl(SizeF factor, BoundsSpecified specified)
         {
             uiScale *= factor.Width; base.ScaleControl(factor, specified);
         }
-        void QueueDashboardSize()
-        {
-            if (!IsHandleCreated || IsDisposed || closing || dashboardSizeQueued) return;
-            dashboardSizeQueued = true;
-            BeginInvoke((MethodInvoker)delegate {
-                dashboardSizeQueued = false;
-                if (!IsDisposed && !closing) SizeDashboard();
-            });
-        }
-        void SizeDashboard()
-        {
-            if (pages == null || sizingDashboard) return;
-            sizingDashboard = true;
-            try
-            {
-                int available = ClientSize.Height - dashboardHead.Height - dashboardStats.Height - dashboardFoot.Height - (int)(76 * uiScale);
-                int height = Math.Max((int)(410 * uiScale), available);
-                if (pages.Height != height) pages.Height = height;
-            }
-            finally { sizingDashboard = false; }
-        }
         void FitToWorkingArea()
         {
             Rectangle area = Screen.FromControl(this).WorkingArea;
-            MinimumSize = new Size(Math.Min((int)(720 * uiScale), area.Width), Math.Min((int)(540 * uiScale), area.Height));
+            MinimumSize = new Size(Math.Min((int)(760 * uiScale), area.Width), Math.Min((int)(560 * uiScale), area.Height));
             Size = new Size(Math.Min(Width, area.Width), Math.Min(Height, area.Height));
             Location = new Point(area.Left + Math.Max(0, (area.Width - Width) / 2), area.Top + Math.Max(0, (area.Height - Height) / 2));
-            SizeDashboard();
         }
         void BuildLibrary(Control page)
         {
-            var viewport = new ContentViewport(); page.Controls.Add(viewport);
-            var columns = new ResponsiveColumns(940, 57, 43); viewport.SetContent(columns);
-            var list = AutoTable(1, 100);
-            modelCount = L("로컬 모델", 12F, true); AddRow(list, modelCount);
-            scanButton = Action("새로고침", async delegate { await Work(RescanFromUi); }, false);
-            AddRow(list, Actions(Action("models 폴더 열기", delegate { OpenModels(); }, false), scanButton,
-                Action("모델 팩 설치", async delegate { await Work(ImportModelPack); }, false),
-                Action("사양별 모델 / 추가 방법", delegate { ShowModelGuide(); }, false)));
-            recommendation = L("사양 확인 중", 9F, true); recommendation.ForeColor = Theme.Accent;
-            recommendation.Margin = new Padding(0, 0, 0, 10); AddRow(list, recommendation);
-            var search = AutoTable(2, -46, 100); search.RowStyles.Add(new RowStyle(SizeType.AutoSize)); search.Margin = new Padding(0, 0, 0, 12);
-            var searchLabel = L("검색", 9F, false); searchLabel.Padding = new Padding(0, 4, 0, 0); search.Controls.Add(searchLabel, 0, 0);
-            searchBox = new TextBox { Dock = DockStyle.Fill, Margin = new Padding(0), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Malgun Gothic", 10F), AccessibleName = "모델 검색" };
-            searchBox.TextChanged += delegate { BindModelGrid(); }; search.Controls.Add(searchBox, 1, 0); AddRow(list, search);
-            modelGrid = MakeGrid(); modelGrid.Columns.Add("name", "모델"); modelGrid.Columns.Add("size", "크기"); modelGrid.Columns.Add("state", "상태");
-            modelGrid.Columns[0].FillWeight = 64; modelGrid.Columns[1].FillWeight = 18; modelGrid.Columns[2].FillWeight = 18;
-            modelGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells; modelGrid.RowTemplate.MinimumHeight = 52;
-            modelGrid.DefaultCellStyle.WrapMode = DataGridViewTriState.True; modelGrid.Height = 230; modelGrid.Dock = DockStyle.Fill;
+            // Fixed outer bounds; only the details scroll. No preferred-height feedback into the window.
+            var columns = Table(2, 58, 42); page.Controls.Add(columns);
+            var list = Table(1, 100); list.RowCount = 3; list.Padding = new Padding(18);
+            list.RowStyles.Add(new RowStyle(SizeType.Absolute, 58)); list.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); list.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
+            var library = new Surface { Dock = DockStyle.Fill, Padding = new Padding(0), Margin = new Padding(0, 0, 16, 0) }; library.Controls.Add(list); columns.Controls.Add(library, 0, 0);
+            var bar = Table(2, 100, -124);
+            modelCount = L("모델", 15F, true); modelCount.Dock = DockStyle.Fill; bar.Controls.Add(modelCount, 0, 0);
+            var add = Action("+ 모델 추가", delegate { ShowModelGuide(); }, false); add.Margin = new Padding(0, 0, 0, 14); bar.Controls.Add(add, 1, 0); list.Controls.Add(bar, 0, 0);
+            modelGrid = MakeGrid(); modelGrid.Columns.Add("name", "모델"); modelGrid.Columns.Add("size", "용량");
+            modelGrid.Columns[0].FillWeight = 76; modelGrid.Columns[1].FillWeight = 24;
+            modelGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells; modelGrid.RowTemplate.MinimumHeight = 76;
+            modelGrid.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             modelGrid.SelectionChanged += delegate { if (bindingModels) return; var m = modelGrid.CurrentRow == null ? null : modelGrid.CurrentRow.Tag as ModelInfo; if (m != null) modelBox.SelectedItem = m; };
-            modelGrid.CellDoubleClick += async delegate(object sender, DataGridViewCellEventArgs e) { if (e.RowIndex >= 0 && modelGrid.Rows[e.RowIndex].Tag is ModelInfo) await Work(StartFromUi); };
-            int gridRow = list.RowStyles.Count; list.RowCount = gridRow + 1; list.RowStyles.Add(new RowStyle(SizeType.Absolute, 230)); list.Controls.Add(modelGrid, 0, gridRow);
-            catalogNote = L("models 폴더에 GGUF 파일을 넣으면 자동으로 검색합니다.", 8.5F, false); catalogNote.ForeColor = Theme.Muted; catalogNote.Margin = new Padding(0, 10, 0, 10); AddRow(list, catalogNote);
-            var guide = L("추가 팩은 ‘모델 팩 설치’ · GGUF 파일은 models 폴더에 복사", 9F, true);
-            guide.ForeColor = Theme.Accent; guide.BackColor = Theme.Pale; guide.Padding = new Padding(12); AddRow(list, guide);
-            var library = Card(list, new Padding(16)); columns.Controls.Add(library);
-
-            var side = AutoTable(1, 100); columns.Controls.Add(side);
+            list.Controls.Add(modelGrid, 0, 1);
+            catalogNote = new Label { Text = "", Dock = DockStyle.Fill, AutoEllipsis = true, ForeColor = Theme.Muted, TextAlign = ContentAlignment.BottomLeft, Font = new Font("Malgun Gothic", 9F) }; list.Controls.Add(catalogNote, 0, 2);
+            var details = new Surface { Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(20) }; columns.Controls.Add(details, 1, 0);
+            var viewport = new ContentViewport(); details.Controls.Add(viewport);
             var detail = AutoTable(1, 100);
-            var tag = L("선택한 모델", 9F, true); tag.ForeColor = Theme.Muted; tag.Margin = new Padding(0, 0, 0, 8); AddRow(detail, tag);
-            selectedName = L("사용할 모델을 선택하세요", 13F, true); selectedName.Margin = new Padding(0, 0, 0, 8); AddRow(detail, selectedName);
-            selectedMeta = L("GGUF 모델이 아직 없습니다.", 9F, false); selectedMeta.ForeColor = Theme.Muted; AddRow(detail, selectedMeta);
-            selectedPath = L("", 8.5F, false); selectedPath.ForeColor = Theme.Muted; selectedPath.Margin = new Padding(0, 5, 0, 12); AddRow(detail, selectedPath);
-            AddRow(detail, L("실행기", 9F, true));
-            backendBox = Combo(new[] { "자동 검사 (CUDA → CPU)", "CPU", "CUDA 12.4", "CUDA 13.1 (기존)", "CUDA 13.4" }); backendBox.Margin = new Padding(0, 5, 0, 10); AddRow(detail, backendBox);
-            AddRow(detail, L("사고 모드", 9F, true));
-            thinkingModeBox = Combo(new[] { "OFF · 빠르게 답변", "ON · 생각한 뒤 답변" });
-            thinkingModeBox.Margin = new Padding(0, 5, 0, 6); AddRow(detail, thinkingModeBox);
-            var thinkingHint = L("시작 / 재시작 시 적용 · 지원 모델에서 사용", 8.5F, false);
-            thinkingHint.ForeColor = Theme.Muted; thinkingHint.Margin = new Padding(0, 0, 0, 10); AddRow(detail, thinkingHint);
-            selectedState = L("선택 후 실행 버튼을 누르세요.", 9F, false); selectedState.ForeColor = Theme.Accent; selectedState.Margin = new Padding(0, 0, 0, 6); AddRow(detail, selectedState);
-            startButton = Action("선택한 모델 시작", async delegate { await Work(StartFromUi); }, true);
+            var tag = L("선택한 모델", 9F, false); tag.ForeColor = Theme.Muted; tag.Margin = new Padding(0, 0, 0, 12); AddRow(detail, tag);
+            selectedName = L("모델을 추가하세요", 18F, true); selectedName.Margin = new Padding(0, 0, 0, 10); AddRow(detail, selectedName);
+            selectedMeta = L("", 10F, false); selectedMeta.ForeColor = Theme.Muted; selectedMeta.Margin = new Padding(0, 0, 0, 26); AddRow(detail, selectedMeta);
+            selectedPath = L("", 9F, false); // Full filename is available as a tooltip, not a repeated paragraph.
+            AddRow(detail, L("실행 장치", 10F, true));
+            backendBox = Combo(new[] { "자동", "CPU", "CUDA 12.4", "CUDA 13.1 (기존)", "CUDA 13.4" }); backendBox.Margin = new Padding(0, 8, 0, 22); AddRow(detail, backendBox);
+            AddRow(detail, L("사고 모드", 10F, true));
+            thinkingModeBox = Combo(new[] { "OFF — 빠른 답변", "ON — 깊이 생각" }); thinkingModeBox.Margin = new Padding(0, 8, 0, 24); AddRow(detail, thinkingModeBox);
+            selectedState = L("", 9F, false); selectedState.ForeColor = Theme.Accent; selectedState.Margin = new Padding(0, 0, 0, 12); AddRow(detail, selectedState);
+            startButton = Action("시작", async delegate { await Work(StartFromUi); }, true);
             stopButton = Action("중지", delegate { cancelRequested = true; if (modelImport != null) modelImport.Cancel(); else server.Stop(); }, false);
-            AddRow(detail, Actions(startButton, stopButton)); loadButton = startButton; AddRow(side, Card(detail, new Padding(16)));
-
-            var ct = AutoTable(1, 100); var ctTitle = L("로컬 API 연결 정보", 12F, true); ctTitle.Margin = new Padding(0, 0, 0, 8); AddRow(ct, ctTitle);
-            runningNote = L("서버를 시작하면 연결 정보가 표시됩니다.", 8.5F, false); runningNote.ForeColor = Theme.Muted; runningNote.Margin = new Padding(0, 0, 0, 10); AddRow(ct, runningNote);
-            baseUrl = ReadonlyText(); chatUrl = ReadonlyText(); modelId = ReadonlyText();
-            AddRow(ct, ConnectionRow("기본 주소", baseUrl)); AddRow(ct, ConnectionRow("요청 주소", chatUrl)); AddRow(ct, ConnectionRow("모델 ID", modelId));
-            hardwareLabel = L("", 8.5F, false); hardwareLabel.ForeColor = Theme.Muted; hardwareLabel.Margin = new Padding(0, 6, 0, 0); AddRow(ct, hardwareLabel);
-            webButton = Action("llama-ui 열기", delegate { OpenUi(); }, false);
-            testButton = Action("연결 테스트", async delegate { await Work(async delegate { string text = await server.TestAsync(); if (!closing) MessageBox.Show(this, text, "API 생성 테스트"); }); }, false);
-            connectionSummary = L("API 키 없이 연결 · 사고 모드 OFF", 9F, true); connectionSummary.ForeColor = Theme.Accent; AddRow(ct, connectionSummary);
-            AddRow(ct, Actions(Action("API 연결 설정 / OpenCode", delegate { pages.SelectedTab = apiPage; }, true), webButton, testButton)); AddRow(side, Card(ct, new Padding(16)));
+            var run = Table(2, 70, 30); run.Height = 48; run.Dock = DockStyle.Top; startButton.AutoSize = false; stopButton.AutoSize = false;
+            startButton.Margin = new Padding(0, 0, 8, 0); stopButton.Margin = new Padding(0); run.Controls.Add(startButton, 0, 0); run.Controls.Add(stopButton, 1, 0); AddRow(detail, run); loadButton = startButton;
+            runningNote = L("", 9F, false); runningNote.ForeColor = Theme.Muted; runningNote.Margin = new Padding(0, 16, 0, 0); AddRow(detail, runningNote);
+            webButton = Action("대화 열기", delegate { OpenUi(); }, false); AddRow(detail, Actions(webButton));
+            viewport.SetContent(detail);
+            // Compatibility fields remain internal; connection details have a single home in the API tab.
+            baseUrl = ReadonlyText(); chatUrl = ReadonlyText(); modelId = ReadonlyText(); hardwareLabel = L("", 9F, false);
+            scanButton = Action("새로고침", async delegate { await Work(RescanFromUi); }, false);
+            connectionSummary = L("", 9F, false);
+        }
+        static string DisplayModel(ModelInfo model)
+        {
+            var profile = ModelCatalog.Current.Find(model);
+            return profile == null ? Path.GetFileNameWithoutExtension(model.Name) : profile.name;
         }
         Control ConnectionRow(string text, TextBox field)
         {
@@ -233,30 +181,21 @@ namespace SILocalAI
         }
         void ShowModelGuide()
         {
-            using (var dialog = new Form { Text = "사양별 모델 / 추가 방법", Font = Font, BackColor = paper, StartPosition = FormStartPosition.CenterParent,
-                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(660, 610), MinimumSize = new Size(400, 320), MaximizeBox = false, MinimizeBox = false, ShowInTaskbar = false })
+            using (var dialog = new Form { Text = "모델 추가", Font = Font, BackColor = Color.White, StartPosition = FormStartPosition.CenterParent,
+                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(590, 440), MinimumSize = new Size(420, 340), MaximizeBox = false, MinimizeBox = false, ShowInTaskbar = false })
             {
-                var viewport = new ContentViewport { Padding = new Padding(22) }; dialog.Controls.Add(viewport);
-                var body = AutoTable(1, 100); viewport.SetContent(body);
-                var heading = L("사양에 맞는 모델 선택", 15F, true); heading.Margin = new Padding(0, 0, 0, 16); AddRow(body, heading);
+                var viewport = new ContentViewport { Padding = new Padding(24) }; var body = AutoTable(1, 100);
+                var heading = L("모델 추가", 18F, true); heading.Margin = new Padding(0, 0, 0, 18); AddRow(body, heading);
+                AddRow(body, L("GGUF 파일을 모델 폴더에 복사하면 목록에 나타납니다.", 10F, false));
+                var folder = new TextBox { ReadOnly = true, Dock = DockStyle.Top, Margin = new Padding(0, 14, 0, 12), Text = Paths.Full(Paths.Full(root, config.AssetRoot), config.ModelsPath), AccessibleName = "모델 폴더" }; AddRow(body, folder);
+                AddRow(body, Actions(Action("폴더 열기", delegate { OpenModels(); }, false), Action("모델 팩 설치", async delegate { dialog.Close(); await Work(ImportModelPack); }, true)));
                 foreach (var model in ModelCatalog.Current.models)
                 {
-                    bool installed = inventory.Models.Any(x => Path.GetFileName(x.FullPath) == model.file && x.Bytes == model.size);
-                    var item = L(model.name + "  ·  " + (model.size / 1e9).ToString("0.00") + " GB" + (installed ? "  ·  설치됨" : "  ·  추가 팩") + "\n" + model.tier + "  /  문맥 " + (model.context / 1024) + "K", 10F, false);
-                    item.Margin = new Padding(0, 0, 0, 12); AddRow(body, item);
+                    var item = L(model.name + "  ·  " + (model.size / 1e9).ToString("0.00") + " GB\n" + model.tier, 9.5F, false);
+                    item.ForeColor = Theme.Muted; item.Margin = new Padding(0, 12, 0, 0); AddRow(body, item);
                 }
-                foreach (string step in new[] {
-                    "1. 인터넷 PC용 모델 다운로드 도구에서 필요한 모델을 받습니다.",
-                    "2. 팩 폴더를 반입한 뒤 ‘모델 팩 설치’에서 .modelpack.json을 선택합니다.",
-                    "3. 목록에서 모델을 선택하고 시작합니다. 27B 등 다른 GGUF는 아래 모델 폴더에 직접 복사하면 자동으로 표시됩니다." })
-                { var text = L(step, 10F, false); text.Margin = new Padding(0, 0, 0, 14); AddRow(body, text); }
-                var note = L("메모리 권장은 문맥 4K–8K 기준 추정치입니다. 다른 앱의 GPU 사용량과 문맥 길이에 따라 달라집니다. 9B는 8GB GPU에서도 문맥을 줄여 시도할 수 있지만 여유가 적습니다.\n추가 팩 설치에는 모델 크기만큼의 빈 공간이 더 필요합니다.", 9F, false);
-                note.ForeColor = Theme.Muted; AddRow(body, note);
-                var folder = new TextBox { ReadOnly = true, Dock = DockStyle.Top, Margin = new Padding(0, 14, 0, 8), Text = Paths.Full(Paths.Full(root, config.AssetRoot), config.ModelsPath), AccessibleName = "현재 모델 폴더" }; AddRow(body, folder);
-                var close = Action("닫기", delegate { dialog.Close(); }, true); dialog.AcceptButton = close; dialog.CancelButton = close;
-                AddRow(body, Actions(Action("models 폴더 열기", delegate { OpenModels(); }, false), close));
-                dialog.Shown += delegate { var area = Screen.FromControl(dialog).WorkingArea; dialog.MinimumSize = new Size(Math.Min(dialog.MinimumSize.Width, area.Width), Math.Min(dialog.MinimumSize.Height, area.Height)); dialog.Size = new Size(Math.Min(dialog.Width, area.Width), Math.Min(dialog.Height, area.Height)); };
-                dialog.ShowDialog(this);
+                var close = Action("닫기", delegate { dialog.Close(); }, false); dialog.CancelButton = close; AddRow(body, Actions(close));
+                viewport.SetContent(body); dialog.Controls.Add(viewport); dialog.ShowDialog(this);
             }
         }
         async Task ImportModelPack()
@@ -286,17 +225,23 @@ namespace SILocalAI
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, SelectionMode = DataGridViewSelectionMode.FullRowSelect, EnableHeadersVisualStyles = false,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal, ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
                 ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
-                Font = new Font("Malgun Gothic", 9F), Margin = new Padding(0), AccessibleName = "사용 가능한 로컬 모델" };
+                Font = new Font("Malgun Gothic", 10.5F), Margin = new Padding(0), AccessibleName = "사용 가능한 로컬 모델" };
             g.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Theme.Background, ForeColor = Theme.Muted, Font = new Font("Malgun Gothic", 8.5F, FontStyle.Bold), Padding = new Padding(8, 6, 0, 6), SelectionBackColor = Theme.Background, SelectionForeColor = Theme.Muted };
             g.DefaultCellStyle = new DataGridViewCellStyle { Font = g.Font, BackColor = Color.White, ForeColor = Theme.Ink, SelectionBackColor = Theme.Pale, SelectionForeColor = Theme.Ink, Padding = new Padding(8, 8, 6, 8) };
             return g;
         }
         void BuildSettings(Control page)
         {
-            var tabs = new TabControl { Dock = DockStyle.Fill };
-            var paths = new TabPage("자산 경로") { BackColor = Color.White, Padding = new Padding(12) };
-            var settings = new TabPage("서버 옵션") { BackColor = Color.White, Padding = new Padding(12) };
-            tabs.TabPages.AddRange(new[] { paths, settings }); page.Controls.Add(tabs); BuildAssets(paths);
+            var tabs = new WorkspaceTabs();
+            var paths = new Panel { BackColor = Color.White, Padding = new Padding(18) };
+            var settings = new Panel { BackColor = Color.White, Padding = new Padding(18) };
+            var pc = new Panel { BackColor = Color.White, Padding = new Padding(18) };
+            tabs.AddPage("서버", settings); tabs.AddPage("폴더", paths); tabs.AddPage("PC 정보", pc); page.Controls.Add(tabs); BuildAssets(paths);
+            var pcViewport = new ContentViewport(); var pcBody = AutoTable(1, 100);
+            AddRow(pcBody, Actions(Action("PC 정보 확인", async delegate { await DetectHardwareAsync(); }, false)));
+            AddRow(pcBody, Stat("CPU · 메모리", out cpuValue, out cpuNote)); AddRow(pcBody, Stat("그래픽 장치", out gpuValue, out gpuNote));
+            AddRow(pcBody, Stat("실행기", out runtimeValue, out runtimeNote));
+            recommendation = L("", 10F, false); recommendation.ForeColor = Theme.Accent; AddRow(pcBody, recommendation); pcViewport.SetContent(pcBody); pc.Controls.Add(pcViewport);
             assetGrid.BackgroundColor = Color.White; assetGrid.GridColor = Theme.Line; assetGrid.EnableHeadersVisualStyles = false; assetGrid.ColumnHeadersDefaultCellStyle.BackColor = Theme.Background; assetGrid.BorderStyle = BorderStyle.None;
             var viewport = new ContentViewport(); settings.Controls.Add(viewport); var t = AutoTable(1, 100); viewport.SetContent(t);
             modeBox = Combo(new[] { "자동 (선택 모델만 실행)", "목록 (선택 모델만 등록)", "단일 모델 (호환 모드)" }); AddRow(t, L("서버 모드", 9F, true)); AddRow(t, modeBox);
@@ -309,14 +254,14 @@ namespace SILocalAI
             fallbackBox = new CheckBox { Text = "자동 모드에서 CPU 전환 허용", AutoSize = true, Margin = new Padding(0, 4, 0, 8) };
             browserBox = new CheckBox { Text = "서버 시작 후 llama-ui 열기", AutoSize = true, Margin = new Padding(0, 4, 0, 8) };
             foreach (Control c in new Control[] { autoBox, fallbackBox, browserBox }) { editable.Add(c); AddRow(t, c); }
-            var save = Action("설정 저장", delegate { TryAction(delegate { ReadConfig(); SaveConfig(); statusLabel.Text = "저장했습니다. 실행 중 서버에는 다음 시작 시 반영됩니다."; }); }, true); editable.Add(save); AddRow(t, Actions(save));
-            var note = L("새 설정은 다음 서버 시작 시 반영합니다.\n자동 실행 옵션은 Windows 시작프로그램 등록이 아닙니다.", 9F, false); note.ForeColor = Theme.Muted; AddRow(t, note);
+            var save = Action("설정 저장", delegate { TryAction(delegate { ReadConfig(); SaveConfig(); statusLabel.Text = "저장됨 · 다음 시작 시 적용"; }); }, true); editable.Add(save); AddRow(t, Actions(save));
+            var note = L("다음 서버 시작 시 적용됩니다.", 9F, false); note.ForeColor = Theme.Muted; AddRow(t, note);
         }
         void BuildLogs(Control page)
         {
             var t = Table(1, 100); t.RowCount = 2; t.RowStyles.Add(new RowStyle(SizeType.AutoSize)); t.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); page.Controls.Add(t);
-            var bar = AutoTable(1, 100); var note = L("오류와 llama-server 출력을 확인할 수 있습니다.", 9F, false); note.ForeColor = Theme.Muted; AddRow(bar, note);
-            AddRow(bar, Actions(Action("PC 다시 감지", async delegate { await DetectHardwareAsync(); }, false), Action("로그 폴더 열기", delegate { OpenPath(state); }, false))); t.Controls.Add(bar, 0, 0);
+            var bar = AutoTable(1, 100); var note = L("실행 기록", 9F, false); note.ForeColor = Theme.Muted; AddRow(bar, note);
+            AddRow(bar, Actions(Action("로그 폴더 열기", delegate { OpenPath(state); }, false))); t.Controls.Add(bar, 0, 0);
             logBox = new TextBox { Dock = DockStyle.Fill, Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Both, WordWrap = false, BackColor = Color.FromArgb(248, 250, 252), ForeColor = Theme.Ink, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Consolas", 9F) }; t.Controls.Add(logBox, 0, 1);
         }
         void RememberSelection()
@@ -331,16 +276,16 @@ namespace SILocalAI
             bindingModels=true;
             try
             {
-                string id=SelectedModel()==null?"":SelectedModel().Id, term=searchBox.Text.Trim(); modelGrid.Rows.Clear();
-                foreach(var m in inventory.Models.Where(m=>term.Length==0 || m.Name.IndexOf(term,StringComparison.OrdinalIgnoreCase)>=0 || m.Architecture.IndexOf(term,StringComparison.OrdinalIgnoreCase)>=0))
+                string id=SelectedModel()==null?"":SelectedModel().Id; modelGrid.Rows.Clear();
+                foreach(var m in inventory.Models)
                 {
                     bool running=server.Status.Ready && server.Status.ModelId==m.Id;
-                    int r=modelGrid.Rows.Add(m.Name+"\n"+m.Architecture, (m.Bytes/1073741824.0).ToString("0.00")+" GiB",running?"준비 완료":server.Status.ModelId==m.Id && server.Status.State=="loading"?"로딩 중":"발견"); modelGrid.Rows[r].Tag=m;
-                    modelGrid.Rows[r].Cells[2].Style.ForeColor=running?Theme.Accent:Theme.Muted;
+                    int r=modelGrid.Rows.Add(DisplayModel(m) + (running ? "\n실행 중" : "\n" + m.Architecture), (m.Bytes/1073741824.0).ToString("0.0")+" GB"); modelGrid.Rows[r].Tag=m;
+                    modelGrid.Rows[r].Cells[0].ToolTipText = m.RelativePath;
                 }
                 modelGrid.ClearSelection();
                 foreach(DataGridViewRow row in modelGrid.Rows) if(((ModelInfo)row.Tag).Id==id) { modelGrid.CurrentCell=row.Cells[0]; row.Selected=true; break; }
-                modelCount.Text="로컬 모델  "+inventory.Models.Count;
+                modelCount.Text="모델  "+inventory.Models.Count;
             }
             finally {bindingModels=false;}
             RefreshSelection();
@@ -348,15 +293,13 @@ namespace SILocalAI
         void RefreshSelection()
         {
             if(selectedName==null || modelBox==null) return; var m=SelectedModel();
-            selectedName.Text=m==null?"사용할 모델이 없습니다":m.Name;
-            selectedMeta.Text=m==null?"models 폴더에 GGUF 파일을 넣으세요.":m.Architecture+"  ·  "+(m.Bytes/1073741824.0).ToString("0.00")+" GiB";
+            selectedName.Text=m==null?"모델을 추가하세요":DisplayModel(m);
             var profile = ModelCatalog.Current.Find(m);
-            if (profile != null) selectedMeta.Text += "\n" + profile.tier + " · 문맥 " + (profile.context / 1024) + "K 권장";
-            selectedPath.Text=m==null?"":m.RelativePath;
-            if(m!=null) { tips.SetToolTip(selectedPath,m.FullPath); tips.SetToolTip(selectedName,m.Name); }
+            selectedMeta.Text=m==null?"GGUF 파일 또는 모델 팩":(m.Bytes/1073741824.0).ToString("0.00")+" GiB" + (profile == null ? " · " + m.Architecture : " · 문맥 " + (profile.context / 1024) + "K 권장");
+            if(m!=null) tips.SetToolTip(selectedName,m.RelativePath);
             bool same=m!=null && server.Status.Ready && server.Status.ModelId==m.Id;
-            selectedState.Text=m==null?"복사 중인 파일은 확인 후 목록에 표시됩니다.":same?"이 모델이 실행 중입니다.":server.Alive?"선택만으로 실행 모델이 바뀌지는 않습니다.":"선택한 모델만 메모리에 불러옵니다.";
-            startButton.Text=uiBusy?"준비 중...":server.Alive?(same?"서버 재시작":"이 모델로 전환") : "선택한 모델 시작";
+            selectedState.Text=server.Alive ? (same ? "실행 중 · 변경 사항은 재시작 후 적용" : "시작하면 현재 모델을 교체합니다") : "";
+            startButton.Text=uiBusy?"준비 중…":server.Alive?(same?"재시작":"모델 전환") : "시작";
             startButton.Enabled=!uiBusy && m!=null && inventory.Backends.Any(b=>!String.IsNullOrEmpty(b.Exe));
         }
         void UpdateDashboard(ServerStatus s)
@@ -365,7 +308,7 @@ namespace SILocalAI
             stateBadge.Text=s.Ready?"준비 완료":s.State=="error"?"오류":s.State=="loading"?"로딩 중":s.State=="probing" || s.State=="testing"?"검사 중":s.Listening?"모델 대기":"대기";
             stateBadge.ForeColor=s.State=="error"?Theme.Danger:s.Ready?Theme.Accent:Theme.Muted;
             stateBadge.BackColor=s.State=="error"?Color.FromArgb(254,237,234):s.Ready?Theme.Pale:Color.FromArgb(233,238,245);
-            runningNote.Text=s.Ready?"생성 확인 완료 · "+s.Backend:s.Listening?"서버 실행 중 · 모델 준비 대기":"서버 중지 · 연결 정보는 실행 후 사용하세요.";
+            runningNote.Text=s.Ready?s.Backend + " · 실행 중":s.Listening?"모델 준비 중":"";
             if(s.Ready) modelId.Text=s.ModelId; else if(!s.Listening) modelId.Text="";
             if(!s.Listening && !uiBusy) { baseUrl.Text=""; chatUrl.Text=""; }
             BindModelGrid();
@@ -378,6 +321,7 @@ namespace SILocalAI
         }
         async Task DetectHardwareAsync()
         {
+            if (detectingHardware) return; detectingHardware = true; cpuValue.Text = "확인 중…";
             try
             {
                 var result=await Task.Run(delegate {
@@ -421,6 +365,7 @@ namespace SILocalAI
                 if (detectedVram == 0 && result[2].IndexOf("NVIDIA", StringComparison.OrdinalIgnoreCase) >= 0) recommendation.Text = "VRAM 확인 불가 · 4060 Ti 8GB → 4B / 16GB → 9B";
                 if(result[4].Length>0) log.Write("PC 환경 일부 확인 불가 (서버 실행과 별개): "+result[4]);
             } catch(Exception e) { if(!closing) log.Write("PC 감지 실패: "+e.Message); }
+            finally { detectingHardware = false; }
         }
         void OpenModels()
         {
