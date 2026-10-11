@@ -41,8 +41,8 @@ $menu = [IO.Path]::GetFullPath((Join-Path ([Environment]::GetFolderPath('Program
 $desktop = Join-Path ([Environment]::GetFolderPath('DesktopDirectory')) 'SI Local AI Launcher.lnk'
 Check (Test-Path $menu) 'Start menu shortcut created'
 Check (Test-Path $desktop) 'optional desktop shortcut created'
-$shell = New-Object -ComObject WScript.Shell
-$shortcutTarget = $shell.CreateShortcut($menu).TargetPath
+Add-Type -Path (Join-Path (Split-Path -Parent $PSScriptRoot) 'tests/ShellLinkReader.cs')
+$shortcutTarget = [ShellLinkReader]::ReadTarget($menu)
 $expectedTarget = [IO.Path]::GetFullPath((Join-Path $installPath 'SI.LocalAI.Launcher.exe'))
 Write-Host "Shortcut target: $shortcutTarget; expected: $expectedTarget"
 Check (-not [String]::IsNullOrWhiteSpace($shortcutTarget) -and [IO.Path]::GetFullPath($shortcutTarget) -eq $expectedTarget) 'shortcut targets the installed Launcher'
