@@ -99,6 +99,7 @@ class UiChecks
                         {
                             form.ClientSize = size; form.PerformLayout(); Application.DoEvents();
                             Capture(Path.Combine(output, "models-" + size.Width + ".png"));
+                            foreach (var viewport in All(form).OfType<ContentViewport>().Where(v => v.Visible)) if (viewport.HorizontalScroll.Visible) Fail("Horizontal scroll at " + size.Width);
                             var start = (Control)Field("startButton"); var stop = (Control)Field("stopButton");
                             if (start.Width < 65 || stop.Width < 50 || start.Bounds.IntersectsWith(stop.Bounds) || !form.ClientRectangle.Contains(form.PointToClient(start.PointToScreen(new Point(start.Width - 1, start.Height - 1))))) Fail("Run controls clipped/overlap");
                         }

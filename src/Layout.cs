@@ -97,6 +97,8 @@ namespace SILocalAI
                 content.SetBounds(Padding.Left + Math.Min(0, AutoScrollPosition.X), Padding.Top + Math.Min(0, AutoScrollPosition.Y), width, height);
                 var scrollSize = new Size(0, height + Padding.Vertical);
                 if (AutoScrollMinSize != scrollSize) AutoScrollMinSize = scrollSize;
+                // Reconcile native scrollbars after changing child bounds (including window shrink).
+                base.OnLayout(e);
             }
             finally { arranging = false; }
         }

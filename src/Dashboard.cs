@@ -146,7 +146,6 @@ namespace SILocalAI
             detailShell.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); detailShell.RowStyles.Add(new RowStyle(SizeType.Absolute, 106));
             details.Controls.Add(detailShell); var viewport = new ContentViewport(); detailShell.Controls.Add(viewport, 0, 0);
             var detail = AutoTable(1, 100);
-            var tag = L("선택한 모델", 9F, false); tag.ForeColor = Theme.Muted; tag.Margin = new Padding(0, 0, 0, 12); AddRow(detail, tag);
             selectedName = L("모델을 추가하세요", 18F, true); selectedName.Margin = new Padding(0, 0, 0, 10); AddRow(detail, selectedName);
             selectedMeta = L("", 10F, false); selectedMeta.ForeColor = Theme.Muted; selectedMeta.Margin = new Padding(0, 0, 0, 18); AddRow(detail, selectedMeta);
             selectedPath = L("", 9F, false); // Full filename is available as a tooltip, not a repeated paragraph.

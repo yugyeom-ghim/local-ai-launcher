@@ -257,7 +257,7 @@ namespace SILocalAI
                 : catalogChanged ? "모델 목록 갱신됨"
                 : inventory.Warnings.Count > 0 ? "제외/확인 항목 " + inventory.Warnings.Count + "개 · 진단 로그를 확인하세요."
                 : "";
-            if (!server.Alive && server.Status.State != "error") statusLabel.Text = pending>0 ? "GGUF 파일 확인 중..." : selected==null ? "모델 없음" : "준비됨";
+            if (!server.Alive && server.Status.State != "error") statusLabel.Text = pending>0 ? "GGUF 파일 확인 중..." : selected==null ? "모델 없음" : "";
             log.Write("라이브러리 갱신 · 모델 " + inventory.Models.Count + "개 / 파일 확인 중 " + pending + "개");
             UpdateRuntimeCards(); BindModelGrid(); SetBusy(uiBusy);
         }
