@@ -28,7 +28,7 @@ $downloadOutput | Set-Content state/windows-download-checks.txt -Encoding utf8
 $downloadOutput | Write-Host
 if ($downloadExit -ne 0) { throw 'Download checks failed' }
 
-& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output '/out:state\ModelPackTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/r:LocalAI.Launcher.exe' 'tests/ModelPackTests.cs'
+& $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output '/out:state\ModelPackTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/r:LocalAI.Launcher.exe' 'tests\ModelPackTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Model pack test build failed' }
 $modelChecks = & ./state/ModelPackTests.exe 2>&1
 $modelExit = $LASTEXITCODE
