@@ -16,6 +16,8 @@ $apiExit = $LASTEXITCODE
 $apiOutput | Set-Content .\state\windows-api-checks.txt -Encoding utf8
 $apiOutput | Write-Host
 if ($apiExit -ne 0) { throw 'API logic checks failed' }
+& ./scripts/Test-Cors.ps1
+if (-not $?) { throw 'Pinned Windows server CORS checks failed' }
 
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
 $csc = Join-Path $framework 'csc.exe'
@@ -77,6 +79,7 @@ Copy-Item state/windows-core-tests.txt (Join-Path $stage 'validation/WINDOWS_COR
 Copy-Item state/ui-checks/UI_CHECKS.json (Join-Path $stage 'validation/UI_CHECKS.json')
 Copy-Item state/windows-library-watch-checks.txt (Join-Path $stage 'validation/WINDOWS_LIBRARY_WATCH_CHECKS.txt')
 Copy-Item state/windows-api-checks.txt (Join-Path $stage 'validation/WINDOWS_API_CHECKS.txt')
+Copy-Item state/windows-cors-checks.txt (Join-Path $stage 'validation/WINDOWS_CORS_CHECKS.txt')
 Copy-Item state/windows-download-checks.txt (Join-Path $stage 'validation/WINDOWS_DOWNLOAD_CHECKS.txt')
 $receipt = @"
 # Windows GitHub Actions validation
@@ -86,12 +89,13 @@ Commit: $env:GITHUB_SHA
 Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 
 - Windows Server 2022 runner: native .NET Framework x64 Release build succeeded.
-- Core regression checks: 62 passed.
+- Core regression checks: 64 passed.
 - API request/credential/context logic checks: 8 passed.
+- Pinned b11429 Windows llama-server CORS/authentication checks: 30 passed (OPTIONS, GET and POST, with and without an API key).
 - Download/assembly checks: 9 passed, including HTTP Range resume and ignored-Range restart.
 - Standalone installer download/assembly checks: 9 passed.
 - Complete GGUF download/assembly, cleanup and concurrent-write checks: 13 passed.
-- No GGUF, llama-server, CUDA runtime or model inference was executed in this job.
+- The pinned CPU llama-server was run in empty router mode for HTTP checks; no model inference or CUDA execution was tested.
 - Native WinForms startup, idle CPU, UI heartbeat, fixed-size renders, simulated scaling and local file change checks passed.
 - Physical DPI transitions, CPU/CUDA inference and company OpenCode/MCP integration remain unverified.
 - This ZIP contains the Windows-built EXE. Previous Linux reports are historical records.
@@ -120,6 +124,7 @@ $hash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
 Copy-Item (Join-Path $stage 'validation/WINDOWS_CI.md') $out
 Copy-Item state/windows-core-tests.txt $out
 Copy-Item state/windows-api-checks.txt $out
+Copy-Item state/windows-cors-checks.txt $out
 Copy-Item state/windows-download-checks.txt $out
 Copy-Item state/windows-installer-download-checks.txt $out
 Copy-Item state/windows-model-download-checks.txt $out
@@ -179,6 +184,8 @@ GitHub 파일당 2GiB 제한 때문에 다운로드 도구가 분할 데이터�
 - 상태 문구 잘림 수정, Pretendard 글꼴 적용
 - 회사 로고 트레이 아이콘 상시 표시
 - API 문맥 4K·8K·16K·32K 선택 및 실제 실행 중인 값 표시
+- Confluence 연결을 막던 localhost 출처 제한 제거, JSON·API 키 요청 헤더 허용
+- 로컬 주소 127.0.0.1과 API 키 인증 유지. 다른 웹사이트 출처도 허용되므로 필요한 경우 API 키를 사용하세요.
 - 추가 모델을 완성된 GGUF로 저장, 모델 팩 설치 메뉴 제거, 메모리 기준 안내 정리
 - 모델 추가: **모델 추가 → 폴더 열기**에서 GGUF 복사
 - 기존 포터블 업데이트: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)
@@ -196,6 +203,6 @@ GitHub 파일당 2GiB 제한 때문에 다운로드 도구가 분할 데이터�
 27B 등 큰 모델은 models 폴더에 GGUF를 직접 추가해 사용할 수 있습니다.
 메모리 권장은 문맥 4K–8K 기준 추정치입니다.
 
-Windows 빌드·외부 연결 차단 상태 설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·GGUF 합치기·자동 인식 검사 통과. Windows 화면·대기 성능 검사 통과. 실제 모니터 DPI 전환·모델 추론·사내 MCP는 미검증입니다.
-검사 기록: SINGLE_INSTALLER_VALIDATION.json · UI_CHECKS.json · REAL_ASSET_UI_CHECKS.json · INSTALLER_VALIDATION.md · WINDOWS_CI.md
+Windows 빌드·외부 연결 차단 상태 설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·GGUF 합치기·자동 인식 검사 통과. Windows 화면·대기 성능 및 CORS·인증 30개 검사 통과. 동일한 CORS 수정본의 Confluence 연결은 사용자 환경에서 성공 확인했습니다. 실제 모니터 DPI 전환·모델 추론·사내 MCP는 CI 미검증입니다.
+검사 기록: SINGLE_INSTALLER_VALIDATION.json · UI_CHECKS.json · REAL_ASSET_UI_CHECKS.json · INSTALLER_VALIDATION.md · WINDOWS_CI.md · windows-cors-checks.txt
 "@ | Set-Content (Join-Path $out 'RELEASE_NOTES.md') -Encoding utf8
