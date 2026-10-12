@@ -1,0 +1,14 @@
+{
+  "tag": "v1.6.2",
+  "commit": "8ad6f0f4b05b77ba594cdff1dd24d005986afe11",
+  "release_url": "https://github.com/yugyeom-ghim/local-ai-launcher/releases/tag/v1.6.2",
+  "installer_bytes": 4073528890,
+  "installer_sha256": "ce7a73d62652f5f180d8cd6789c250a0d604d05c169caea9e5047d0379005fe4",
+  "checksum_asset_count": 38,
+  "small_files_downloaded_verified": 10,
+  "installer_parts_range_checked": 3,
+  "zip_member_hash_checks": 119,
+  "full_installer_redownloaded": false,
+  "gpu_inference_verified": false
+}
+
