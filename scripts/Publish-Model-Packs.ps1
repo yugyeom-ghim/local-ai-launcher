@@ -5,7 +5,7 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 $out = Join-Path $repoRoot 'release-output'
 $volume = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Free -gt 14GB } | Sort-Object Free -Descending | Select-Object -First 1
-if (-not $volume) { throw 'A build volume with 14 GiB free is required for the largest pack import check' }
+if (-not $volume) { throw 'A build volume with 14 GiB free is required for the largest GGUF assembly check' }
 $buildRoot = Join-Path $volume.Root ('local-ai-model-packs-' + [Guid]::NewGuid().ToString('N'))
 $packRoot = Join-Path $buildRoot 'packs'
 $catalog = Get-Content src/Resources/ModelCatalog.json -Raw | ConvertFrom-Json
@@ -19,40 +19,51 @@ foreach ($model in @($catalog.models | Where-Object { -not $_.bundled })) {
     $folder = Join-Path $packRoot $model.id
     & python scripts/build_model_pack.py --model $model.id --output $folder
     if ($LASTEXITCODE -ne 0) { throw "Model download/hash verification failed: $($model.id)" }
-    $manifest = Join-Path $folder ($model.id + '.modelpack.json')
+    $manifest = Join-Path $folder ($model.id + '.assembly.json')
+    $assembly = Get-Content $manifest -Raw | ConvertFrom-Json
     $installed = Join-Path $buildRoot ('모델 검증/' + $model.id)
-    $result = & ./state/ModelPackTests.exe $manifest $installed 2>&1
-    $exit = $LASTEXITCODE
-    $result | Add-Content (Join-Path $out 'MODEL_PACK_CHECKS.txt') -Encoding utf8
-    $result | Write-Host
-    if ($exit -ne 0) { throw "Windows model import failed: $($model.id)" }
-    Remove-Item $installed -Recurse -Force
     $baseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$Tag/"
-    $files = @(Get-ChildItem $folder -File | Sort-Object Name | ForEach-Object {
+    $files = @(Get-ChildItem $folder -File | Where-Object { $_.Extension -ne '.json' } | Sort-Object Name | ForEach-Object {
         @{ name=$_.Name; size=$_.Length; sha256=(Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(); url=$baseUrl+$_.Name }
     })
-    $downloads += @{ id=$model.id; name=$model.name; tier=$model.tier; files=$files }
+    $downloads += @{
+        id=$model.id; name=$model.name
+        model=@{ name=$model.file; size=$model.size; sha256=$model.sha256 }
+        license=($files | Where-Object { $_.name -eq ($model.id + '-LICENSE.txt') })
+        parts=@($assembly.parts)
+    }
+    # Embedded build metadata; no JSON is needed by the user or launcher.
     @{ models=$downloads } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'model-download-manifest.json') -Encoding utf8
     & $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:ModelDownload '/out:release-output\Internet-PC-Download-Models.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:release-output\model-download-manifest.json,ModelDownloads' 'tools\FullDownload.cs' 'tools\ModelDownload.cs'
     if ($LASTEXITCODE -ne 0) { throw 'Model download helper compilation failed' }
-    & ./release-output/Internet-PC-Download-Models.exe --model $model.id --directory $packRoot --verify-only --no-pause
-    if ($LASTEXITCODE -ne 0) { throw 'Model helper manifest verification failed' }
-    Remove-Item (Join-Path $folder 'download.lock')
-    $assets = @(Get-ChildItem $folder -File | ForEach-Object { $_.FullName })
+    & ./release-output/Internet-PC-Download-Models.exe --model $model.id --directory $installed --parts-directory $folder --assemble-only --no-pause
+    if ($LASTEXITCODE -ne 0) { throw 'Complete GGUF assembly failed' }
+    & ./release-output/Internet-PC-Download-Models.exe --model $model.id --directory $installed --verify-only --no-pause
+    if ($LASTEXITCODE -ne 0) { throw 'Completed GGUF/license verification failed' }
+    $modelsFolder = Join-Path $installed 'models'
+    if (@(Get-ChildItem $modelsFolder -Force).Count -ne 1 -or @(Get-ChildItem $installed -File -Recurse -Force).Count -ne 2) { throw 'Expected only GGUF and separate license' }
+    $result = & ./state/ModelPackTests.exe $manifest $modelsFolder --existing 2>&1
+    $exit = $LASTEXITCODE
+    $result | Add-Content (Join-Path $out 'MODEL_PACK_CHECKS.txt') -Encoding utf8
+    $result | Write-Host
+    if ($exit -ne 0) { throw "Complete GGUF discovery/selection failed: $($model.id)" }
+    Remove-Item $installed -Recurse -Force
+    $assets = @($files | ForEach-Object { Join-Path $folder $_.name })
     & gh release upload $Tag @assets --repo $env:GITHUB_REPOSITORY --clobber
     if ($LASTEXITCODE -ne 0) { throw 'Model pack upload failed; release remains draft' }
-    $records += @{ id=$model.id; file=$model.file; size=$model.size; sha256=$model.sha256; revision=$model.revision; download_verified=$true; windows_import_verified=$true; gguf_header_and_tensor_bounds_verified=$true; discovery_and_selected_path_verified=$true; inference_verified=$false }
+    $records += @{ id=$model.id; file=$model.file; size=$model.size; sha256=$model.sha256; revision=$model.revision; download_verified=$true; windows_gguf_assembly_verified=$true; complete_gguf_only_in_models=$true; license_verified=$true; no_json_or_lock=$true; gguf_header_and_tensor_bounds_verified=$true; discovery_and_selected_path_verified=$true; inference_verified=$false }
     $hashes += @($files | ForEach-Object { $_.sha256 + '  ' + $_.name })
-    # Each pack is uploaded and validated before reclaiming disk for the next model.
+    # Reclaim disk after verifying the complete GGUF and publishing its transport files.
     Remove-Item $folder -Recurse -Force
 }
-@{ commit=$env:GITHUB_SHA; run="https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"; logic_checks=12; models=$records; gpu_inference_verified=$false } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'MODEL_PACK_VALIDATION.json') -Encoding utf8
+@{ commit=$env:GITHUB_SHA; run="https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"; logic_checks=12; download_checks=13; models=$records; gpu_inference_verified=$false } | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $out 'MODEL_PACK_VALIDATION.json') -Encoding utf8
 Copy-Item src/Resources/ModelCatalog.json (Join-Path $out 'MODEL_CATALOG.json')
 Copy-Item MODEL_PACKS.md $out
-$finalNames = @('Internet-PC-Download-Models.exe','model-download-manifest.json','MODEL_CATALOG.json','MODEL_PACKS.md','MODEL_PACK_VALIDATION.json','MODEL_PACK_CHECKS.txt')
+$finalNames = @('Internet-PC-Download-Models.exe','MODEL_CATALOG.json','MODEL_PACKS.md','MODEL_PACK_VALIDATION.json','MODEL_PACK_CHECKS.txt')
 $hashes += @($finalNames | ForEach-Object { (Get-FileHash (Join-Path $out $_) -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_ })
 $hashes | Set-Content (Join-Path $out 'MODEL_PACK_SHA256SUMS.txt') -Encoding ascii
 $finalFiles = @($finalNames + 'MODEL_PACK_SHA256SUMS.txt' | ForEach-Object { Join-Path $out $_ })
 & gh release upload $Tag @finalFiles --repo $env:GITHUB_REPOSITORY --clobber
 if ($LASTEXITCODE -ne 0) { throw 'Model pack metadata upload failed' }
 Remove-Item $buildRoot -Recurse -Force
+Remove-Item (Join-Path $out 'model-download-manifest.json')

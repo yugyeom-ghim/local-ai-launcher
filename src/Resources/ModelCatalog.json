@@ -38,7 +38,7 @@
       "vram_gib": 6,
       "ram_gib": 16,
       "context": 4096,
-      "tier": "GPU 6–8GB · 4060 Ti 8GB",
+      "tier": "VRAM 6–8GB · RAM 16GB+",
       "bundled": true
     },
     {
@@ -57,7 +57,7 @@
       "vram_gib": 12,
       "ram_gib": 16,
       "context": 8192,
-      "tier": "GPU 12–16GB · 4060 Ti 16GB",
+      "tier": "VRAM 12–16GB · RAM 16GB+",
       "bundled": false
     }
   ]

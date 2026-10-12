@@ -365,7 +365,7 @@ namespace SILocalAI
                 if (answer == DialogResult.Cancel) { e.Cancel = true; return; }
                 if (answer == DialogResult.No) { e.Cancel = true; WindowState = FormWindowState.Minimized; return; }
             }
-            closing = true; if (modelImport != null) modelImport.Cancel(); monitorTimer.Stop(); libraryTimer.Stop(); server.Stop();
+            closing = true; monitorTimer.Stop(); libraryTimer.Stop(); server.Stop();
             try { ReadConfig(); SaveConfig(); } catch (Exception ex) { log.Write("종료 시 설정 저장 실패: " + ex.Message); }
         }
     }

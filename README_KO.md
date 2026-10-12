@@ -42,4 +42,4 @@ PC 사양 확인: **설정 → PC 정보 → PC 정보 확인**.
 
 출처·크기·SHA256: `ASSET_MANIFEST.json`, `scripts/ASSET_LOCK.json`. 무결성 검사: `Verify-Package.cmd`.
 
-사양별 추가 팩: [모델 선택·설치](MODEL_PACKS.md). 앱의 **모델 추가 → 모델 팩 설치**에서 반입한 팩을 선택합니다.
+추가 모델: [모델 선택·다운로드](MODEL_PACKS.md).

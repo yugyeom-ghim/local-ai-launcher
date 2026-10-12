@@ -36,6 +36,14 @@ $installerChecks | Set-Content state/windows-installer-download-checks.txt -Enco
 $installerChecks | Write-Host
 if ($installerExit -ne 0) { throw 'Installer download checks failed' }
 
+& $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:ModelDownloadTests '/out:state\ModelDownloadTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" 'tools\FullDownload.cs' 'tools\ModelDownload.cs' 'tests\ModelDownloadTests.cs'
+if ($LASTEXITCODE -ne 0) { throw 'Model download test build failed' }
+$modelDownloadChecks = & ./state/ModelDownloadTests.exe 2>&1
+$modelDownloadExit = $LASTEXITCODE
+$modelDownloadChecks | Set-Content state/windows-model-download-checks.txt -Encoding utf8
+$modelDownloadChecks | Write-Host
+if ($modelDownloadExit -ne 0) { throw 'Model download checks failed' }
+
 & $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output '/out:state\ModelPackTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/r:LocalAI.Launcher.exe' 'tests\ModelPackTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Model pack test build failed' }
 $modelChecks = & ./state/ModelPackTests.exe 2>&1
@@ -82,6 +90,7 @@ Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 - API request/credential logic checks: 7 passed.
 - Download/assembly checks: 9 passed, including HTTP Range resume and ignored-Range restart.
 - Standalone installer download/assembly checks: 9 passed.
+- Complete GGUF download/assembly, cleanup and concurrent-write checks: 13 passed.
 - No GGUF, llama-server, CUDA runtime or model inference was executed in this job.
 - Native WinForms startup, idle CPU, UI heartbeat, fixed-size renders, simulated scaling and local file change checks passed.
 - Physical DPI transitions, CPU/CUDA inference and company OpenCode/MCP integration remain unverified.
@@ -113,6 +122,7 @@ Copy-Item state/windows-core-tests.txt $out
 Copy-Item state/windows-api-checks.txt $out
 Copy-Item state/windows-download-checks.txt $out
 Copy-Item state/windows-installer-download-checks.txt $out
+Copy-Item state/windows-model-download-checks.txt $out
 Copy-Item state/windows-model-pack-checks.txt (Join-Path $out 'MODEL_PACK_CHECKS.txt')
 Copy-Item state/ui-checks/UI_CHECKS.json $out
 Copy-Item state/ui-checks/models-1000.png (Join-Path $out 'UI_PREVIEW.png')
@@ -166,8 +176,8 @@ GitHub 파일당 2GiB 제한 때문에 다운로드 도구가 분할 데이터�
 
 - 포함: Qwen3.5-4B-Q4_K_M, llama.cpp CPU·CUDA 12.4/13.4, VC++ 런타임
 - 환경: Windows 10/11 x64, .NET Framework 4.8+, 여유 공간 6GB 이상
-- 변경: 모델·CPU·CUDA 실행기를 하나의 오프라인 설치 EXE로 통합
-- 모델 추가: **모델 추가**에서 폴더 열기 또는 모델 팩 설치
+- 변경: 추가 모델을 완성된 GGUF로 저장, 모델 팩 설치 메뉴 제거, 메모리 기준 안내 정리
+- 모델 추가: **모델 추가 → 폴더 열기**에서 GGUF 복사
 - 기존 포터블 업데이트: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)
 
 ## 사양별 추가 모델
@@ -175,14 +185,14 @@ GitHub 파일당 2GiB 제한 때문에 다운로드 도구가 분할 데이터�
 | PC | 모델 | 크기 |
 |---|---|---:|
 | CPU · RAM 8GB+ | Qwen3.5 2B | 1.28GB |
-| 4060 Ti 8GB / GPU 6–8GB | Qwen3.5 4B (기본 포함) | 2.74GB |
-| 4060 Ti 16GB / GPU 12–16GB | Qwen3.5 9B | 5.68GB |
+| VRAM 6–8GB · RAM 16GB+ | Qwen3.5 4B (기본 포함) | 2.74GB |
+| VRAM 12–16GB · RAM 16GB+ | Qwen3.5 9B | 5.68GB |
 
 [인터넷 PC용 모델 다운로드 도구](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Models.exe)에서 필요한 모델 또는 전체를 선택합니다.
-팩 폴더를 반입한 뒤 Launcher의 **모델 추가 → 모델 팩 설치**에서 해당 .modelpack.json을 선택하세요.
+완성된 Local_AI_Models/models의 GGUF를 앱의 모델 폴더에 복사하세요. 라이선스는 별도 licenses 폴더에 저장됩니다.
 27B 등 큰 모델은 models 폴더에 GGUF를 직접 추가해 사용할 수 있습니다.
 메모리 권장은 문맥 4K–8K 기준 추정치입니다.
 
-Windows 빌드·외부 연결 차단 상태 설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·팩 설치 검사 통과. Windows 화면·대기 성능 검사 통과. 실제 모니터 DPI 전환·모델 추론·사내 MCP는 미검증입니다.
+Windows 빌드·외부 연결 차단 상태 설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·GGUF 합치기·자동 인식 검사 통과. Windows 화면·대기 성능 검사 통과. 실제 모니터 DPI 전환·모델 추론·사내 MCP는 미검증입니다.
 검사 기록: SINGLE_INSTALLER_VALIDATION.json · UI_CHECKS.json · REAL_ASSET_UI_CHECKS.json · INSTALLER_VALIDATION.md · WINDOWS_CI.md
 "@ | Set-Content (Join-Path $out 'RELEASE_NOTES.md') -Encoding utf8

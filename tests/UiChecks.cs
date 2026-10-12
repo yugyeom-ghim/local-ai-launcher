@@ -90,7 +90,7 @@ class UiChecks
                         if (((DataGridView)Field("modelGrid")).Rows.Count == 0) Fail("Model discovery failed");
                         // Exercise long names and all navigation pages. No timers are disabled during performance sampling.
                         ((Label)Field("cpuValue")).Text = "Intel(R) Core(TM) i9-14900K 24-Core Processor / AMD Ryzen Threadripper PRO 7995WX";
-                        ((Label)Field("gpuValue")).Text = "NVIDIA GeForce RTX 4060 Ti";
+                        ((Label)Field("gpuValue")).Text = "NVIDIA GPU · 8GB VRAM";
                         var inventory = (Inventory)Field("inventory");
                         foreach (var model in inventory.Models) { var entry = ModelCatalog.Current.models.FirstOrDefault(m => m.file == Path.GetFileName(model.FullPath)); if (entry != null) model.Bytes = entry.size; }
                         typeof(MainForm).GetMethod("BindModelGrid", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, null);

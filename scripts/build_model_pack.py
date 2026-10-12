@@ -66,12 +66,12 @@ def build(model, out, base):
         with (out / part['name']).open('rb') as f:
             for block in iter(lambda: f.read(4 * 1024 * 1024), b''): whole.update(block)
     if whole.hexdigest() != model['sha256']: raise ValueError('Publisher GGUF SHA256 mismatch')
-    # Exact upstream license; immutable source URL is recorded in the manifest.
+    # Exact upstream license; immutable source and provenance remain in ModelCatalog.json.
     with urllib.request.urlopen(model['license_url'], timeout=90) as r: license_data = r.read()
     if len(license_data) != model['license_size'] or hashlib.sha256(license_data).hexdigest() != model['license_sha256']: raise ValueError('License mismatch')
     (out / (model['id'] + '-LICENSE.txt')).write_bytes(license_data)
-    manifest = out / (model['id'] + '.modelpack.json')
-    manifest.write_text(json.dumps(dict(schema=1, model=model, parts=parts), ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+    manifest = out / (model['id'] + '.assembly.json')
+    manifest.write_text(json.dumps(dict(schema=1, model={k: model[k] for k in ('file', 'size', 'sha256')}, parts=parts), ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
     for record in out.glob('*.verified.json'): record.unlink()
     for partial in out.glob('*.partial'): partial.unlink()
     print('Publisher size/SHA256 verified:', model['file'], flush=True)
