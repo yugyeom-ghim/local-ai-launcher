@@ -14,16 +14,34 @@ on:
       - '.gitattributes'
       - '.github/workflows/windows-release.yml'
   workflow_dispatch:
+    inputs:
+      build_installer:
+        description: 'Build and publish the full offline installer after review'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
   group: windows-release-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
+  preview:
+    if: github.event_name != 'workflow_dispatch' || !inputs.build_installer
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Compile review build
+        shell: cmd
+        run: Build.cmd
   windows:
+    if: github.event_name == 'workflow_dispatch' && inputs.build_installer
     runs-on: windows-2022
     timeout-minutes: 120
     permissions:
