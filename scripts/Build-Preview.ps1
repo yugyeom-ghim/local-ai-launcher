@@ -19,14 +19,14 @@ if (-not $?) { throw 'UI/font/tray/idle checks failed' }
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
 $csc = Join-Path $framework 'csc.exe'
 $web = (Get-ChildItem (Join-Path $env:WINDIR 'Microsoft.NET/assembly/GAC_MSIL/System.Web.Extensions') -Filter System.Web.Extensions.dll -Recurse | Select-Object -First 1).FullName
-& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:ModelDownloadTests '/out:state\ModelDownloadTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" tools/FullDownload.cs tools/ModelDownload.cs tests/ModelDownloadTests.cs
+& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:ModelDownloadTests '/out:state\ModelDownloadTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" 'tools\FullDownload.cs' 'tools\ModelDownload.cs' 'tests\ModelDownloadTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Model downloader test build failed' }
 $checks = & ./state/ModelDownloadTests.exe 2>&1
 $checksExit = $LASTEXITCODE
 $checks | Set-Content state/windows-model-download-checks.txt -Encoding utf8
 $checks | Write-Host
 if ($checksExit -ne 0) { throw 'Model download checks failed' }
-& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 '/out:LibraryWatchTests.exe' /r:System.dll /r:System.Core.dll '/r:LocalAI.Launcher.exe' tests/LibraryWatchTests.cs
+& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 '/out:LibraryWatchTests.exe' /r:System.dll /r:System.Core.dll '/r:LocalAI.Launcher.exe' 'tests\LibraryWatchTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Watcher test build failed' }
 & ./LibraryWatchTests.exe
 if ($LASTEXITCODE -ne 0) { throw 'Watcher checks failed' }
@@ -43,7 +43,7 @@ Copy-Item licenses/Pretendard-LICENSE.txt (Join-Path $stage 'licenses')
 문맥을 바꿨다면 서버 재시작 후 OpenCode 설정을 다시 내보내고 새 대화에서 확인하세요.
 '@ | Set-Content (Join-Path $stage 'README_TEST_KO.txt') -Encoding utf8
 Compress-Archive -Path (Join-Path $stage '*') -DestinationPath (Join-Path $out 'Local_AI_Preview_Windows.zip') -CompressionLevel Optimal
-& $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:ModelDownload '/out:preview-output\Internet-PC-Download-Models.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:tools\model-downloads.json,ModelDownloads' tools/FullDownload.cs tools/ModelDownload.cs
+& $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:ModelDownload '/out:preview-output\Internet-PC-Download-Models.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:tools\model-downloads.json,ModelDownloads' 'tools\FullDownload.cs' 'tools\ModelDownload.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Model download helper compilation failed' }
 & ./preview-output/Internet-PC-Download-Models.exe --list --no-pause
 if ($LASTEXITCODE -ne 0) { throw 'Pinned model download manifest invalid' }
