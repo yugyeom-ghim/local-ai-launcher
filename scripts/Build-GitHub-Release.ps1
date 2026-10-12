@@ -176,7 +176,10 @@ GitHub 파일당 2GiB 제한 때문에 다운로드 도구가 분할 데이터�
 
 - 포함: Qwen3.5-4B-Q4_K_M, llama.cpp CPU·CUDA 12.4/13.4, VC++ 런타임
 - 환경: Windows 10/11 x64, .NET Framework 4.8+, 여유 공간 6GB 이상
-- 변경: 추가 모델을 완성된 GGUF로 저장, 모델 팩 설치 메뉴 제거, 메모리 기준 안내 정리
+- 상태 문구 잘림 수정, Pretendard 글꼴 적용
+- 회사 로고 트레이 아이콘 상시 표시
+- API 문맥 4K·8K·16K·32K 선택 및 실제 실행 중인 값 표시
+- 추가 모델을 완성된 GGUF로 저장, 모델 팩 설치 메뉴 제거, 메모리 기준 안내 정리
 - 모델 추가: **모델 추가 → 폴더 열기**에서 GGUF 복사
 - 기존 포터블 업데이트: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)
 
