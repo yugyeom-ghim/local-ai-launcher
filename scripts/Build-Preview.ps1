@@ -19,14 +19,14 @@ if (-not $?) { throw 'UI/font/tray/idle checks failed' }
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
 $csc = Join-Path $framework 'csc.exe'
 $web = (Get-ChildItem (Join-Path $env:WINDIR 'Microsoft.NET/assembly/GAC_MSIL/System.Web.Extensions') -Filter System.Web.Extensions.dll -Recurse | Select-Object -First 1).FullName
-& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:ModelDownloadTests '/out:state\ModelDownloadTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" 'tools\FullDownload.cs' 'tools\ModelDownload.cs' 'tests\ModelDownloadTests.cs'
+& $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:ModelDownloadTests '/out:state\ModelDownloadTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" 'tools\FullDownload.cs' 'tools\ModelDownload.cs' 'tests\ModelDownloadTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Model downloader test build failed' }
 $checks = & ./state/ModelDownloadTests.exe 2>&1
 $checksExit = $LASTEXITCODE
 $checks | Set-Content state/windows-model-download-checks.txt -Encoding utf8
 $checks | Write-Host
 if ($checksExit -ne 0) { throw 'Model download checks failed' }
-& $csc /nologo /target:exe /platform:x64 /langversion:5 /codepage:65001 '/out:LibraryWatchTests.exe' /r:System.dll /r:System.Core.dll '/r:LocalAI.Launcher.exe' 'tests\LibraryWatchTests.cs'
+& $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 '/out:LibraryWatchTests.exe' /r:System.dll /r:System.Core.dll '/r:LocalAI.Launcher.exe' 'tests\LibraryWatchTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Watcher test build failed' }
 & ./LibraryWatchTests.exe
 if ($LASTEXITCODE -ne 0) { throw 'Watcher checks failed' }
@@ -56,7 +56,7 @@ foreach ($image in @('models-1000','models-800','models-scale150','page-1','mode
     ready_status_is_simulated=$true; live_model_inference=$false; company_opencode_mcp=$false; full_installer_built=$false
     model_transport_release='v1.6.1'; real_model_download_repeated=$false
 } | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $out 'PREVIEW_VALIDATION.json') -Encoding utf8
-Get-ChildItem $out -File | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name } | Set-Content (Join-Path $out 'SHA256SUMS.txt') -Encoding ascii
+Get-ChildItem $out -File | Where-Object { $_.Name -ne 'SHA256SUMS.txt' } | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name } | Set-Content (Join-Path $out 'SHA256SUMS.txt') -Encoding ascii
 @'
 ## 검증용 업데이트
 
