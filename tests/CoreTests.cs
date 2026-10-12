@@ -118,6 +118,17 @@ namespace SILocalAI
                     var a = Plans.Arguments(s0, new Capabilities("--parallel N\n--offline\n--reasoning-format FORMAT"), new BackendInfo { Id = "cpu" }, false, "models/q.gguf", "q", "preset.ini", null);
                     Equal("0", a[a.IndexOf("-ngl") + 1]); Yes(a.Contains("--offline")); Yes(!a.Contains("--reasoning")); Yes(a.Contains("--alias"));
                 });
+                Test("browser origins unrestricted with explicit JSON and bearer headers", delegate {
+                    foreach (bool router in new[] { false, true }) {
+                        var a = Plans.Arguments(s0, new Capabilities("--cors-origins ORIGINS\n--cors-headers HEADERS"), new BackendInfo { Id = "cpu" }, router, "m", "m", "p", null);
+                        Yes(!a.Contains("--cors-origins")); Equal("127.0.0.1", a[a.IndexOf("--host") + 1]);
+                        Equal("*, Content-Type, Authorization", a[a.IndexOf("--cors-headers") + 1]);
+                    }
+                });
+                Test("older runtime does not receive unsupported CORS flags", delegate {
+                    var a = Plans.Arguments(s0, new Capabilities(""), new BackendInfo { Id = "cpu" }, false, "m", "m", "p", null);
+                    Yes(!a.Any(x => x.StartsWith("--cors-")));
+                });
                 Test("router args never fix model alias", delegate {
                     var a = Plans.Arguments(s0, new Capabilities("--offline\n--reasoning MODE"), new BackendInfo { Id = "cuda12" }, true, "m.gguf", "m", "p.ini", null);
                     Yes(a.Contains("--models-preset")); Yes(!a.Contains("-m")); Yes(!a.Contains("--alias")); Yes(a.Contains("--reasoning"));

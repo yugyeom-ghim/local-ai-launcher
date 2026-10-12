@@ -17,6 +17,12 @@ The Launcher reports ready after a nonempty generation response. Diagnostic requ
 Startup checks require 401 responses for missing/incorrect keys, then successful authenticated model listing and generation. `/health` is public in the pinned server.
 Unsupported key-file authentication stops startup. Logs, exported configuration and `connection.json` exclude the key.
 
+## Browser clients / CORS
+
+The launcher no longer forces `--cors-origins localhost`. The pinned llama.cpp b11429 server's default allows any origin, including a Confluence page. For supported runtimes, `--cors-headers "*, Content-Type, Authorization"` also allows JSON requests and explicit bearer authentication; `Authorization` is not covered by the header wildcard.
+The listener remains `127.0.0.1`, and optional API-key authentication remains enforced. Other websites can now call the local API too; enable the API key when access should require a token. Restart the server after updating the launcher. Inherited `LLAMA_ARG_*` settings are removed as before.
+Preflight OPTIONS and HTTP responses are checked against the pinned Windows server without loading a model. The actual Confluence page, browser local-network permissions, CSP and model inference are separate checks.
+
 ## Thinking
 
 Persisted `ThinkingOff` maps to `--reasoning off/on`, with template kwargs for older supported runtimes. This is a server default; request options can override it. Restart to apply changes.

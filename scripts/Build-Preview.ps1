@@ -14,6 +14,8 @@ $apiExit = $LASTEXITCODE
 $api | Set-Content state/windows-api-checks.txt -Encoding utf8
 $api | Write-Host
 if ($apiExit -ne 0) { throw 'API/context checks failed' }
+& ./scripts/Test-Cors.ps1
+if (-not $?) { throw 'CORS checks failed' }
 & ./scripts/Test-UI.ps1
 if (-not $?) { throw 'UI/font/tray/idle checks failed' }
 $framework = Join-Path $env:WINDIR 'Microsoft.NET/Framework64/v4.0.30319'
@@ -39,7 +41,9 @@ Copy-Item licenses/Pretendard-LICENSE.txt (Join-Path $stage 'licenses')
 검증용 업데이트
 
 앱을 종료하고 ZIP 내용을 기존 설치 폴더에 덮어쓴 뒤 LocalAI.Launcher.exe를 실행하세요.
-확인할 항목: 준비 완료 문구, 글꼴, 트레이 아이콘, 모델 추가, API 문맥 크기.
+CORS 업데이트: localhost 출처 제한 제거, JSON/API 키 요청 헤더 허용.
+덮어쓴 뒤 서버를 다시 시작하고 Confluence 페이지의 API 요청을 확인하세요.
+다른 웹사이트에서도 로컬 API를 호출할 수 있으므로 필요한 경우 API 키를 사용하세요.
 문맥을 바꿨다면 서버 재시작 후 OpenCode 설정을 다시 내보내고 새 대화에서 확인하세요.
 '@ | Set-Content (Join-Path $stage 'README_TEST_KO.txt') -Encoding utf8
 Compress-Archive -Path (Join-Path $stage '*') -DestinationPath (Join-Path $out 'Local_AI_Preview_Windows.zip') -CompressionLevel Optimal
@@ -47,14 +51,14 @@ Compress-Archive -Path (Join-Path $stage '*') -DestinationPath (Join-Path $out '
 if ($LASTEXITCODE -ne 0) { throw 'Model download helper compilation failed' }
 & ./preview-output/Internet-PC-Download-Models.exe --list --no-pause
 if ($LASTEXITCODE -ne 0) { throw 'Pinned model download manifest invalid' }
-Copy-Item state/ui-checks/UI_CHECKS.json,state/windows-api-checks.txt,state/windows-model-download-checks.txt $out
+Copy-Item state/ui-checks/UI_CHECKS.json,state/windows-api-checks.txt,state/windows-model-download-checks.txt,state/windows-cors-checks.txt $out
 foreach ($image in @('models-1000','models-800','models-scale150','page-1','model-guide')) { Copy-Item "state/ui-checks/$image.png" $out }
 @{
     commit=$env:GITHUB_SHA; run="https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
-    native_windows_build=$true; core_checks=62; api_checks=8; model_download_checks=13; watcher_checks=7
+    native_windows_build=$true; core_checks=64; cors_checks=30; api_checks=8; model_download_checks=13; watcher_checks=7
     embedded_font='Pretendard 1.3.9'; ui_checks='UI_CHECKS.json'
     ready_status_is_simulated=$true; live_model_inference=$false; company_opencode_mcp=$false; full_installer_built=$false
-    model_transport_release='v1.6.1'; real_model_download_repeated=$false
+    model_transport_release='v1.6.2'; real_model_download_repeated=$false
 } | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $out 'PREVIEW_VALIDATION.json') -Encoding utf8
 Get-ChildItem $out -File | Where-Object { $_.Name -ne 'SHA256SUMS.txt' } | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name } | Set-Content (Join-Path $out 'SHA256SUMS.txt') -Encoding ascii
 @'
@@ -62,12 +66,14 @@ Get-ChildItem $out -File | Where-Object { $_.Name -ne 'SHA256SUMS.txt' } | ForEa
 
 Local_AI_Preview_Windows.zip을 기존 설치 폴더에 덮어써서 확인하세요.
 
-- 상태 문구 잘림 수정, Pretendard 글꼴 적용
-- 회사 로고 트레이 아이콘 상시 표시
-- API 문맥 선택과 실제 실행 중인 문맥 표시
-- GGUF 복사로 모델 추가, 모델팩 설치 메뉴 제거
+- llama-server 실행 인자의 localhost 출처 제한 제거
+- JSON 및 API 키 요청을 위한 Content-Type·Authorization 헤더 허용
+- 127.0.0.1 주소와 API 키 인증 유지
+- 포함된 b11429 Windows 서버의 OPTIONS·GET·POST CORS 응답과 인증 검사 통과
+
+앱을 완전히 종료하고 덮어쓴 뒤 서버를 다시 시작하세요. 다른 웹사이트도 로컬 API를 호출할 수 있으므로 필요한 경우 API 키를 사용하세요.
 
 Internet-PC-Download-Models.exe는 인터넷 PC에서 완성된 GGUF를 받는 도구입니다.
-Windows 빌드·UI·문맥 설정·파일 감지 검사를 통과했습니다. 실제 모델 추론과 사내 OpenCode/MCP는 미검증입니다.
+Windows 빌드·UI·문맥 설정·파일 감지 검사를 통과했습니다. 실제 모델 추론과 사내 Confluence 브라우저·OpenCode/MCP는 미검증입니다.
 설치 파일은 확인 후 제작합니다.
 '@ | Set-Content (Join-Path $out 'REVIEW_NOTES.md') -Encoding utf8

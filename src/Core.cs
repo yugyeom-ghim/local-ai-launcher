@@ -385,7 +385,9 @@ namespace SILocalAI
             // --reasoning-format controls parsing, not whether the model thinks.
             if (c.Has("--reasoning")) a.AddRange(new[] { "--reasoning", s.ThinkingOff ? "off" : "on" });
             else if (c.Has("--chat-template-kwargs")) a.AddRange(new[] { "--chat-template-kwargs", s.ThinkingOff ? "{\"enable_thinking\":false}" : "{\"enable_thinking\":true}" });
-            if (c.Has("--cors-origins")) a.AddRange(new[] { "--cors-origins", "localhost" });
+            // Keep llama.cpp's default origin policy so browser tools on Confluence can connect.
+            // Authorization must be explicit: the CORS header wildcard does not cover it.
+            if (c.Has("--cors-headers")) a.AddRange(new[] { "--cors-headers", "*, Content-Type, Authorization" });
             return a;
         }
     }
