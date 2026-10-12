@@ -14,6 +14,24 @@ function Run-Setup([string]$name) {
     return $process.ExitCode
 }
 
+# Only this disposable CI runner is blocked. The shipped installer never changes firewall policy.
+$profiles = @(Get-NetFirewallProfile | Select-Object Name, Enabled)
+$ruleName = 'LocalAI-Offline-Validation-' + [Guid]::NewGuid().ToString('N')
+$probeAddress = [Net.Dns]::GetHostAddresses('github.com') | Where-Object { $_.AddressFamily -eq [Net.Sockets.AddressFamily]::InterNetwork } | Select-Object -First 1
+function Can-Connect {
+    $client = [Net.Sockets.TcpClient]::new()
+    try {
+        $pending = $client.BeginConnect($probeAddress, 443, $null, $null)
+        if (-not $pending.AsyncWaitHandle.WaitOne(3000)) { return $false }
+        try { $client.EndConnect($pending); return $client.Connected } catch { return $false }
+    } finally { $client.Dispose() }
+}
+Check (Can-Connect) 'network probe works before isolation'
+try {
+    Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True
+    New-NetFirewallRule -Name $ruleName -DisplayName $ruleName -Direction Outbound -Action Block -Profile Any -Protocol Any | Out-Null
+    Check (-not (Can-Connect)) 'outbound network blocked on disposable Windows runner'
+    Check (@(Get-ChildItem (Split-Path -Parent $SetupPath) -Force).Count -eq 1) 'installer source folder contains only one EXE'
 # The mutex name matches the Launcher, including UTF-8 Korean paths and final slash.
 $bytes = [Text.Encoding]::UTF8.GetBytes(($installPath.TrimEnd('\')+'\').ToLowerInvariant())
 $sha = [Security.Cryptography.SHA256]::Create()
@@ -75,18 +93,24 @@ Check (-not (Test-Path (Join-Path $installPath 'offline-assets/ai/models/Qwen3.5
 Check ((Get-FileHash $settings).Hash -eq $settingsHash -and (Get-FileHash $key).Hash -eq $keyHash -and (Get-FileHash $personal).Hash -eq $personalHash) 'uninstall preserves personal settings, local key and user-added files'
 Check (-not (Test-Path $menu) -and -not (Test-Path $desktop)) 'uninstall removes created shortcuts'
 
+} finally {
+    Get-NetFirewallRule -Name $ruleName -ErrorAction SilentlyContinue | Remove-NetFirewallRule
+    foreach ($profile in $profiles) { Set-NetFirewallProfile -Profile $profile.Name -Enabled $profile.Enabled }
+}
+Check (Can-Connect) 'runner network policy restored after installation checks'
+
 $receipt = @"
 # Offline installer validation
 
 Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 Commit: $env:GITHUB_SHA
-Windows Server 2022: real setup/reinstall/uninstall executed in a temporary Korean path.
+Windows Server 2022: single EXE setup/reinstall/uninstall executed in a temporary Korean path with outbound network blocked.
 
 $($results -join "`n")
 
 - Installer payload contains the actual Qwen model, CPU and both CUDA runtimes. No model inference executed.
 - Setup script has no network/download operation, firewall change or execution-policy change.
-- This test did not disconnect the runner's network and does not claim packet-capture verification.
+- Outbound network was blocked with a temporary CI firewall rule; the original runner policy was restored in finally. A TCP probe checked connectivity before, during and after isolation. No packet capture performed.
 - Interactive wizard/DPI, Windows desktop model inference and company OpenCode/MCP remain unverified.
 - Installer/compiler and Launcher binaries are not company-code-signed; existing execution policy applies.
 "@

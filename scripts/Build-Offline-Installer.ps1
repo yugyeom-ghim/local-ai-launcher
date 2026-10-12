@@ -15,19 +15,18 @@ if ((Get-Item $compilerSetup).Length -ne 10592232 -or (Get-FileHash $compilerSet
 $process = Start-Process $compilerSetup -ArgumentList @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/SP-',"/DIR=`"$compilerRoot`"") -Wait -PassThru
 if ($process.ExitCode -ne 0) { throw "Compiler installation failed: $($process.ExitCode)" }
 $iscc = Join-Path $compilerRoot 'ISCC.exe'
-& $iscc "/DPayloadRoot=$PayloadRoot" "/DOutputRoot=$OutDirectory" "/DReleaseVersion=$version" (Join-Path $repoRoot 'installer/Local-AI.iss')
+$singleRoot = Join-Path $env:RUNNER_TEMP ("single-installer-$version")
+New-Item $singleRoot -ItemType Directory -Force | Out-Null
+& $iscc "/DPayloadRoot=$PayloadRoot" "/DOutputRoot=$singleRoot" "/DReleaseVersion=$version" (Join-Path $repoRoot 'installer/Local-AI.iss')
 if ($LASTEXITCODE -ne 0) { throw 'Offline installer compilation failed' }
 
-$setup = Join-Path $OutDirectory 'Local_AI_Offline_Setup.exe'
-$installerFiles = @(Get-Item $setup) + @(Get-ChildItem $OutDirectory -Filter 'Local_AI_Offline_Setup-*.bin' -File | Sort-Object Name)
-if ($installerFiles.Count -lt 2) { throw 'Installer data slices are missing' }
+$setup = Join-Path $singleRoot 'Local_AI_Offline_Setup.exe'
+if (@(Get-ChildItem $singleRoot -File).Count -ne 1 -or -not (Test-Path $setup)) { throw 'Standalone installer must contain exactly one EXE' }
+if ((Get-Item $setup).Length -ge 4294967295L) { throw 'Installer exceeds Windows executable size limit' }
 $baseUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/"
-$manifest = @{ version = $version; files = @($installerFiles | ForEach-Object {
-    if ($_.Length -ge 2GB) { throw 'Installer asset exceeds GitHub size limit' }
-    @{ name=$_.Name; size=$_.Length; sha256=(Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(); url=$baseUrl+$_.Name }
-}) }
-$manifest | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $OutDirectory 'installer-download-manifest.json') -Encoding utf8
+& python (Join-Path $repoRoot 'scripts/split_installer.py') --installer $setup --output $OutDirectory --base-url $baseUrl --version $version
+if ($LASTEXITCODE -ne 0) { throw 'Installer transport split failed' }
+# The release contains transport parts. The downloader must reconstruct and verify the EXE before testing it.
+Remove-Item $setup
 $compilerRecord = @{ name='Inno Setup'; version='6.7.3'; url=$compilerUrl; size=10592232; sha256=$compilerHash; license='Inno Setup License'; source_commit='4adf37ed7f3fd2bd11c6836ba056e3de170fbabf' }
 $compilerRecord | ConvertTo-Json | Set-Content (Join-Path $OutDirectory 'INSTALLER_BUILD_TOOL.json') -Encoding utf8
-& (Join-Path $repoRoot 'scripts/Test-Offline-Installer.ps1') -SetupPath $setup -PayloadRoot $PayloadRoot -OutDirectory $OutDirectory
-if (-not $?) { throw 'Installer validation failed' }

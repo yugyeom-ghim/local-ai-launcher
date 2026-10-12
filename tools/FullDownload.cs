@@ -109,7 +109,7 @@ namespace SILocalAI.Distribution
             if (File.Exists(output))
             {
                 if (Verified(output, manifest.archive)) return;
-                throw new InvalidDataException("기존 ZIP을 덮어쓰지 않습니다. 다른 폴더를 사용하세요: " + output);
+                throw new InvalidDataException("기존 파일을 덮어쓰지 않습니다. 다른 폴더를 사용하세요: " + output);
             }
             for (int i = 0; i < paths.Length; i++)
                 if (!Verified(paths[i], manifest.parts[i])) throw new InvalidDataException("Part verification failed: " + paths[i]);
@@ -117,7 +117,7 @@ namespace SILocalAI.Distribution
             using (var destination = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
                 foreach (string part in paths)
                     using (var input = File.OpenRead(part)) input.CopyTo(destination, 1024 * 1024);
-            if (!Verified(temporary, manifest.archive)) throw new InvalidDataException("전체 ZIP의 SHA256이 일치하지 않습니다.");
+            if (!Verified(temporary, manifest.archive)) throw new InvalidDataException("전체 파일의 SHA256이 일치하지 않습니다.");
             File.Move(temporary, output);
         }
         public static int Main(string[] args)

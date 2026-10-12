@@ -1,8 +1,9 @@
 Local AI Launcher
 
 설치
-  Setup EXE와 BIN을 같은 폴더에 두고 Local_AI_Offline_Setup.exe를 실행합니다.
-  인터넷 PC용 다운로드 도구: Internet-PC-Download-Installer.exe
+  인터넷 PC에서 Internet-PC-Download-Installer.exe를 실행합니다.
+  생성된 Local_AI_Offline_Setup.exe 하나를 업무망으로 옮겨 실행합니다.
+  다운로드·합치기: 여유 공간 9GB
   설치 중 다운로드는 없습니다.
 
 환경

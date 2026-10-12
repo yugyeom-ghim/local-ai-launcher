@@ -28,6 +28,14 @@ $downloadOutput | Set-Content state/windows-download-checks.txt -Encoding utf8
 $downloadOutput | Write-Host
 if ($downloadExit -ne 0) { throw 'Download checks failed' }
 
+& $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output /main:InstallerDownloadTests '/out:state\InstallerDownloadTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" 'tools\FullDownload.cs' 'tools\InstallerDownload.cs' 'tests\InstallerDownloadTests.cs'
+if ($LASTEXITCODE -ne 0) { throw 'Installer download test build failed' }
+$installerChecks = & ./state/InstallerDownloadTests.exe 2>&1
+$installerExit = $LASTEXITCODE
+$installerChecks | Set-Content state/windows-installer-download-checks.txt -Encoding utf8
+$installerChecks | Write-Host
+if ($installerExit -ne 0) { throw 'Installer download checks failed' }
+
 & $csc /nologo /noconfig /target:exe /platform:x64 /langversion:5 /codepage:65001 /utf8output '/out:state\ModelPackTests.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/r:LocalAI.Launcher.exe' 'tests\ModelPackTests.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Model pack test build failed' }
 $modelChecks = & ./state/ModelPackTests.exe 2>&1
@@ -73,6 +81,7 @@ Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 - Core regression checks: 62 passed.
 - API request/credential logic checks: 7 passed.
 - Download/assembly checks: 9 passed, including HTTP Range resume and ignored-Range restart.
+- Standalone installer download/assembly checks: 9 passed.
 - No GGUF, llama-server, CUDA runtime or model inference was executed in this job.
 - Native WinForms startup, idle CPU, UI heartbeat, fixed-size renders, simulated scaling and local file change checks passed.
 - Physical DPI transitions, CPU/CUDA inference and company OpenCode/MCP integration remain unverified.
@@ -103,6 +112,7 @@ Copy-Item (Join-Path $stage 'validation/WINDOWS_CI.md') $out
 Copy-Item state/windows-core-tests.txt $out
 Copy-Item state/windows-api-checks.txt $out
 Copy-Item state/windows-download-checks.txt $out
+Copy-Item state/windows-installer-download-checks.txt $out
 Copy-Item state/windows-model-pack-checks.txt (Join-Path $out 'MODEL_PACK_CHECKS.txt')
 Copy-Item state/ui-checks/UI_CHECKS.json $out
 Copy-Item state/ui-checks/models-1000.png (Join-Path $out 'UI_PREVIEW.png')
@@ -120,14 +130,27 @@ Copy-Item state/real-payload-ui/UI_CHECKS.json (Join-Path $out 'REAL_ASSET_UI_CH
 if (-not $?) { throw 'Offline installer build/validation failed' }
 & $csc /nologo /noconfig /target:exe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:InstallerDownload '/out:release-output\Internet-PC-Download-Installer.exe' /r:System.dll /r:System.Core.dll "/r:$web" '/resource:release-output\installer-download-manifest.json,InstallerManifest' 'tools\FullDownload.cs' 'tools\InstallerDownload.cs'
 if ($LASTEXITCODE -ne 0) { throw 'Internet-PC download helper compilation failed' }
-& ./release-output/Internet-PC-Download-Installer.exe --verify-only --directory $out --no-pause
-if ($LASTEXITCODE -ne 0) { throw 'Download helper manifest verification failed' }
-Remove-Item (Join-Path $out 'download.lock')
+$singleFolder = Join-Path $env:RUNNER_TEMP ('assembled-offline-installer-' + $version)
+& ./release-output/Internet-PC-Download-Installer.exe --assemble-only --parts-directory $out --directory $singleFolder --no-pause
+if ($LASTEXITCODE -ne 0) { throw 'Standalone installer assembly failed' }
+& ./release-output/Internet-PC-Download-Installer.exe --verify-only --directory $singleFolder --no-pause
+if ($LASTEXITCODE -ne 0) { throw 'Standalone installer whole-file verification failed' }
+$setup = Join-Path $singleFolder 'Local_AI_Offline_Setup.exe'
+if (@(Get-ChildItem $singleFolder -Force).Count -ne 1) { throw 'Installer must run from a folder containing only its EXE' }
+& ./scripts/Test-Offline-Installer.ps1 -SetupPath $setup -PayloadRoot $payloadRoot -OutDirectory $out
+if (-not $?) { throw 'Standalone installer native validation failed' }
 Copy-Item README_FULL_DOWNLOAD_KO.md $out
 Copy-Item README_INSTALL_KO.txt $out
 $installer = Get-Content (Join-Path $out 'installer-download-manifest.json') -Raw | ConvertFrom-Json
-$size = [Math]::Round(($installer.files | Measure-Object size -Sum).Sum / 1GB, 2)
-$fileLinks = ($installer.files | ForEach-Object { '- ['+$_.name+']('+$_.url+')' }) -join "`n"
+$size = [Math]::Round($installer.installer.size / 1GB, 2)
+@{
+    version=$version; commit=$env:GITHUB_SHA
+    installer=$installer.installer; transport_parts=$installer.parts.Count
+    whole_sha256_verified=$true; single_exe_only_directory=$true
+    installed_payload_verified=$true; outbound_blocked_install_verified=$true
+    model_inference_verified=$false
+    run="https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID"
+} | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $out 'SINGLE_INSTALLER_VALIDATION.json') -Encoding utf8
 Get-ChildItem $out -File | Where-Object { $_.Name -notin @('SHA256SUMS.txt', 'RELEASE_NOTES.md') } | Sort-Object Name | ForEach-Object {
     (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $_.Name
 } | Set-Content (Join-Path $out 'SHA256SUMS.txt') -Encoding ascii
@@ -136,16 +159,14 @@ Get-ChildItem $out -File | Where-Object { $_.Name -notin @('SHA256SUMS.txt', 'RE
 
 기존 설치: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)을 설치 폴더에 덮어씁니다. 모델은 다시 받을 필요가 없습니다.
 
-새 설치: 모델을 포함한 오프라인 설치 파일입니다. 합계 $size GiB.
+새 설치: [인터넷 PC용 다운로드 도구](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Installer.exe)를 실행하면 **Local_AI_Offline_Setup.exe 하나($size GiB)**가 만들어집니다.
+완성된 EXE만 업무망으로 옮겨 설치하세요. 설치 중 인터넷 연결은 필요하지 않습니다.
 
-$fileLinks
-
-같은 폴더에 저장한 뒤 **Local_AI_Offline_Setup.exe**를 실행합니다.
-[인터넷 PC용 다운로드 도구](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/Internet-PC-Download-Installer.exe)는 이어받기와 SHA256 검사를 지원합니다.
+GitHub 파일당 2GiB 제한 때문에 다운로드 도구가 분할 데이터를 자동으로 합칩니다. 완료 시 받은 조각은 정리됩니다.
 
 - 포함: Qwen3.5-4B-Q4_K_M, llama.cpp CPU·CUDA 12.4/13.4, VC++ 런타임
 - 환경: Windows 10/11 x64, .NET Framework 4.8+, 여유 공간 6GB 이상
-- 변경: 시작·대기 지연 개선, 모델 검색창 제거, 화면 구성·글꼴·로고 배경 정리
+- 변경: 모델·CPU·CUDA 실행기를 하나의 오프라인 설치 EXE로 통합
 - 모델 추가: **모델 추가**에서 폴더 열기 또는 모델 팩 설치
 - 기존 포터블 업데이트: [$zipName](https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/$zipName)
 
@@ -162,6 +183,6 @@ $fileLinks
 27B 등 큰 모델은 models 폴더에 GGUF를 직접 추가해 사용할 수 있습니다.
 메모리 권장은 문맥 4K–8K 기준 추정치입니다.
 
-Windows 빌드·설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·팩 설치 검사 통과. Windows 화면·대기 성능 검사 통과. 실제 모니터 DPI 전환·모델 추론·사내 MCP는 미검증입니다.
-검사 기록: UI_CHECKS.json · REAL_ASSET_UI_CHECKS.json · INSTALLER_VALIDATION.md · WINDOWS_CI.md
+Windows 빌드·외부 연결 차단 상태 설치·재설치·제거, 실제 추가 모델 다운로드·SHA256·팩 설치 검사 통과. Windows 화면·대기 성능 검사 통과. 실제 모니터 DPI 전환·모델 추론·사내 MCP는 미검증입니다.
+검사 기록: SINGLE_INSTALLER_VALIDATION.json · UI_CHECKS.json · REAL_ASSET_UI_CHECKS.json · INSTALLER_VALIDATION.md · WINDOWS_CI.md
 "@ | Set-Content (Join-Path $out 'RELEASE_NOTES.md') -Encoding utf8
