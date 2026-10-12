@@ -108,7 +108,7 @@ namespace SILocalAI
         {
             string text = ClientConfig.Guide(server.Connection());
             using (var dialog = new Form { Text = "API / OpenCode 연결 안내", Font = Font, BackColor = paper, StartPosition = FormStartPosition.CenterParent,
-                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(650, 540), MinimumSize = new Size(380, 300), ShowInTaskbar = false })
+                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(650, 540), MinimumSize = new Size(380, 300), ShowInTaskbar = false, ShowIcon = false })
             {
                 var viewport = new ContentViewport { Padding = new Padding(22) }; dialog.Controls.Add(viewport);
                 var body = AutoTable(1, 100); viewport.SetContent(body); AddRow(body, L(text, 10F, false));

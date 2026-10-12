@@ -183,7 +183,7 @@ namespace SILocalAI
         void ShowModelGuide()
         {
             using (var dialog = new Form { Text = "모델 추가", Font = Font, BackColor = Color.White, StartPosition = FormStartPosition.CenterParent,
-                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(590, 280), MinimumSize = new Size(420, 260), MaximizeBox = false, MinimizeBox = false, ShowInTaskbar = false })
+                AutoScaleDimensions = new SizeF(96, 96), AutoScaleMode = AutoScaleMode.Dpi, ClientSize = new Size(590, 280), MinimumSize = new Size(420, 260), MaximizeBox = false, MinimizeBox = false, ShowInTaskbar = false, ShowIcon = false })
             {
                 var viewport = new ContentViewport { Padding = new Padding(24) }; var body = AutoTable(1, 100);
                 var heading = L("모델 추가", 18F, true); heading.Margin = new Padding(0, 0, 0, 18); AddRow(body, heading);
@@ -270,8 +270,7 @@ namespace SILocalAI
         {
             if(selectedName==null || modelBox==null) return; var m=SelectedModel();
             selectedName.Text=m==null?"모델을 추가하세요":DisplayModel(m);
-            var profile = ModelCatalog.Current.Find(m);
-            selectedMeta.Text=m==null?"모델 폴더에 GGUF 추가":(m.Bytes/1073741824.0).ToString("0.00")+" GiB" + (profile == null ? " · " + m.Architecture : " · 문맥 " + (profile.context / 1024) + "K 권장");
+            selectedMeta.Text=m==null?"모델 폴더에 GGUF 추가":(m.Bytes/1073741824.0).ToString("0.00")+" GiB";
             if(m!=null) tips.SetToolTip(selectedName,m.RelativePath);
             bool same=m!=null && server.Status.Ready && server.Status.ModelId==m.Id;
             selectedState.Text=server.Alive ? (same ? "실행 중 · 변경 사항은 재시작 후 적용" : "시작하면 현재 모델을 교체합니다") : "";
