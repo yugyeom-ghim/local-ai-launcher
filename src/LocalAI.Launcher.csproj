@@ -8,7 +8,7 @@
     <AssemblyName>LocalAI.Launcher</AssemblyName><TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <PlatformTarget>x64</PlatformTarget><LangVersion>5</LangVersion><Optimize>true</Optimize>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-    <OutputPath>..\</OutputPath><ApplicationManifest>app.manifest</ApplicationManifest>
+    <OutputPath>..\</OutputPath><ApplicationManifest>app.manifest</ApplicationManifest><ApplicationIcon>Resources\app.ico</ApplicationIcon>
     <AppConfig>LocalAI.Launcher.exe.config</AppConfig><StartupObject>SILocalAI.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
@@ -16,9 +16,13 @@
     <Reference Include="System.Windows.Forms"/><Reference Include="System.Management"/><Reference Include="System.Net.Http"/><Reference Include="System.Web.Extensions"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs"/><Compile Include="Core.cs"/><Compile Include="WindowsHost.cs"/><Compile Include="App.cs"/><Compile Include="Library.cs"/><Compile Include="ModelPacks.cs"/><Compile Include="Theme.cs"/><Compile Include="Layout.cs"/><Compile Include="Dashboard.cs"/><Compile Include="ApiIntegration.cs"/><Compile Include="Connections.cs"/>
+    <Compile Include="AssemblyInfo.cs"/><Compile Include="Core.cs"/><Compile Include="WindowsHost.cs"/><Compile Include="App.cs"/><Compile Include="Library.cs"/><Compile Include="ModelPacks.cs"/><Compile Include="Branding.cs"/><Compile Include="Theme.cs"/><Compile Include="Layout.cs"/><Compile Include="Dashboard.cs"/><Compile Include="ApiIntegration.cs"/><Compile Include="Connections.cs"/>
     <EmbeddedResource Include="Resources\si-logo.png"><LogicalName>SILocalAI.BrandLogo</LogicalName></EmbeddedResource>
     <EmbeddedResource Include="Resources\ModelCatalog.json"><LogicalName>SILocalAI.ModelCatalog</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Resources\app.ico"><LogicalName>SILocalAI.AppIcon</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Resources\Pretendard-Regular.ttf"><LogicalName>SILocalAI.Font.Regular</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="Resources\Pretendard-Bold.ttf"><LogicalName>SILocalAI.Font.Bold</LogicalName></EmbeddedResource>
+    <EmbeddedResource Include="..\licenses\Pretendard-LICENSE.txt"><LogicalName>SILocalAI.FontLicense</LogicalName></EmbeddedResource>
     <None Include="app.manifest"/><None Include="LocalAI.Launcher.exe.config"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

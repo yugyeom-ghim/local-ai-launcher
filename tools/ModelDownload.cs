@@ -142,6 +142,11 @@ public static class ModelDownload
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ModelDownloads"))
             using (var reader = new StreamReader(stream)) catalog = new JavaScriptSerializer().Deserialize<ModelDownloadCatalog>(reader.ReadToEnd());
             foreach (var model in catalog.models) Validate(model);
+            if (args.Contains("--list"))
+            {
+                foreach (var entry in catalog.models) Console.WriteLine(entry.id + " · " + entry.name + " · " + entry.model.size);
+                return 0;
+            }
             string requested = Option(args, "--model");
             if (requested == null)
             {

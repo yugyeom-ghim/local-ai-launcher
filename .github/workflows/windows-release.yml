@@ -31,15 +31,26 @@ jobs:
   preview:
     if: github.event_name != 'workflow_dispatch' || !inputs.build_installer
     runs-on: windows-2022
-    timeout-minutes: 10
+    timeout-minutes: 12
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Compile review build
-        shell: cmd
-        run: Build.cmd
+      - name: Build and check review EXE
+        shell: pwsh
+        run: ./scripts/Build-Preview.ps1
+      - name: Publish review files
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = 'preview-' + $env:GITHUB_SHA.Substring(0, 8)
+          $files = @(Get-ChildItem preview-output -File | Where-Object { $_.Name -ne 'REVIEW_NOTES.md' } | ForEach-Object { $_.FullName })
+          gh release create $tag @files --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title 'Local AI Launcher · 검증용' --prerelease --latest=false --notes-file preview-output/REVIEW_NOTES.md
+          if ($LASTEXITCODE -ne 0) { throw 'Review upload failed' }
   windows:
     if: github.event_name == 'workflow_dispatch' && inputs.build_installer
     runs-on: windows-2022

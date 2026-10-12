@@ -84,7 +84,8 @@ namespace SILocalAI
                 (c.ApiKeyRequired ? "2. /connect → Other → si-local에 로컬 API 키를 입력합니다.\r\n" : "2. API 키 인증: 사용 안 함\r\n") +
                 "3. /models에서 Local AI 모델을 선택합니다.\r\n\r\n" +
                 "기본 주소: " + c.BaseUrl + "\r\n모델 ID: " + c.ModelId + "\r\n사고 모드: " + c.Thinking + "\r\n\r\n" +
-                "문맥 부족 오류가 나면 16K 설정을 적용하세요. 메모리 사용량이 늘어납니다.\r\n" +
+                "문맥: " + c.Context.ToString("N0") + " 토큰\r\n" +
+                "압축 실패 시 문맥을 늘려 재시작·설정 내보내기 후 새 대화에서 확인하세요.\r\n" +
                 "모델·포트·문맥 변경 후에는 설정을 다시 내보냅니다.\r\n";
 
         }

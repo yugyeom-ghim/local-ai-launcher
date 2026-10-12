@@ -88,6 +88,19 @@ class UiChecks
                         if (Field("searchBox") != null) Fail("Model search still present");
                         if (((Label)Field("cpuValue")).Text != "확인 전") Fail("Automatic hardware probe");
                         if (((DataGridView)Field("modelGrid")).Rows.Count == 0) Fail("Model discovery failed");
+                        if (form.Font.Name != "Pretendard" || !Branding.Family.IsStyleAvailable(FontStyle.Bold)) Fail("Embedded Korean font unavailable");
+                        var tray = (NotifyIcon)Field("tray");
+                        if (!tray.Visible || tray.Icon == null || form.Icon == null) Fail("Company tray icon missing");
+                        form.WindowState = FormWindowState.Minimized; Application.DoEvents();
+                        if (form.Visible || !tray.Visible) Fail("Minimize-to-tray failed");
+                        typeof(MainForm).GetMethod("ShowWindow", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, null); Application.DoEvents();
+                        if (!form.Visible || !tray.Visible) Fail("Restoring window removed tray icon");
+                        var context = (NumericUpDown)Field("contextBox"); var contextChoice = (ComboBox)Field("apiContextBox");
+                        contextChoice.SelectedItem = 16384; if (context.Value != 16384) Fail("API context preset not applied");
+                        context.Value = 6144; if (!Equals(contextChoice.SelectedItem, 6144)) Fail("Custom context not preserved"); context.Value = 4096;
+                        result["font"] = form.Font.Name; result["tray_visible_open_minimized_restored"] = true; result["context_selector_synced"] = true;
+                        // Simulate status text only; no model/server is started.
+                        typeof(MainForm).GetMethod("UpdateDashboard", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, new object[] { new ServerStatus { Ready=true, Listening=true, State="ready", Backend="CPU", ModelId="ui-fixture" } });
                         // Exercise long names and all navigation pages. No timers are disabled during performance sampling.
                         ((Label)Field("cpuValue")).Text = "Intel(R) Core(TM) i9-14900K 24-Core Processor / AMD Ryzen Threadripper PRO 7995WX";
                         ((Label)Field("gpuValue")).Text = "NVIDIA GPU · 8GB VRAM";
@@ -98,6 +111,8 @@ class UiChecks
                         foreach (Size size in new[] { new Size(1000, 680), new Size(800, 600) })
                         {
                             form.ClientSize = size; form.PerformLayout(); Application.DoEvents();
+                            var badge = (Control)Field("stateBadge");
+                            if (badge.GetPreferredSize(Size.Empty).Width > badge.Width || badge.GetPreferredSize(Size.Empty).Height > badge.Height) Fail("Ready status clipped at " + size.Width);
                             Capture(Path.Combine(output, "models-" + size.Width + ".png"));
                             foreach (var viewport in All(form).OfType<ContentViewport>().Where(v => v.Visible)) if (viewport.HorizontalScroll.Visible) Fail("Horizontal scroll at " + size.Width);
                             var start = (Control)Field("startButton"); var stop = (Control)Field("stopButton");
@@ -109,10 +124,27 @@ class UiChecks
                         var nested = All(nav).First(c => c != nav && c.GetType().Name == "WorkspaceTabs");
                         nested.GetType().GetProperty("SelectedIndex").SetValue(nested, 2, null); Application.DoEvents(); Capture(Path.Combine(output, "pc-info.png"));
                         selected.SetValue(nav, 0, null);
+                        Exception guideError = null;
+                        using (var closeGuide = new System.Windows.Forms.Timer { Interval=150 })
+                        {
+                            closeGuide.Tick += delegate {
+                                closeGuide.Stop(); Form guide = Application.OpenForms.Cast<Form>().FirstOrDefault(f => f != form && f.Text == "모델 추가");
+                                if (guide == null) { guideError = new Exception("Model guide missing"); return; }
+                                try {
+                                    using (var image = new Bitmap(guide.Width, guide.Height)) { guide.DrawToBitmap(image, new Rectangle(Point.Empty, image.Size)); image.Save(Path.Combine(output,"model-guide.png"), ImageFormat.Png); }
+                                    if (All(guide).Any(c => c.Text == "모델 팩 설치")) Fail("Pack import UI remains");
+                                } catch(Exception e) { guideError=e; } finally { guide.Close(); }
+                            };
+                            closeGuide.Start(); typeof(MainForm).GetMethod("ShowModelGuide", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, null);
+                        }
+                        if (guideError != null) throw guideError;
                         form.Scale(new SizeF(1.5F, 1.5F)); form.MinimumSize = new Size(750, 540); form.ClientSize = new Size(1000, 680); Application.DoEvents(); Capture(Path.Combine(output, "models-scale150.png"));
                         var scaledStart = (Control)Field("startButton");
                         if (!form.ClientRectangle.Contains(form.PointToClient(scaledStart.PointToScreen(new Point(scaledStart.Width - 1, scaledStart.Height - 1))))) Fail("Scaled run button clipped");
                         foreach (var viewport in All(form).OfType<ContentViewport>().Where(v => v.Visible)) if (viewport.HorizontalScroll.Visible) Fail("Unexpected horizontal viewport scroll");
+                        var scaledBadge = (Control)Field("stateBadge");
+                        if (scaledBadge.GetPreferredSize(Size.Empty).Width > scaledBadge.Width || scaledBadge.GetPreferredSize(Size.Empty).Height > scaledBadge.Height) Fail("Scaled ready status clipped");
+                        result["ready_status_not_clipped"] = true;
                         result["render_checks"] = "1000x680, 800x600, API, settings, logs, long CPU, simulated 150% scale";
                     }
                 }

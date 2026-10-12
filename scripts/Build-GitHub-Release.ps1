@@ -66,7 +66,7 @@ if ($version -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid release version' }
 $stage = Join-Path $env:RUNNER_TEMP ('si-local-release-' + [Guid]::NewGuid().ToString('N'))
 New-Item $stage -ItemType Directory -Force | Out-Null
 # Always ship the same source and instructions as the freshly compiled EXE.
-foreach ($folder in @('src', 'tests', 'tools', 'validation')) {
+foreach ($folder in @('src', 'tests', 'tools', 'validation', 'licenses')) {
     New-Item (Join-Path $stage $folder) -ItemType Directory -Force | Out-Null
     Copy-Item "$folder/*" (Join-Path $stage $folder) -Recurse -Force
 }
@@ -87,7 +87,7 @@ Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 
 - Windows Server 2022 runner: native .NET Framework x64 Release build succeeded.
 - Core regression checks: 62 passed.
-- API request/credential logic checks: 7 passed.
+- API request/credential/context logic checks: 8 passed.
 - Download/assembly checks: 9 passed, including HTTP Range resume and ignored-Range restart.
 - Standalone installer download/assembly checks: 9 passed.
 - Complete GGUF download/assembly, cleanup and concurrent-write checks: 13 passed.

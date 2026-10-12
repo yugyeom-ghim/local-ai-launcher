@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using System.Linq;
@@ -63,6 +63,7 @@ namespace SILocalAI
         readonly System.Windows.Forms.Timer logTimer = new System.Windows.Forms.Timer();
         readonly System.Windows.Forms.Timer monitorTimer = new System.Windows.Forms.Timer();
         readonly NotifyIcon tray = new NotifyIcon();
+        Icon applicationIcon;
         readonly ToolTip tips = new ToolTip();
         Label statusLabel, hardwareLabel, modelCount;
         TextBox baseUrl, chatUrl, modelId, logBox;
@@ -84,13 +85,13 @@ namespace SILocalAI
             configFile = Path.Combine(state, "settings.json"); config = LoadSettings();
             server = new ServerController(root, state, log);
             Text = "Local AI Launcher";
-            Font = new Font("Malgun Gothic", 10F);
+            Font = Theme.UIFont(10F);
             ForeColor = ink; BackColor = paper;
             StartPosition = FormStartPosition.CenterScreen;
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             ClientSize = new Size(1120, 740); MinimumSize = new Size(760, 560);
-            Icon = SystemIcons.Application;
+            applicationIcon = Branding.LoadIcon(); Icon = applicationIcon;
             BuildUi(); ApplyConfig(); SetBusy(false);
             log.Line += OnLog;
             server.Changed += delegate(ServerStatus s) { if (!closing && !IsDisposed) UpdateStatus(s); };
@@ -113,10 +114,11 @@ namespace SILocalAI
                 finally { catalogRefreshing = false; }
             };
             libraryTimer.Start();
-            tray.Icon = SystemIcons.Application; tray.Text = "Local AI Launcher";
-            var menu = new ContextMenuStrip();
+            tray.Icon = applicationIcon; tray.Text = "Local AI Launcher"; tray.Visible = true;
+            var menu = new ContextMenuStrip { Font = Theme.UIFont(10F) };
             menu.Items.Add("열기", null, delegate { ShowWindow(); });
-            menu.Items.Add("서버 종료 후 닫기", null, delegate { ShowWindow(); Close(); });
+            menu.Items.Add("서버 중지", null, delegate { cancelRequested = true; server.Stop(); });
+            menu.Items.Add("종료", null, delegate { ShowWindow(); Close(); });
             tray.ContextMenuStrip = menu; tray.DoubleClick += delegate { ShowWindow(); };
             Resize += delegate { if (WindowState == FormWindowState.Minimized) { tray.Visible = true; Hide(); } };
             Shown += async delegate
@@ -137,7 +139,7 @@ namespace SILocalAI
                 if (initialMinimized && server.Alive) { WindowState = FormWindowState.Minimized; }
             };
             FormClosing += OnClosing;
-            FormClosed += delegate { server.Dispose(); log.Line -= OnLog; logTimer.Dispose(); monitorTimer.Dispose(); libraryTimer.Dispose(); catalog.Dispose(); tray.Dispose(); tips.Dispose(); modelBox.Dispose(); if (brandImage != null) brandImage.Dispose(); };
+            FormClosed += delegate { server.Dispose(); log.Line -= OnLog; logTimer.Dispose(); monitorTimer.Dispose(); libraryTimer.Dispose(); catalog.Dispose(); tray.Dispose(); if (applicationIcon != null) applicationIcon.Dispose(); tips.Dispose(); modelBox.Dispose(); if (brandImage != null) brandImage.Dispose(); };
         }
         Settings LoadSettings()
         {
@@ -355,7 +357,7 @@ namespace SILocalAI
             if (logBox.TextLength > 100000) logBox.Text = logBox.Text.Substring(logBox.TextLength - 50000);
             logBox.AppendText(b.ToString());
         }
-        void ShowWindow() { Show(); WindowState = FormWindowState.Normal; tray.Visible = false; Activate(); }
+        void ShowWindow() { Show(); WindowState = FormWindowState.Normal; tray.Visible = true; Activate(); }
         void OnClosing(object sender, FormClosingEventArgs e)
         {
             if (closing) return;

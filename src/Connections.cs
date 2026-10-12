@@ -9,7 +9,9 @@ namespace SILocalAI
     public sealed partial class MainForm
     {
         Control apiPage;
-        Label connectionSummary, apiStateLabel, apiPendingLabel;
+        Label connectionSummary, apiStateLabel, apiPendingLabel, apiContextSummary;
+        ComboBox apiContextBox;
+        bool syncingContext;
         TextBox apiBaseField, apiModelField, apiKeyField;
         readonly List<Control> connectionActions = new List<Control>();
 
@@ -28,6 +30,20 @@ namespace SILocalAI
             var guide = Action("연결 방법", delegate { TryAction(ShowConnectionGuide); }, false);
             connectionActions.Add(export); connectionActions.Add(copy); connectionActions.Add(guide);
             AddRow(live, Actions(export, copy, guide, testButton));
+            AddRow(body, L("문맥 크기", 10F, true));
+            apiContextBox = Combo(new string[0]); apiContextBox.AccessibleName = "API 문맥 크기";
+            apiContextBox.Items.AddRange(new object[] { 4096, 8192, 16384, 32768 });
+            apiContextBox.FormattingEnabled = true;
+            apiContextBox.Format += delegate(object sender, ListControlConvertEventArgs e) { e.Value = ContextText(Convert.ToInt32(e.ListItem)); };
+            apiContextBox.SelectedIndexChanged += delegate {
+                if (!syncingContext && apiContextBox.SelectedItem != null) contextBox.Value = (int)apiContextBox.SelectedItem;
+                UpdateContextPanel();
+            };
+            contextBox.ValueChanged += delegate { UpdateContextPanel(); };
+            AddRow(body, apiContextBox);
+            apiContextSummary = L("", 9.5F, false); apiContextSummary.ForeColor = Theme.Muted; AddRow(body, apiContextSummary);
+            var contextHint = L("OpenCode·MCP는 16K부터 확인하세요. 문맥을 늘리면 메모리 사용량도 늘어납니다.", 9F, false);
+            contextHint.ForeColor = Theme.Muted; contextHint.Margin = new Padding(0, 7, 0, 0); AddRow(body, contextHint);
             var settings = body;
             apiKeyBox = new CheckBox { Text = "API 키 사용", AutoSize = true, Margin = new Padding(0, 20, 0, 12), AccessibleName = "로컬 API 키 인증 사용" };
             editable.Add(apiKeyBox); AddRow(settings, apiKeyBox);
@@ -38,12 +54,29 @@ namespace SILocalAI
             apiKeyBox.CheckedChanged += delegate { UpdateConnectionPanel(); };
             thinkingModeBox.SelectedIndexChanged += delegate { UpdateConnectionPanel(); };
         }
+        static string ContextText(int value) { return value % 1024 == 0 ? (value / 1024) + "K · " + value.ToString("N0") + " 토큰" : value.ToString("N0") + " 토큰"; }
+        void UpdateContextPanel()
+        {
+            if (apiContextBox == null || apiContextSummary == null || syncingContext) return;
+            int selected = (int)contextBox.Value;
+            syncingContext = true;
+            try
+            {
+                if (!apiContextBox.Items.Contains(selected)) apiContextBox.Items.Add(selected);
+                apiContextBox.SelectedItem = selected;
+            }
+            finally { syncingContext = false; }
+            if (server.Status.Ready)
+                apiContextSummary.Text = "실행 중 " + ContextText(server.Status.Context) + (server.Status.Context != selected ? " · 변경하려면 재시작" : "");
+            else apiContextSummary.Text = "다음 시작: " + ContextText(selected);
+        }
         void UpdateConnectionPanel()
         {
             if (apiStateLabel == null || apiKeyField == null) return;
+            UpdateContextPanel();
             bool ready = !uiBusy && !server.Busy && server.Alive && server.Status.Ready;
             foreach (Control c in connectionActions) c.Enabled = ready;
-            apiPendingLabel.Text = "변경 후 서버를 다시 시작하세요.";
+            apiPendingLabel.Text = "문맥 변경 후 재시작하고 OpenCode 설정을 다시 내보내세요.";
             if (ready)
             {
                 var c = server.Connection();

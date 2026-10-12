@@ -11,6 +11,7 @@ namespace SILocalAI
         public static readonly Color Background = Color.FromArgb(245, 246, 248), Line = Color.FromArgb(224, 230, 238);
         public static readonly Color Accent = Color.FromArgb(34, 91, 214), Pale = Color.FromArgb(234, 240, 255);
         public static readonly Color Danger = Color.FromArgb(174, 62, 57), Amber = Color.FromArgb(155, 102, 22);
+        public static Font UIFont(float size, bool bold = false) { return new Font(Branding.Family, size, bold ? FontStyle.Bold : FontStyle.Regular); }
         public static GraphicsPath Round(Rectangle rect, int radius)
         {
             var p = new GraphicsPath(); float d = Math.Min(radius * 2, Math.Min(rect.Width, rect.Height));
@@ -21,7 +22,7 @@ namespace SILocalAI
         public static Label Text(string value, float size, bool bold)
         {
             return new WrappingLabel { Text = value, Dock = DockStyle.Top,
-                Font = new Font("Malgun Gothic", size, bold ? FontStyle.Bold : FontStyle.Regular), ForeColor = Ink,
+                Font = UIFont(size, bold), ForeColor = Ink,
                 TextAlign = ContentAlignment.MiddleLeft, Margin = new Padding(0) };
         }
     }
@@ -43,7 +44,7 @@ namespace SILocalAI
         public ActionButton()
         {
             FlatStyle = FlatStyle.Flat; FlatAppearance.BorderSize = 0; Cursor = Cursors.Hand;
-            BackColor = Color.White; ForeColor = Theme.Ink; Font = new Font("Malgun Gothic", 10F);
+            BackColor = Color.White; ForeColor = Theme.Ink; Font = Theme.UIFont(10F);
             Height = 38; MinimumSize = new Size(60, 36); Padding = new Padding(12, 7, 12, 7); Margin = new Padding(0, 0, 8, 0);
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         }
@@ -71,6 +72,11 @@ namespace SILocalAI
     }
     public sealed class Badge : Label
     {
-        public Badge() { AutoSize = false; TextAlign = ContentAlignment.MiddleCenter; ForeColor = Theme.Accent; BackColor = Theme.Pale; Padding = new Padding(8,0,8,0); }
+        public Badge() { AutoSize = true; TextAlign = ContentAlignment.MiddleCenter; Font = Theme.UIFont(9.5F, true); ForeColor = Theme.Accent; BackColor = Theme.Pale; Padding = new Padding(12,5,12,5); UseMnemonic = false; }
+        public override Size GetPreferredSize(Size proposedSize)
+        {
+            var text = TextRenderer.MeasureText(Text, Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix);
+            return new Size(text.Width + Padding.Horizontal + 4, text.Height + Padding.Vertical + 2);
+        }
     }
 }

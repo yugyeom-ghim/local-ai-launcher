@@ -2,3 +2,7 @@
 # Do not let Windows checkout convert their line endings.
 licenses/** -text
 installer/assets/** -text
+
+# Embedded binary UI resources must retain exact bytes.
+src/Resources/*.ttf -text
+src/Resources/*.ico -text

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Drawing;
@@ -82,7 +82,7 @@ namespace SILocalAI
             var shell = Table(1, 100); shell.BackColor = Color.White; shell.RowCount = 3;
             shell.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
             shell.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            shell.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
+            shell.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             var header = Table(2, -92, 100); header.Padding = new Padding(24, 12, 24, 10);
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SILocalAI.BrandLogo"))
             { if (stream != null) using (var original = Image.FromStream(stream)) brandImage = new Bitmap(original); }
@@ -90,7 +90,7 @@ namespace SILocalAI
                 Margin = new Padding(0, 0, 20, 0), BackColor = Color.White, AccessibleName = "회사 로고" };
             header.Controls.Add(logo, 0, 0);
             header.Controls.Add(new Label { Text = "Local AI Launcher", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft,
-                Font = new Font("Segoe UI", 21F, FontStyle.Bold), ForeColor = Theme.Ink, Margin = new Padding(0) }, 1, 0);
+                Font = Theme.UIFont(21F, true), ForeColor = Theme.Ink, Margin = new Padding(0) }, 1, 0);
             shell.Controls.Add(header, 0, 0);
             pages = new WorkspaceTabs();
             var main = new Panel { BackColor = paper, Padding = new Padding(24, 20, 24, 16) };
@@ -100,7 +100,7 @@ namespace SILocalAI
             pages.AddPage("모델", main); pages.AddPage("API 연결", apiPage); pages.AddPage("설정", settings); pages.AddPage("로그", diagnostic);
             BuildLibrary(main); BuildSettings(settings); BuildApiPage(apiPage); BuildLogs(diagnostic);
             shell.Controls.Add(pages, 0, 1);
-            var foot = Table(3, -92, 100, -116); foot.Padding = new Padding(24, 6, 24, 6);
+            var foot = AutoTable(3, 0, 100, -116); foot.ColumnStyles[0].SizeType = SizeType.AutoSize; foot.MinimumSize = new Size(0, 44); foot.Padding = new Padding(24, 6, 24, 6);
             stateBadge = new Badge { Text = "대기", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 14, 0) };
             statusLabel = new Label { Text = "모델 확인 중", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft,
                 AutoEllipsis = true, ForeColor = Theme.Muted, Margin = new Padding(0) };
@@ -139,7 +139,7 @@ namespace SILocalAI
             modelGrid.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
             modelGrid.SelectionChanged += delegate { if (bindingModels) return; var m = modelGrid.CurrentRow == null ? null : modelGrid.CurrentRow.Tag as ModelInfo; if (m != null) modelBox.SelectedItem = m; };
             list.Controls.Add(modelGrid, 0, 1);
-            catalogNote = new Label { Text = "", Dock = DockStyle.Fill, AutoEllipsis = true, ForeColor = Theme.Muted, TextAlign = ContentAlignment.BottomLeft, Font = new Font("Malgun Gothic", 9F) }; list.Controls.Add(catalogNote, 0, 2);
+            catalogNote = new Label { Text = "", Dock = DockStyle.Fill, AutoEllipsis = true, ForeColor = Theme.Muted, TextAlign = ContentAlignment.BottomLeft, Font = Theme.UIFont(9F) }; list.Controls.Add(catalogNote, 0, 2);
             var details = new Surface { Dock = DockStyle.Fill, Margin = new Padding(0), Padding = new Padding(20) }; columns.Controls.Add(details, 1, 0);
             var detailShell = Table(1, 100); detailShell.RowCount = 2;
             detailShell.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); detailShell.RowStyles.Add(new RowStyle(SizeType.Absolute, 106));
@@ -175,7 +175,7 @@ namespace SILocalAI
         {
             var row = AutoTable(3, -65, 100, -64); row.RowStyles.Add(new RowStyle(SizeType.AutoSize)); row.Margin = new Padding(0, 0, 0, 5);
             var label = L(text, 8.5F, false); label.ForeColor = Theme.Muted; label.Padding = new Padding(0, 9, 0, 0); row.Controls.Add(label, 0, 0);
-            field.Font = new Font("Segoe UI", 9F); field.Margin = new Padding(0, 8, 8, 0); field.BorderStyle = BorderStyle.FixedSingle; field.AccessibleName = text;
+            field.Font = Theme.UIFont(9.5F); field.Margin = new Padding(0, 8, 8, 0); field.BorderStyle = BorderStyle.FixedSingle; field.AccessibleName = text;
             row.Controls.Add(field, 1, 0);
             var b = Action("복사", delegate { TryAction(delegate { if (!String.IsNullOrWhiteSpace(field.Text)) { Clipboard.SetText(field.Text); statusLabel.Text = text + " 복사 완료"; } }); }, false);
             b.Margin = new Padding(0); row.Controls.Add(b, 2, 0); return row;
@@ -201,8 +201,8 @@ namespace SILocalAI
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill, SelectionMode = DataGridViewSelectionMode.FullRowSelect, EnableHeadersVisualStyles = false,
                 CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal, ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
                 ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
-                Font = new Font("Segoe UI", 11F), Margin = new Padding(0), AccessibleName = "사용 가능한 로컬 모델" };
-            g.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Theme.Background, ForeColor = Theme.Muted, Font = new Font("Malgun Gothic", 8.5F, FontStyle.Bold), Padding = new Padding(8, 6, 0, 6), SelectionBackColor = Theme.Background, SelectionForeColor = Theme.Muted };
+                Font = Theme.UIFont(11F), Margin = new Padding(0), AccessibleName = "사용 가능한 로컬 모델" };
+            g.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Theme.Background, ForeColor = Theme.Muted, Font = Theme.UIFont(9F, true), Padding = new Padding(8, 6, 0, 6), SelectionBackColor = Theme.Background, SelectionForeColor = Theme.Muted };
             g.DefaultCellStyle = new DataGridViewCellStyle { Font = g.Font, BackColor = Color.White, ForeColor = Theme.Ink, SelectionBackColor = Theme.Pale, SelectionForeColor = Theme.Ink, Padding = new Padding(8, 8, 6, 8) };
             return g;
         }
@@ -283,6 +283,7 @@ namespace SILocalAI
         {
             if(stateBadge==null) return;
             stateBadge.Text=s.Ready?"준비 완료":s.State=="error"?"오류":s.State=="loading"?"로딩 중":s.State=="probing" || s.State=="testing"?"검사 중":s.Listening?"모델 대기":"대기";
+            tray.Text = "Local AI Launcher · " + stateBadge.Text;
             stateBadge.ForeColor=s.State=="error"?Theme.Danger:s.Ready?Theme.Accent:Theme.Muted;
             stateBadge.BackColor=s.State=="error"?Color.FromArgb(254,237,234):s.Ready?Theme.Pale:Color.FromArgb(233,238,245);
             runningNote.Visible = s.Listening;

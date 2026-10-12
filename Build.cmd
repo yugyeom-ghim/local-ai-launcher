@@ -19,7 +19,7 @@ if /i "%~1"=="/test" goto :BuildTests
 if /i "%~1"=="/apitest" goto :BuildApiTests
 if not exist "state\build" mkdir "state\build"
 echo Building Local AI Launcher from the included source...
-"%CSC%" /nologo /target:winexe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:SILocalAI.Program /win32manifest:"src\app.manifest" /resource:"src\Resources\si-logo.png",SILocalAI.BrandLogo /resource:"src\Resources\ModelCatalog.json",SILocalAI.ModelCatalog /out:"state\build\LocalAI.Launcher.exe" %REFS% "src\AssemblyInfo.cs" "src\Core.cs" "src\Library.cs" "src\ModelPacks.cs" "src\WindowsHost.cs" "src\Theme.cs" "src\Layout.cs" "src\Dashboard.cs" "src\ApiIntegration.cs" "src\Connections.cs" "src\App.cs" > "%BUILDLOG%" 2>&1
+"%CSC%" /nologo /target:winexe /platform:x64 /optimize+ /langversion:5 /codepage:65001 /utf8output /main:SILocalAI.Program /win32manifest:"src\app.manifest" /win32icon:"src\Resources\app.ico" /resource:"src\Resources\app.ico",SILocalAI.AppIcon /resource:"src\Resources\Pretendard-Regular.ttf",SILocalAI.Font.Regular /resource:"src\Resources\Pretendard-Bold.ttf",SILocalAI.Font.Bold /resource:"licenses\Pretendard-LICENSE.txt",SILocalAI.FontLicense /resource:"src\Resources\si-logo.png",SILocalAI.BrandLogo /resource:"src\Resources\ModelCatalog.json",SILocalAI.ModelCatalog /out:"state\build\LocalAI.Launcher.exe" %REFS% "src\AssemblyInfo.cs" "src\Core.cs" "src\Library.cs" "src\ModelPacks.cs" "src\WindowsHost.cs" "src\Branding.cs" "src\Theme.cs" "src\Layout.cs" "src\Dashboard.cs" "src\ApiIntegration.cs" "src\Connections.cs" "src\App.cs" > "%BUILDLOG%" 2>&1
 if errorlevel 1 goto :Failed
 move /y "state\build\LocalAI.Launcher.exe" "LocalAI.Launcher.exe" >nul
 if errorlevel 1 (

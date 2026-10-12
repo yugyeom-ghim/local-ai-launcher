@@ -42,6 +42,16 @@ public static class ApiChecks
    Test("stopped server cannot export stale connection",delegate {
     using(var server=new ServerController(state,state,new AppLog(Path.Combine(state,"server.log"))))Throws(delegate{server.Connection();});
    });
+   Test("exported context follows running server with bounded output",delegate {
+    foreach(int context in new[]{512,4096,8192,16384,32768}) {
+     var c=new ClientConnection{BaseUrl="http://127.0.0.1:1234/v1",ModelId="test",ModelName="Test",Context=context};
+     var doc=Json.Read<Dictionary<string,object>>(ClientConfig.OpenCode(c));
+     var providers=(Dictionary<string,object>)doc["provider"];var provider=(Dictionary<string,object>)providers[ClientConfig.ProviderId];
+     var models=(Dictionary<string,object>)provider["models"];var model=(Dictionary<string,object>)models["test"];var limits=(Dictionary<string,object>)model["limit"];
+     Yes(Convert.ToInt32(limits["context"])==context);int output=Convert.ToInt32(limits["output"]);Yes(output>0 && output<context);
+     Yes(!doc.ContainsKey("mcp") && !doc.ContainsKey("permission") && !doc.ContainsKey("agent"));
+    }
+   });
    foreach(bool required in new[]{false,true}) {
     var c=new ClientConnection{BaseUrl="http://127.0.0.1:1234/v1",ModelId="Qwen3.5-4B-Q4_K_M-12345678",ModelName="Qwen3.5-4B-Q4_K_M",Context=16384,ApiKeyRequired=required,ApiKey=key};
     File.WriteAllText(Path.Combine(args[0],required?"opencode-auth-test.json":"opencode-noauth-test.json"),ClientConfig.OpenCode(c));

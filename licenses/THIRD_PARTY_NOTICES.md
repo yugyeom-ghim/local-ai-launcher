@@ -29,3 +29,7 @@ The launcher source came from the user-provided v1.1 package. These third-party 
 ## Optional model packs
 
 Qwen3.5-2B and Qwen3.5-9B: Alibaba Qwen, Apache-2.0. GGUF quantization: Unsloth. Exact revisions, hashes and original license URLs are recorded in `src/Resources/ModelCatalog.json`. Each released pack includes the verified original license. The quantized weights are distributed without further tensor modification.
+
+## UI font
+
+Pretendard 1.3.9 (Regular/Bold), SIL Open Font License 1.1. [License](Pretendard-LICENSE.txt). Pinned source, sizes and SHA256: `src/Resources/FontSources.json`. Fonts are embedded and loaded privately by the launcher.
