@@ -15,7 +15,8 @@ function Run-Setup([string]$name) {
 }
 
 # Only this disposable CI runner is blocked. The shipped installer never changes firewall policy.
-$profiles = @(Get-NetFirewallProfile | Select-Object Name, Enabled)
+$profiles = @(Get-NetFirewallProfile | Select-Object Name, Enabled, DefaultOutboundAction)
+$previousAllows = @(Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True | Select-Object -ExpandProperty Name)
 $ruleName = 'LocalAI-Offline-Validation-' + [Guid]::NewGuid().ToString('N')
 $probeAddress = [Net.Dns]::GetHostAddresses('github.com') | Where-Object { $_.AddressFamily -eq [Net.Sockets.AddressFamily]::InterNetwork } | Select-Object -First 1
 function Can-Connect {
@@ -28,9 +29,20 @@ function Can-Connect {
 }
 Check (Can-Connect) 'network probe works before isolation'
 try {
-    Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True
-    New-NetFirewallRule -Name $ruleName -DisplayName $ruleName -Direction Outbound -Action Block -Profile Any -Protocol Any | Out-Null
-    Check (-not (Can-Connect)) 'outbound network blocked on disposable Windows runner'
+    # Keep only GitHub's control processes and DNS online; setup and all its children remain blocked.
+    $controllers = @(Get-Process -Name 'Runner.*' | Select-Object -ExpandProperty Path -Unique)
+    if ($controllers.Count -eq 0) { throw 'GitHub runner control processes not found' }
+    $index = 0
+    foreach ($controller in $controllers) {
+        New-NetFirewallRule -Name ($ruleName + '-runner-' + $index) -DisplayName $ruleName -Direction Outbound -Action Allow -Profile Any -Protocol TCP -RemotePort 443 -Program $controller | Out-Null
+        $index++
+    }
+    foreach ($protocol in @('TCP','UDP')) {
+        New-NetFirewallRule -Name ($ruleName + '-dns-' + $protocol) -DisplayName $ruleName -Direction Outbound -Action Allow -Profile Any -Protocol $protocol -RemotePort 53 -Program (Join-Path $env:WINDIR 'System32/svchost.exe') -Service Dnscache | Out-Null
+    }
+    foreach ($name in $previousAllows) { Disable-NetFirewallRule -Name $name | Out-Null }
+    Set-NetFirewallProfile -Profile Domain,Private,Public -Enabled True -DefaultOutboundAction Block
+    Check (-not (Can-Connect)) 'installer/test outbound connections blocked; GitHub control connection retained'
     Check (@(Get-ChildItem (Split-Path -Parent $SetupPath) -Force).Count -eq 1) 'installer source folder contains only one EXE'
 # The mutex name matches the Launcher, including UTF-8 Korean paths and final slash.
 $bytes = [Text.Encoding]::UTF8.GetBytes(($installPath.TrimEnd('\')+'\').ToLowerInvariant())
@@ -94,8 +106,9 @@ Check ((Get-FileHash $settings).Hash -eq $settingsHash -and (Get-FileHash $key).
 Check (-not (Test-Path $menu) -and -not (Test-Path $desktop)) 'uninstall removes created shortcuts'
 
 } finally {
-    Get-NetFirewallRule -Name $ruleName -ErrorAction SilentlyContinue | Remove-NetFirewallRule
-    foreach ($profile in $profiles) { Set-NetFirewallProfile -Profile $profile.Name -Enabled $profile.Enabled }
+    foreach ($profile in $profiles) { Set-NetFirewallProfile -Profile $profile.Name -Enabled $profile.Enabled -DefaultOutboundAction $profile.DefaultOutboundAction }
+    foreach ($name in $previousAllows) { Enable-NetFirewallRule -Name $name | Out-Null }
+    Get-NetFirewallRule -Name ($ruleName + '-*') -ErrorAction SilentlyContinue | Remove-NetFirewallRule
 }
 Check (Can-Connect) 'runner network policy restored after installation checks'
 
@@ -110,7 +123,7 @@ $($results -join "`n")
 
 - Installer payload contains the actual Qwen model, CPU and both CUDA runtimes. No model inference executed.
 - Setup script has no network/download operation, firewall change or execution-policy change.
-- Outbound network was blocked with a temporary CI firewall rule; the original runner policy was restored in finally. A TCP probe checked connectivity before, during and after isolation. No packet capture performed.
+- Installer/test outbound connections were blocked by temporary CI firewall policy; only GitHub runner control processes (HTTPS) and the DNS service were allowed. The original policy was restored in finally. A TCP probe checked connectivity before, during and after isolation. No packet capture performed.
 - Interactive wizard/DPI, Windows desktop model inference and company OpenCode/MCP remain unverified.
 - Installer/compiler and Launcher binaries are not company-code-signed; existing execution policy applies.
 "@
