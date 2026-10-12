@@ -1,0 +1,39 @@
+{
+  "release": "https://github.com/yugyeom-ghim/local-ai-launcher/releases/tag/v1.6.1",
+  "checked_at_utc": "2026-10-12T00:40:06Z",
+  "full_downloads": [
+    "installer-download-manifest.json",
+    "SINGLE_INSTALLER_VALIDATION.json",
+    "INSTALLER_SHA256.txt",
+    "INSTALLER_VALIDATION.md",
+    "WINDOWS_CI.md",
+    "FULL_PACKAGE_VALIDATION.json",
+    "SHA256SUMS.txt",
+    "windows-installer-download-checks.txt",
+    "Internet-PC-Download-Installer.exe",
+    "Local_AI_Update_v1.6.1_Windows.zip"
+  ],
+  "range_samples": [
+    {
+      "name": "Local_AI_Offline_Setup.exe.part01",
+      "status": 206,
+      "content_range": "bytes 0-4095/1610612736"
+    },
+    {
+      "name": "Local_AI_Offline_Setup.exe.part02",
+      "status": 206,
+      "content_range": "bytes 0-4095/1610612736"
+    },
+    {
+      "name": "Local_AI_Offline_Setup.exe.part03",
+      "status": 206,
+      "content_range": "bytes 0-4095/847115433"
+    }
+  ],
+  "installer": {
+    "name": "Local_AI_Offline_Setup.exe",
+    "size": 4068340905,
+    "sha256": "dcf98f8314c3536e044c4bc61334b0ffec4ff6051fa1f32edcf80327fa1a48d6"
+  },
+  "note": "Small files, downloader and update ZIP fully downloaded and hashed. Public large parts checked against GitHub server digests and 4096-byte HTTP Range samples. Full EXE assembly and native installation with outbound blocked verified separately by Windows CI."
+}

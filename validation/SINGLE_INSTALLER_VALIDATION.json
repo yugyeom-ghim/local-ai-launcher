@@ -1,0 +1,16 @@
+{
+  "single_exe_only_directory": true,
+  "outbound_blocked_install_verified": true,
+  "whole_sha256_verified": true,
+  "version": "1.6.1",
+  "commit": "2357be9224a8dcec379645bd397b5c006e0fedfd",
+  "installed_payload_verified": true,
+  "transport_parts": 3,
+  "run": "https://github.com/yugyeom-ghim/local-ai-launcher/actions/runs/38187867066",
+  "installer": {
+    "name": "Local_AI_Offline_Setup.exe",
+    "size": 4068340905,
+    "sha256": "dcf98f8314c3536e044c4bc61334b0ffec4ff6051fa1f32edcf80327fa1a48d6"
+  },
+  "model_inference_verified": false
+}

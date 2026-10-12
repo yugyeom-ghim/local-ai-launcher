@@ -1,0 +1,16 @@
+
+다운로드 23.3% (0.00 / 0.00 GB)   
+Setup.exe 생성 및 SHA256 검사 중...
+PASS only one verified offline EXE remains
+PASS manual parts preserved
+PASS completed EXE verifies without parts or network
+PASS different existing EXE never overwritten
+PASS missing parts fail without network or incomplete EXE
+
+다운로드 23.3% (0.00 / 0.00 GB)   
+Setup.exe 생성 및 SHA256 검사 중...
+PASS resume from owned cache then remove download parts
+PASS unexpected origin rejected
+PASS duplicate or reordered parts rejected
+PASS incorrect total size rejected
+Installer download checks: 9 passed.
