@@ -37,7 +37,7 @@ namespace SILocalAI
         {
             if (Schema != 1) throw new InvalidDataException("지원하지 않는 설정 버전입니다: " + Schema);
             if (Port < 1024 || Port > 65535) throw new ArgumentException("포트는 1024~65535 범위여야 합니다.");
-            if (Context < 512 || Context > 32768) throw new ArgumentException("문맥은 512~32768 토큰 범위여야 합니다.");
+            if (Context < 512) throw new ArgumentException("문맥은 512 토큰 이상이어야 합니다.");
             if (Threads < 0 || Threads > 512) throw new ArgumentException("CPU 스레드는 0~512 범위여야 합니다.");
             if (LoadTimeout < 30 || LoadTimeout > 900) throw new ArgumentException("모델 로딩 제한은 30~900초 범위여야 합니다.");
             if (GpuLayers < -1 || GpuLayers > 999) throw new ArgumentException("GPU 레이어는 -1(자동) 또는 0~999여야 합니다.");
@@ -149,6 +149,7 @@ namespace SILocalAI
     {
         public string Id, Name, FullPath, RelativePath, Architecture;
         public long Bytes;
+        public int? ContextLength; // GGUF training context; not a hardware capacity limit.
         public override string ToString() { return Name + "  (" + (Bytes / 1073741824.0).ToString("0.00") + " GB)"; }
     }
     public sealed class BackendInfo
@@ -212,7 +213,7 @@ namespace SILocalAI
                         }
                         if (!partsReady) { result.PendingFiles.Add(name + " (분할 파일 확인 중)"); continue; }
                     }
-                    string arch = Gguf.Header(file);
+                    var metadata = Gguf.ReadHeader(file); string arch = metadata.Architecture;
                     if (new[] { "clip", "bert", "nomic-bert", "t5", "wavtokenizer-dec", "whisper" }.Contains(arch.ToLowerInvariant()))
                     { warn("텍스트 생성용이 아닌 모델 제외: " + name + " [" + arch + "]"); continue; }
                     string rel = Paths.Relative(modelRoot, file);
@@ -222,7 +223,7 @@ namespace SILocalAI
                     if (slug.Length > 80) slug = slug.Substring(0, 80);
                     // Always include relative-path hash: identity is stable after moving the whole package.
                     string id = slug + "-" + Paths.Hash(rel.ToLowerInvariant()).Substring(0, 8);
-                    result.Models.Add(new ModelInfo { Id = id, Name = stem, FullPath = file, RelativePath = rel, Architecture = arch, Bytes = bytes });
+                    result.Models.Add(new ModelInfo { Id = id, Name = stem, FullPath = file, RelativePath = rel, Architecture = arch, ContextLength = metadata.ContextLength, Bytes = bytes });
                 }
                 catch (Exception e) { warn("모델 제외: " + Path.GetFileName(file) + " / " + e.Message); }
             }
@@ -240,6 +241,12 @@ namespace SILocalAI
             return ids.Select(id => inv.Backends.FirstOrDefault(x => x.Id == id)).Where(x => x != null && !String.IsNullOrEmpty(x.Exe)).ToList();
         }
     }
+    public sealed class GgufMetadata
+    {
+        public string Architecture;
+        public int? ContextLength;
+    }
+
     public static class Gguf
     {
         // Bounded metadata/tensor-directory validation. Tensor bytes are not loaded or hashed here.
@@ -271,7 +278,8 @@ namespace SILocalAI
             }
             Need(r, size); r.BaseStream.Seek(size, SeekOrigin.Current);
         }
-        public static string Header(string file)
+        public static string Header(string file) { return ReadHeader(file).Architecture; }
+        public static GgufMetadata ReadHeader(string file)
         {
             using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (var r = new BinaryReader(stream))
@@ -282,12 +290,18 @@ namespace SILocalAI
                 if (tensors == 0 || tensors > 1000000) throw new InvalidDataException("GGUF 텐서 개수 범위 오류");
                 ulong count = r.ReadUInt64(); if (count > 100000) throw new InvalidDataException("GGUF 메타데이터 개수 제한 초과");
                 string architecture = "unknown"; uint alignment = 32;
+                var contexts = new Dictionary<string, int>(StringComparer.Ordinal);
                 for (ulong i = 0; i < count; i++)
                 {
                     if (stream.Position > 64 * 1024 * 1024) throw new InvalidDataException("GGUF 메타데이터 길이 제한 초과");
                     string key = Str(r); uint type = r.ReadUInt32();
                     if (key == "general.architecture" && type == 8) architecture = Str(r);
                     else if (key == "general.alignment" && type == 4) alignment = r.ReadUInt32();
+                    else if (key.EndsWith(".context_length", StringComparison.Ordinal) && (type == 4 || type == 10))
+                    {
+                        ulong value = type == 4 ? r.ReadUInt32() : r.ReadUInt64();
+                        if (value > 0 && value <= Int32.MaxValue) contexts[key] = (int)value;
+                    }
                     else Skip(r, type, 0);
                 }
                 if (alignment == 0 || alignment > 1048576 || (alignment & (alignment - 1)) != 0) throw new InvalidDataException("GGUF 정렬 값 오류");
@@ -326,7 +340,8 @@ namespace SILocalAI
                 ulong dataStart = checked(((ulong)stream.Position + alignment - 1) / alignment * alignment);
                 if (dataStart > (ulong)stream.Length || minimumPayload > (ulong)stream.Length - dataStart)
                     throw new InvalidDataException("GGUF 텐서 데이터가 잘렸습니다. 파일 복사/다운로드를 완료하세요.");
-                return architecture;
+                int context;
+                return new GgufMetadata { Architecture = architecture, ContextLength = contexts.TryGetValue(architecture + ".context_length", out context) ? (int?)context : null };
             }
         }
     }
@@ -372,6 +387,8 @@ namespace SILocalAI
             if (router) { a.AddRange(new[] { "--models-preset", presetPath, "--models-max", "1" }); if (c.Has("--no-models-autoload")) a.Add("--no-models-autoload"); }
             else { a.AddRange(new[] { "-m", modelPath, "--alias", id }); }
             a.AddRange(new[] { "--host", "127.0.0.1", "--port", s.Port.ToString(), "-c", s.Context.ToString() });
+            // Do not silently reduce the requested context during automatic memory fitting.
+            if (c.Has("--fit-ctx")) a.AddRange(new[] { "--fit-ctx", s.Context.ToString() });
             if (c.Has("--parallel")) a.AddRange(new[] { "--parallel", "1" });
             int threads = s.Threads == 0 ? Math.Max(1, Math.Min(12, Environment.ProcessorCount / 2)) : s.Threads;
             a.AddRange(new[] { "-t", threads.ToString() });

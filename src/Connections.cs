@@ -9,8 +9,10 @@ namespace SILocalAI
     public sealed partial class MainForm
     {
         Control apiPage;
-        Label connectionSummary, apiStateLabel, apiPendingLabel, apiContextSummary;
+        Label connectionSummary, apiStateLabel, apiPendingLabel, apiContextSummary, apiContextMetadata;
         ComboBox apiContextBox;
+        NumericUpDown apiCustomContextBox;
+        Button modelContextButton;
         bool syncingContext;
         TextBox apiBaseField, apiModelField, apiKeyField;
         readonly List<Control> connectionActions = new List<Control>();
@@ -32,7 +34,7 @@ namespace SILocalAI
             AddRow(live, Actions(export, copy, guide, testButton));
             AddRow(body, L("문맥 크기", 10F, true));
             apiContextBox = Combo(new string[0]); apiContextBox.AccessibleName = "API 문맥 크기";
-            apiContextBox.Items.AddRange(new object[] { 4096, 8192, 16384, 32768 });
+            apiContextBox.Items.AddRange(new object[] { 4096, 8192, 16384, 32768, 65536, 131072, 262144 });
             apiContextBox.FormattingEnabled = true;
             apiContextBox.Format += delegate(object sender, ListControlConvertEventArgs e) { e.Value = ContextText(Convert.ToInt32(e.ListItem)); };
             apiContextBox.SelectedIndexChanged += delegate {
@@ -41,8 +43,19 @@ namespace SILocalAI
             };
             contextBox.ValueChanged += delegate { UpdateContextPanel(); };
             AddRow(body, apiContextBox);
+            AddRow(body, L("직접 입력 (토큰)", 9F, true));
+            apiCustomContextBox = Number(512, Int32.MaxValue, 512); apiCustomContextBox.Dock = DockStyle.Top;
+            apiCustomContextBox.AccessibleName = "문맥 토큰 직접 입력";
+            apiCustomContextBox.ValueChanged += delegate { if (!syncingContext) contextBox.Value = apiCustomContextBox.Value; };
+            AddRow(body, apiCustomContextBox);
+            apiContextMetadata = L("", 9F, false); apiContextMetadata.ForeColor = Theme.Muted; AddRow(body, apiContextMetadata);
+            modelContextButton = Action("모델 기준값 사용", delegate {
+                var model = SelectedModel();
+                if (model != null && model.ContextLength.HasValue && model.ContextLength.Value >= 512) contextBox.Value = model.ContextLength.Value;
+            }, false);
+            AddRow(body, Actions(modelContextButton));
             apiContextSummary = L("", 9.5F, false); apiContextSummary.ForeColor = Theme.Muted; AddRow(body, apiContextSummary);
-            var contextHint = L("OpenCode·MCP는 16K부터 확인하세요. 문맥을 늘리면 메모리 사용량도 늘어납니다.", 9F, false);
+            var contextHint = L("문맥을 늘리면 메모리 사용량과 처리 시간이 늘어납니다. 실제 사용 가능한 크기는 모델과 PC에 따라 다릅니다.", 9F, false);
             contextHint.ForeColor = Theme.Muted; contextHint.Margin = new Padding(0, 7, 0, 0); AddRow(body, contextHint);
             var settings = body;
             apiKeyBox = new CheckBox { Text = "API 키 사용", AutoSize = true, Margin = new Padding(0, 20, 0, 12), AccessibleName = "로컬 API 키 인증 사용" };
@@ -64,8 +77,16 @@ namespace SILocalAI
             {
                 if (!apiContextBox.Items.Contains(selected)) apiContextBox.Items.Add(selected);
                 apiContextBox.SelectedItem = selected;
+                if (apiCustomContextBox != null) apiCustomContextBox.Value = selected;
             }
             finally { syncingContext = false; }
+            var model = SelectedModel();
+            int? native = model == null ? null : model.ContextLength;
+            if (modelContextButton != null) modelContextButton.Enabled = !uiBusy && native.HasValue && native.Value >= 512;
+            if (apiContextMetadata != null)
+                apiContextMetadata.Text = native.HasValue ? "GGUF 기준 문맥: " + ContextText(native.Value) +
+                    (selected > native.Value ? " · 기준 초과: 모델별 확장 설정이 필요할 수 있습니다. YaRN은 자동 적용하지 않습니다." : "")
+                    : "GGUF 기준 문맥: 확인할 수 없음 · 모델 설명을 참고하세요.";
             if (server.Status.Ready)
                 apiContextSummary.Text = "실행 중 " + ContextText(server.Status.Context) + (server.Status.Context != selected ? " · 변경하려면 재시작" : "");
             else apiContextSummary.Text = "다음 시작: " + ContextText(selected);

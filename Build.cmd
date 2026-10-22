@@ -28,7 +28,7 @@ if errorlevel 1 (
 )
 copy /y "src\LocalAI.Launcher.exe.config" "LocalAI.Launcher.exe.config" >nul
 if exist "state" copy /y "%BUILDLOG%" "state\build.log" >nul 2>nul
-> ".launcher-build-version.txt" echo 1.6.3
+> ".launcher-build-version.txt" echo 1.6.4
 echo Build complete: LocalAI.Launcher.exe
 exit /b 0
 

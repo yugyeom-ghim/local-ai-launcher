@@ -221,7 +221,7 @@ namespace SILocalAI
             assetGrid.BackgroundColor = Color.White; assetGrid.GridColor = Theme.Line; assetGrid.EnableHeadersVisualStyles = false; assetGrid.ColumnHeadersDefaultCellStyle.BackColor = Theme.Background; assetGrid.BorderStyle = BorderStyle.None;
             var viewport = new ContentViewport(); settings.Controls.Add(viewport); var t = AutoTable(1, 100); viewport.SetContent(t);
             modeBox = Combo(new[] { "자동 (선택 모델만 실행)", "목록 (선택 모델만 등록)", "단일 모델 (호환 모드)" }); AddRow(t, L("서버 모드", 9F, true)); AddRow(t, modeBox);
-            portBox = Number(1024, 65535, 1); contextBox = Number(512, 32768, 512); threadsBox = Number(0, 512, 1); timeoutBox = Number(30, 900, 30); gpuBox = Number(-1, 999, 1);
+            portBox = Number(1024, 65535, 1); contextBox = Number(512, Int32.MaxValue, 512); threadsBox = Number(0, 512, 1); timeoutBox = Number(30, 900, 30); gpuBox = Number(-1, 999, 1);
             var options = new ResponsiveColumns(620, 50, 50);
             string[] names = { "서버 포트", "문맥 토큰", "CPU 스레드 (0=자동)", "GPU 레이어 (-1=자동)", "로딩 제한 (초)" };
             Control[] fields = { portBox, contextBox, threadsBox, gpuBox, timeoutBox };
@@ -275,6 +275,7 @@ namespace SILocalAI
             bool same=m!=null && server.Status.Ready && server.Status.ModelId==m.Id;
             selectedState.Text=server.Alive ? (same ? "실행 중 · 변경 사항은 재시작 후 적용" : "시작하면 현재 모델을 교체합니다") : "";
             selectedState.Visible = server.Alive;
+            UpdateContextPanel();
             startButton.Text=uiBusy?"준비 중…":server.Alive?(same?"재시작":"모델 전환") : "시작";
             startButton.Enabled=!uiBusy && m!=null && inventory.Backends.Any(b=>!String.IsNullOrEmpty(b.Exe));
         }

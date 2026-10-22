@@ -19,12 +19,13 @@ namespace SILocalAI
         static void Equal<T>(T want, T got) { if (!Object.Equals(want, got)) throw new Exception("expected=" + want + ", actual=" + got); }
         static void Yes(bool value) { if (!value) throw new Exception("assertion failed"); }
         static void Throws(Action action) { try { action(); } catch { return; } throw new Exception("expected an exception"); }
-        static void WriteModel(string path, string arch)
+        static void WriteModel(string path, string arch, Action<BinaryWriter> metadata = null, ulong extraCount = 0)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             using (var w = new BinaryWriter(File.Create(path)))
             {
-                w.Write((uint)0x46554747); w.Write((uint)3); w.Write((ulong)1); w.Write((ulong)1);
+                w.Write((uint)0x46554747); w.Write((uint)3); w.Write((ulong)1); w.Write((ulong)1 + extraCount);
+                if (metadata != null) metadata(w);
                 byte[] key = Encoding.UTF8.GetBytes("general.architecture"); w.Write((ulong)key.Length); w.Write(key); w.Write((uint)8);
                 byte[] value = Encoding.UTF8.GetBytes(arch); w.Write((ulong)value.Length); w.Write(value);
                 byte[] tensor = Encoding.UTF8.GetBytes("test.weight"); w.Write((ulong)tensor.Length); w.Write(tensor);
@@ -32,6 +33,11 @@ namespace SILocalAI
                 while (w.BaseStream.Position % 32 != 0) w.Write((byte)0);
                 w.Write(new byte[128]);
             }
+        }
+        static void ContextMetadata(BinaryWriter w, string key, uint type, ulong value)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(key); w.Write((ulong)bytes.Length); w.Write(bytes); w.Write(type);
+            if (type == 10) w.Write(value); else w.Write((uint)value);
         }
         public static int Main(string[] args)
         {
@@ -66,12 +72,51 @@ namespace SILocalAI
                 Test("CPU does not count as CUDA", delegate { Yes(!new Capabilities("").NvidiaListed("Available devices:\n CPU: x64\nfound 0 CUDA devices")); });
                 Test("CUDA device recognized", delegate { Yes(new Capabilities("").NvidiaListed("Available devices:\n  CUDA0: NVIDIA GeForce RTX 3050 (6000 MiB, 5000 MiB free)")); });
                 Test("GGUF header parser", delegate { string f = Path.Combine(temp, "valid.gguf"); WriteModel(f, "qwen35"); Equal("qwen35", Gguf.Header(f)); });
+                Test("GGUF context before architecture ignores other architectures and rope keys", delegate {
+                    string f = Path.Combine(temp, "context.gguf");
+                    WriteModel(f, "qwen35", delegate(BinaryWriter w) {
+                        ContextMetadata(w, "qwen35.context_length", 4, 262144);
+                        ContextMetadata(w, "llama.context_length", 4, 8192);
+                        ContextMetadata(w, "qwen35.rope.scaling.original_context_length", 4, 32768);
+                    }, 3);
+                    Equal((int?)262144, Gguf.ReadHeader(f).ContextLength);
+                });
+                Test("missing or unusable GGUF context remains unknown without rejecting model", delegate {
+                    string f = Path.Combine(temp, "unknown-context.gguf"); WriteModel(f, "qwen35");
+                    Equal((int?)null, Gguf.ReadHeader(f).ContextLength);
+                    foreach (uint value in new uint[] { 0, UInt32.MaxValue }) {
+                        WriteModel(f, "qwen35", delegate(BinaryWriter w) { ContextMetadata(w, "qwen35.context_length", 4, value); }, 1);
+                        Equal((int?)null, Gguf.ReadHeader(f).ContextLength); Equal("qwen35", Gguf.Header(f));
+                    }
+                    WriteModel(f, "qwen35", delegate(BinaryWriter w) { ContextMetadata(w, "qwen35.context_length", 6, 262144); }, 1);
+                    Equal((int?)null, Gguf.ReadHeader(f).ContextLength);
+                });
+                Test("uint64 GGUF context supported without integer overflow", delegate {
+                    string f = Path.Combine(temp, "rwkv.gguf");
+                    WriteModel(f, "rwkv", delegate(BinaryWriter w) { ContextMetadata(w, "rwkv.context_length", 10, 65536); }, 1);
+                    Equal((int?)65536, Gguf.ReadHeader(f).ContextLength);
+                    WriteModel(f, "rwkv", delegate(BinaryWriter w) { ContextMetadata(w, "rwkv.context_length", 10, UInt64.MaxValue); }, 1);
+                    Equal((int?)null, Gguf.ReadHeader(f).ContextLength);
+                });
+                Test("large and custom saved context reaches server unchanged and disables fit reduction", delegate {
+                    foreach (int requested in new[] { 65536, 131072, 262144, 70000, 1010000, Int32.MaxValue }) {
+                        var saved = new Settings { Context = requested }.Clone(); saved.Validate();
+                        foreach (bool router in new[] { false, true }) {
+                            var a = Plans.Arguments(saved, new Capabilities("--fit-ctx N"), new BackendInfo { Id = "cpu" }, router, "m", "m", "p", null);
+                            Equal(requested.ToString(), a[a.IndexOf("-c") + 1]);
+                            Equal(requested.ToString(), a[a.IndexOf("--fit-ctx") + 1]);
+                        }
+                        var legacy = Plans.Arguments(saved, new Capabilities(""), new BackendInfo { Id = "cpu" }, false, "m", "m", "p", null);
+                        Yes(!legacy.Contains("--fit-ctx"));
+                    }
+                });
                 Test("truncated tensor payload rejected", delegate { string f = Path.Combine(temp, "truncated.gguf"); WriteModel(f, "qwen35"); using (var stream = File.OpenWrite(f)) stream.SetLength(stream.Length - 1); Throws(delegate { Gguf.Header(f); }); });
                 Test("CUDA 13.4 config supported without replacing legacy path", delegate { var s = Json.Read<Settings>("{\"Cuda13Path\":\"bin/legacy-13.1\",\"Backend\":\"cuda134\"}"); s.Validate(); Equal("bin/legacy-13.1", s.Cuda13Path); Equal("bin/win-cuda-13.4-x64", s.Cuda134Path); });
                 Test("HTML renamed as GGUF rejected", delegate { string f = Path.Combine(temp, "invalid.gguf"); File.WriteAllText(f, "<html>not a model</html>"); Throws(delegate { Gguf.Header(f); }); });
                 var s0 = new Settings(); string assets = Paths.Full(temp, s0.AssetRoot);
                 string models = Path.Combine(assets, "models"); Directory.CreateDirectory(models);
-                WriteModel(Path.Combine(models, "Qwen3.5-4B-Q4_K_M.gguf"), "qwen35");
+                WriteModel(Path.Combine(models, "Qwen3.5-4B-Q4_K_M.gguf"), "qwen35", delegate(BinaryWriter w) { ContextMetadata(w, "qwen35.context_length", 4, 262144); }, 1);
+                Test("discovery exposes model context for UI without a second file read", delegate { Equal((int?)262144, Discovery.Scan(temp, s0).Models.Single().ContextLength); });
                 WriteModel(Path.Combine(models, "mmproj-Qwen.gguf"), "clip");
                 WriteModel(Path.Combine(models, "ocr", "ocr.gguf"), "qwen35");
                 WriteModel(Path.Combine(models, "bert.gguf"), "bert");

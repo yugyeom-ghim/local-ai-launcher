@@ -32,6 +32,12 @@ Persisted `ThinkingOff` maps to `--reasoning off/on`, with template kwargs for o
 Exports use `@ai-sdk/openai-compatible`, the running base URL/model/context and provider ID `si-local` for compatibility. Authenticated exports omit the key; register it through `/connect`. Keyless exports use `si-local-no-key`.
 Merge `provider.si-local` into existing configuration to retain MCP settings.
 
+## Context
+
+Presets cover 4K through 256K; custom integer context accepts 512 through Int32.MaxValue. The default remains 4096 and saved values are preserved. GGUF `[architecture].context_length` is displayed as a model reference, not a hardware capacity guarantee; missing or unusable metadata leaves it unknown. No automatic RoPE/YaRN expansion is added.
+
+The selected context is passed as `-c` and, where supported, `--fit-ctx` to prevent silent reduction by memory fitting. Restart to apply, then re-export OpenCode configuration. Exported `limit.context` uses the active server configuration, not unsaved UI edits. Large-context model inference still requires validation on the target PC.
+
 ## State
 
 State is stored beside the EXE, falling back to `%LOCALAPPDATA%/SI.LocalAI/<installation-path-hash>` when unwritable.

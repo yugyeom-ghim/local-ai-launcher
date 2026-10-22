@@ -89,7 +89,7 @@ Commit: $env:GITHUB_SHA
 Run: https://github.com/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
 
 - Windows Server 2022 runner: native .NET Framework x64 Release build succeeded.
-- Core regression checks: 64 passed.
+- Core regression checks: 69 passed.
 - API request/credential/context logic checks: 8 passed.
 - Pinned b11429 Windows llama-server CORS/authentication checks: 30 passed (OPTIONS, GET and POST, with and without an API key).
 - Download/assembly checks: 9 passed, including HTTP Range resume and ignored-Range restart.

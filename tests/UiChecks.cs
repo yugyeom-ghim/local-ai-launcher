@@ -97,7 +97,20 @@ class UiChecks
                         if (!form.Visible || !tray.Visible) Fail("Restoring window removed tray icon");
                         var context = (NumericUpDown)Field("contextBox"); var contextChoice = (ComboBox)Field("apiContextBox");
                         contextChoice.SelectedItem = 16384; if (context.Value != 16384) Fail("API context preset not applied");
-                        context.Value = 6144; if (!Equals(contextChoice.SelectedItem, 6144)) Fail("Custom context not preserved"); context.Value = 4096;
+                        var customContext = (NumericUpDown)Field("apiCustomContextBox");
+                        contextChoice.SelectedItem = 262144; if (context.Value != 262144 || customContext.Value != 262144) Fail("256K preset not applied");
+                        customContext.Value = 70000; if (context.Value != 70000 || !Equals(contextChoice.SelectedItem, 70000)) Fail("Custom API context not applied");
+                        context.Value = 1010000; if (!Equals(contextChoice.SelectedItem, 1010000) || customContext.Value != 1010000) Fail("Large settings context not preserved");
+                        var selectedModel = (ModelInfo)((ComboBox)Field("modelBox")).SelectedItem;
+                        selectedModel.ContextLength = 262144;
+                        typeof(MainForm).GetMethod("RefreshSelection", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, null);
+                        if (!((Label)Field("apiContextMetadata")).Text.Contains("기준 초과")) Fail("Context expansion warning missing");
+                        typeof(Button).GetMethod("OnClick", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Field("modelContextButton"), new object[] { EventArgs.Empty });
+                        if (context.Value != 262144) Fail("GGUF reference button not applied");
+                        selectedModel.ContextLength = null;
+                        typeof(MainForm).GetMethod("RefreshSelection", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, null);
+                        if (((Button)Field("modelContextButton")).Enabled || !((Label)Field("apiContextMetadata")).Text.Contains("확인할 수 없음") || context.Value != 262144) Fail("Unknown GGUF context reset user value or enabled reference button");
+                        context.Value = 4096;
                         result["font"] = form.Font.Name; result["tray_visible_open_minimized_restored"] = true; result["context_selector_synced"] = true;
                         // Simulate status text only; no model/server is started.
                         typeof(MainForm).GetMethod("UpdateDashboard", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, new object[] { new ServerStatus { Ready=true, Listening=true, State="ready", Backend="CPU", ModelId="ui-fixture" } });

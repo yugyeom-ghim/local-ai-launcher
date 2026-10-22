@@ -43,7 +43,7 @@ public static class ApiChecks
     using(var server=new ServerController(state,state,new AppLog(Path.Combine(state,"server.log"))))Throws(delegate{server.Connection();});
    });
    Test("exported context follows running server with bounded output",delegate {
-    foreach(int context in new[]{512,4096,8192,16384,32768}) {
+    foreach(int context in new[]{512,4096,8192,16384,32768,65536,131072,262144,70000,1010000,Int32.MaxValue}) {
      var c=new ClientConnection{BaseUrl="http://127.0.0.1:1234/v1",ModelId="test",ModelName="Test",Context=context};
      var doc=Json.Read<Dictionary<string,object>>(ClientConfig.OpenCode(c));
      var providers=(Dictionary<string,object>)doc["provider"];var provider=(Dictionary<string,object>)providers[ClientConfig.ProviderId];
