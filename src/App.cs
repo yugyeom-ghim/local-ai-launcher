@@ -64,13 +64,14 @@ namespace SILocalAI
         readonly System.Windows.Forms.Timer monitorTimer = new System.Windows.Forms.Timer();
         readonly NotifyIcon tray = new NotifyIcon();
         Icon applicationIcon;
+        FormWindowState restoreWindowState = FormWindowState.Normal;
         readonly ToolTip tips = new ToolTip();
         Label statusLabel, hardwareLabel, modelCount;
         TextBox baseUrl, chatUrl, modelId, logBox;
         ComboBox backendBox, modeBox, modelBox, thinkingModeBox;
         NumericUpDown portBox, contextBox, threadsBox, timeoutBox, gpuBox;
         CheckBox autoBox, fallbackBox, browserBox, apiKeyBox;
-        Button startButton, stopButton, scanButton, loadButton, testButton, webButton, applyButton;
+        Button startButton, stopButton, scanButton, loadButton, testButton, webButton, applyButton, trayButton;
         DataGridView assetGrid;
         readonly Dictionary<string, TextBox> pathBoxes = new Dictionary<string, TextBox>();
         readonly List<Control> editable = new List<Control>();
@@ -120,7 +121,7 @@ namespace SILocalAI
             menu.Items.Add("서버 중지", null, delegate { cancelRequested = true; server.Stop(); });
             menu.Items.Add("종료", null, delegate { ShowWindow(); Close(); });
             tray.ContextMenuStrip = menu; tray.DoubleClick += delegate { ShowWindow(); };
-            Resize += delegate { if (WindowState == FormWindowState.Minimized) { tray.Visible = true; Hide(); } };
+            Resize += delegate { if (Visible && WindowState != FormWindowState.Minimized) restoreWindowState = WindowState; };
             Shown += async delegate
             {
                 FitToWorkingArea();
@@ -357,15 +358,23 @@ namespace SILocalAI
             if (logBox.TextLength > 100000) logBox.Text = logBox.Text.Substring(logBox.TextLength - 50000);
             logBox.AppendText(b.ToString());
         }
-        void ShowWindow() { Show(); WindowState = FormWindowState.Normal; tray.Visible = true; Activate(); }
+        void HideToTray()
+        {
+            if (WindowState != FormWindowState.Minimized) restoreWindowState = WindowState;
+            tray.Visible = true; Hide(); ShowInTaskbar = false;
+        }
+        void ShowWindow()
+        {
+            ShowInTaskbar = true; Show(); WindowState = restoreWindowState; tray.Visible = true; Activate();
+        }
         void OnClosing(object sender, FormClosingEventArgs e)
         {
             if (closing) return;
             if ((server.Alive || uiBusy) && e.CloseReason == CloseReason.UserClosing)
             {
-                var answer = MessageBox.Show(this, "종료하면 이 도구가 시작한 AI 서버와 모델도 종료됩니다.\r\n\r\n예: 서버 종료 후 닫기\r\n아니요: 알림 영역으로 최소화\r\n취소: 계속 사용", "Local AI 종료", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                var answer = MessageBox.Show(this, "종료하면 이 도구가 시작한 AI 서버와 모델도 종료됩니다.\r\n\r\n예: 서버 종료 후 닫기\r\n아니요: 트레이로 보내기\r\n취소: 계속 사용", "Local AI 종료", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (answer == DialogResult.Cancel) { e.Cancel = true; return; }
-                if (answer == DialogResult.No) { e.Cancel = true; WindowState = FormWindowState.Minimized; return; }
+                if (answer == DialogResult.No) { e.Cancel = true; HideToTray(); return; }
             }
             closing = true; monitorTimer.Stop(); libraryTimer.Stop(); server.Stop();
             try { ReadConfig(); SaveConfig(); } catch (Exception ex) { log.Write("종료 시 설정 저장 실패: " + ex.Message); }

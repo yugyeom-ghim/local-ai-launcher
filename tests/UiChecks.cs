@@ -92,9 +92,23 @@ class UiChecks
                         var tray = (NotifyIcon)Field("tray");
                         if (!tray.Visible || tray.Icon == null || form.Icon == null) Fail("Company tray icon missing");
                         form.WindowState = FormWindowState.Minimized; Application.DoEvents();
-                        if (form.Visible || !tray.Visible) Fail("Minimize-to-tray failed");
-                        typeof(MainForm).GetMethod("ShowWindow", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(form, null); Application.DoEvents();
-                        if (!form.Visible || !tray.Visible) Fail("Restoring window removed tray icon");
+                        if (!form.Visible || !form.ShowInTaskbar || form.WindowState != FormWindowState.Minimized) Fail("Normal minimize removed taskbar window");
+                        form.WindowState = FormWindowState.Normal; Application.DoEvents();
+                        if (!form.Visible || !form.ShowInTaskbar) Fail("Normal taskbar restore failed");
+                        var trayButton = (Button)Field("trayButton");
+                        trayButton.PerformClick(); Application.DoEvents();
+                        if (form.Visible || form.ShowInTaskbar || !tray.Visible) Fail("Explicit tray button did not hide taskbar window");
+                        // Exercise the actual tray Open menu, which shares the double-click restore handler.
+                        ((ToolStripMenuItem)tray.ContextMenuStrip.Items[0]).PerformClick(); Application.DoEvents();
+                        if (!form.Visible || !form.ShowInTaskbar || form.WindowState != FormWindowState.Normal || !tray.Visible) Fail("Tray Open did not restore taskbar window");
+                        form.WindowState = FormWindowState.Maximized; Application.DoEvents();
+                        trayButton.PerformClick(); Application.DoEvents();
+                        ((ToolStripMenuItem)tray.ContextMenuStrip.Items[0]).PerformClick(); Application.DoEvents();
+                        if (!form.Visible || !form.ShowInTaskbar || form.WindowState != FormWindowState.Maximized) Fail("Tray restore lost maximized state");
+                        form.WindowState = FormWindowState.Normal; Application.DoEvents();
+                        result["minimize_keeps_taskbar_window"] = true;
+                        result["explicit_tray_and_open_restore"] = true;
+                        result["tray_restore_preserves_maximized_state"] = true;
                         var context = (NumericUpDown)Field("contextBox"); var contextChoice = (ComboBox)Field("apiContextBox");
                         contextChoice.SelectedItem = 16384; if (context.Value != 16384) Fail("API context preset not applied");
                         var customContext = (NumericUpDown)Field("apiCustomContextBox");
@@ -126,6 +140,7 @@ class UiChecks
                             form.ClientSize = size; form.PerformLayout(); Application.DoEvents();
                             var badge = (Control)Field("stateBadge");
                             if (badge.GetPreferredSize(Size.Empty).Width > badge.Width || badge.GetPreferredSize(Size.Empty).Height > badge.Height) Fail("Ready status clipped at " + size.Width);
+                            if (!trayButton.Visible || !form.ClientRectangle.Contains(form.PointToClient(trayButton.PointToScreen(new Point(trayButton.Width - 1, trayButton.Height - 1))))) Fail("Tray button clipped at " + size.Width);
                             Capture(Path.Combine(output, "models-" + size.Width + ".png"));
                             foreach (var viewport in All(form).OfType<ContentViewport>().Where(v => v.Visible)) if (viewport.HorizontalScroll.Visible) Fail("Horizontal scroll at " + size.Width);
                             var start = (Control)Field("startButton"); var stop = (Control)Field("stopButton");

@@ -83,7 +83,7 @@ namespace SILocalAI
             shell.RowStyles.Add(new RowStyle(SizeType.Absolute, 88));
             shell.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             shell.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            var header = Table(2, -92, 100); header.Padding = new Padding(24, 12, 24, 10);
+            var header = Table(3, -92, 100, -156); header.Padding = new Padding(24, 12, 24, 10);
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("SILocalAI.BrandLogo"))
             { if (stream != null) using (var original = Image.FromStream(stream)) brandImage = new Bitmap(original); }
             var logo = new PictureBox { Image = brandImage, SizeMode = PictureBoxSizeMode.Zoom, Dock = DockStyle.Fill,
@@ -91,6 +91,11 @@ namespace SILocalAI
             header.Controls.Add(logo, 0, 0);
             header.Controls.Add(new Label { Text = "Local AI Launcher", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft,
                 Font = Theme.UIFont(21F, true), ForeColor = Theme.Ink, Margin = new Padding(0) }, 1, 0);
+            trayButton = Action("트레이로 보내기", delegate { HideToTray(); }, false);
+            trayButton.Dock = DockStyle.None; trayButton.Anchor = AnchorStyles.Right;
+            trayButton.AccessibleName = "알림 영역으로 보내기";
+            tips.SetToolTip(trayButton, "창을 작업표시줄에서 숨깁니다. 알림 영역 아이콘을 두 번 클릭하면 다시 열립니다.");
+            header.Controls.Add(trayButton, 2, 0);
             shell.Controls.Add(header, 0, 0);
             pages = new WorkspaceTabs();
             var main = new Panel { BackColor = paper, Padding = new Padding(24, 20, 24, 16) };
